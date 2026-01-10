@@ -1,97 +1,304 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight, Globe, Shield, Zap } from "lucide-react";
 import { Suspense } from "react";
-import { SignOutButton } from "~/components/sign-out-button";
 import { ThemeToggle } from "~/components/theme-toggle";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "~/components/ui/accordion";
 import { Button } from "~/components/ui/button";
 import { authQueryOptions } from "~/lib/auth/queries";
 
 export const Route = createFileRoute("/")({
-  component: HomePage,
+  component: LandingPage,
 });
 
-function HomePage() {
+function LandingPage() {
+  const scrollToExamples = () => {
+    document.getElementById("examples")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-10 p-2">
-      <div className="flex flex-col items-center gap-4">
-        <h1 className="text-3xl font-bold sm:text-4xl">React TanStarter</h1>
-        <div className="text-foreground/80 flex items-center gap-2 text-sm max-sm:flex-col">
-          This is an unprotected page:
-          <pre className="bg-card text-card-foreground rounded-md border p-1">
-            routes/index.tsx
-          </pre>
+    <div className="min-h-svh">
+      {/* Header */}
+      <header className="border-b">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+          <Link to="/" className="text-xl font-bold">
+            FormFlow
+          </Link>
+          <div className="flex items-center gap-3">
+            <Suspense fallback={null}>
+              <HeaderActions />
+            </Suspense>
+            <ThemeToggle />
+          </div>
         </div>
-      </div>
+      </header>
 
-      <Suspense fallback={<div className="py-6">Loading user...</div>}>
-        <UserAction />
-      </Suspense>
-
-      <div className="flex flex-col items-center gap-2">
-        <p className="text-foreground/80 max-sm:text-xs">
-          A minimal starter template for{" "}
-          <a
-            className="text-foreground group"
-            href="https://tanstack.com/start/latest"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            🏝️ <span className="group-hover:underline">TanStack Start</span>
-          </a>
-          .
-        </p>
-        <div className="flex items-center gap-3">
-          <a
-            className="text-foreground/80 hover:text-foreground underline max-sm:text-sm"
-            href="https://github.com/dotnize/react-tanstarter"
-            target="_blank"
-            title="Template repository on GitHub"
-            rel="noreferrer noopener"
-          >
-            dotnize/react-tanstarter
-          </a>
-
-          <ThemeToggle />
+      {/* Hero Section */}
+      <section className="py-20 md:py-32">
+        <div className="mx-auto max-w-4xl px-4 text-center">
+          <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
+            Form endpoints for your websites
+          </h1>
+          <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg md:text-xl">
+            Add contact forms, feedback widgets, and more to any website. No backend
+            required.
+          </p>
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Button size="lg" render={<Link to="/login" />}>
+              Get Started Free
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+            <Button size="lg" variant="outline" onClick={scrollToExamples}>
+              View Examples
+            </Button>
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="bg-muted/50 py-20">
+        <div className="mx-auto max-w-6xl px-4">
+          <h2 className="text-center text-3xl font-bold">Why FormFlow?</h2>
+          <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-center">
+            Everything you need to collect form submissions without writing backend code.
+          </p>
+          <div className="mt-12 grid gap-8 md:grid-cols-3">
+            <FeatureCard
+              icon={<Zap className="h-6 w-6" />}
+              title="No Backend Required"
+              description="Create form endpoints in seconds. Just point your HTML form to our URL and start collecting submissions."
+            />
+            <FeatureCard
+              icon={<Shield className="h-6 w-6" />}
+              title="Spam Protection"
+              description="Built-in honeypot fields automatically detect and filter bot submissions, keeping your inbox clean."
+            />
+            <FeatureCard
+              icon={<Globe className="h-6 w-6" />}
+              title="Domain Restrictions"
+              description="Control exactly which websites can submit to your forms. Block unauthorized submissions with ease."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-20">
+        <div className="mx-auto max-w-6xl px-4">
+          <h2 className="text-center text-3xl font-bold">How It Works</h2>
+          <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-center">
+            Get started in minutes with three simple steps.
+          </p>
+          <div className="mt-12 grid gap-8 md:grid-cols-3">
+            <StepCard
+              number={1}
+              title="Create a form"
+              description="Sign up and create a form endpoint. Configure email notifications and customize settings."
+            />
+            <StepCard
+              number={2}
+              title="Add to your site"
+              description="Copy the HTML snippet and paste it into your website. Works with any platform or website builder."
+            />
+            <StepCard
+              number={3}
+              title="Receive submissions"
+              description="Get email notifications and view all submissions in your dashboard. It's that simple."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Examples Section */}
+      <section id="examples" className="bg-muted/50 py-20">
+        <div className="mx-auto max-w-4xl px-4">
+          <h2 className="text-center text-3xl font-bold">Integration is Simple</h2>
+          <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-center">
+            Just add your FormFlow endpoint URL to any HTML form.
+          </p>
+          <div className="mt-12">
+            <pre className="bg-card overflow-x-auto rounded-lg border p-6 text-sm">
+              <code>{`<form action="https://formflow.app/api/f/your-form-id" method="POST">
+  <label for="email">Email</label>
+  <input type="email" id="email" name="email" required />
+
+  <label for="message">Message</label>
+  <textarea id="message" name="message" required></textarea>
+
+  <button type="submit">Send Message</button>
+</form>`}</code>
+            </pre>
+          </div>
+          <p className="text-muted-foreground mt-6 text-center text-sm">
+            Works with React, Vue, plain HTML, WordPress, Webflow, and any other platform.
+          </p>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20">
+        <div className="mx-auto max-w-3xl px-4">
+          <h2 className="text-center text-3xl font-bold">Frequently Asked Questions</h2>
+          <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-center">
+            Got questions? We&apos;ve got answers.
+          </p>
+          <div className="mt-12">
+            <Accordion className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>Is FormFlow free?</AccordionTrigger>
+                <AccordionContent>
+                  Yes! FormFlow offers a generous free tier that includes unlimited forms
+                  and up to 100 submissions per month. Perfect for personal projects and
+                  small websites.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-2">
+                <AccordionTrigger>How do I add a form to my website?</AccordionTrigger>
+                <AccordionContent>
+                  Simply create a form in your dashboard, copy the HTML snippet, and paste
+                  it into your website&apos;s HTML. It works with any website builder or
+                  custom code.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-3">
+                <AccordionTrigger>
+                  Can I use FormFlow with any website builder?
+                </AccordionTrigger>
+                <AccordionContent>
+                  Absolutely. FormFlow works with WordPress, Webflow, Squarespace, Wix,
+                  static sites, and any platform that allows custom HTML forms.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-4">
+                <AccordionTrigger>How does spam protection work?</AccordionTrigger>
+                <AccordionContent>
+                  We use honeypot fields - invisible form fields that trick bots into
+                  filling them out. When detected, submissions are automatically flagged
+                  as spam and filtered from your inbox.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-5">
+                <AccordionTrigger>Where is my data stored?</AccordionTrigger>
+                <AccordionContent>
+                  Your submission data is securely stored in our database with encryption
+                  at rest. We never share or sell your data to third parties. See our
+                  Privacy Policy for more details.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="bg-primary text-primary-foreground py-20">
+        <div className="mx-auto max-w-4xl px-4 text-center">
+          <h2 className="text-3xl font-bold">Ready to get started?</h2>
+          <p className="mt-4 text-lg opacity-90">
+            Create your first form endpoint in under a minute.
+          </p>
+          <Button
+            size="lg"
+            variant="secondary"
+            className="mt-8"
+            render={<Link to="/login" />}
+          >
+            Get Started Free
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t py-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 sm:flex-row">
+          <p className="text-muted-foreground text-sm">
+            &copy; {new Date().getFullYear()} FormFlow. All rights reserved.
+          </p>
+          <div className="flex items-center gap-6">
+            <a
+              href="/privacy"
+              className="text-muted-foreground hover:text-foreground text-sm"
+            >
+              Privacy Policy
+            </a>
+            <a
+              href="/terms"
+              className="text-muted-foreground hover:text-foreground text-sm"
+            >
+              Terms of Service
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
 
-function UserAction() {
+function HeaderActions() {
   const { data: user } = useSuspenseQuery(authQueryOptions());
 
-  return user ? (
-    <div className="flex flex-col items-center gap-2">
-      <p>Welcome back, {user.name}!</p>
-      <Button
-        render={<Link to="/dashboard" />}
-        className="mb-2 w-fit"
-        size="lg"
-        nativeButton={false}
-      >
-        Go to Dashboard
+  if (user) {
+    return (
+      <Button variant="outline" size="sm" render={<Link to="/dashboard" />}>
+        Dashboard
       </Button>
-      <div className="text-center text-xs sm:text-sm">
-        Session user:
-        <pre className="max-w-screen overflow-x-auto px-2 text-start">
-          {JSON.stringify(user, null, 2)}
-        </pre>
-      </div>
+    );
+  }
 
-      <SignOutButton />
-    </div>
-  ) : (
-    <div className="flex flex-col items-center gap-2">
-      <p>You are not signed in.</p>
-      <Button
-        render={<Link to="/login" />}
-        className="w-fit"
-        size="lg"
-        nativeButton={false}
-      >
-        Log in
+  return (
+    <>
+      <Button variant="ghost" size="sm" render={<Link to="/login" />}>
+        Login
       </Button>
+      <Button size="sm" render={<Link to="/login" />}>
+        Get Started
+      </Button>
+    </>
+  );
+}
+
+function FeatureCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="bg-card rounded-lg border p-6">
+      <div className="bg-primary/10 text-primary mb-4 inline-flex rounded-lg p-3">
+        {icon}
+      </div>
+      <h3 className="text-lg font-semibold">{title}</h3>
+      <p className="text-muted-foreground mt-2">{description}</p>
+    </div>
+  );
+}
+
+function StepCard({
+  number,
+  title,
+  description,
+}: {
+  number: number;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="text-center">
+      <div className="bg-primary text-primary-foreground mx-auto flex h-12 w-12 items-center justify-center rounded-full text-xl font-bold">
+        {number}
+      </div>
+      <h3 className="mt-4 text-lg font-semibold">{title}</h3>
+      <p className="text-muted-foreground mt-2">{description}</p>
     </div>
   );
 }
