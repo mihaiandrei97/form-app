@@ -64,22 +64,20 @@ function EditFormPage() {
         </div>
       </div>
 
-      <div className="max-w-2xl">
-        <FormForm
-          mode="edit"
-          defaultValues={{
-            name: form.name,
-            emailTo: form.emailTo,
-            redirectUrl: form.redirectUrl || "",
-            allowedDomains: form.allowedDomains?.join(", ") || "",
-            honeypotField: form.honeypotField || "",
-            isActive: form.isActive,
-          }}
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-          isSubmitting={isPending}
-        />
-      </div>
+      <FormForm
+        mode="edit"
+        defaultValues={{
+          name: form.name,
+          emailTo: form.emailTo,
+          redirectUrl: form.redirectUrl || "",
+          allowedDomains: form.allowedDomains?.join(", ") || "",
+          honeypotField: form.honeypotField || "",
+          isActive: form.isActive,
+        }}
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+        isSubmitting={isPending}
+      />
     </div>
   );
 }

@@ -59,17 +59,15 @@ function NewFormPage() {
         </div>
       </div>
 
-      <div className="max-w-2xl">
-        <FormForm
-          mode="create"
-          defaultValues={{
-            emailTo: user.email,
-          }}
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-          isSubmitting={isPending}
-        />
-      </div>
+      <FormForm
+        mode="create"
+        defaultValues={{
+          emailTo: user.email,
+        }}
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+        isSubmitting={isPending}
+      />
     </div>
   );
 }
