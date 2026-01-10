@@ -1,31 +1,39 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { Button } from "~/components/ui/button";
 
 export const Route = createFileRoute("/(authenticated)/dashboard")({
   component: DashboardLayout,
 });
 
 function DashboardLayout() {
+  const { user } = Route.useRouteContext();
+
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-10 p-2">
-      <div className="flex flex-col items-center gap-2">
-        <h1 className="text-3xl font-bold sm:text-4xl">Dashboard Layout</h1>
-        <pre className="bg-card text-card-foreground mb-4 rounded-md border p-1 text-xs">
-          routes/(authenticated)/dashboard/route.tsx
-        </pre>
-        <div className="text-foreground/80 mb-4 flex flex-col items-center gap-2 text-sm">
-          This is a protected layout from the authenticated layout route:
-          <pre className="bg-card text-card-foreground rounded-md border p-1 text-xs">
-            routes/(authenticated)/route.tsx
-          </pre>
+    <div className="min-h-svh">
+      <header className="border-b">
+        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+          <nav className="flex items-center gap-6">
+            <Link
+              to="/dashboard"
+              className="text-lg font-semibold"
+              activeOptions={{ exact: true }}
+            >
+              FormFlow
+            </Link>
+            <Link
+              to="/dashboard/forms"
+              className="text-muted-foreground hover:text-foreground [&.active]:text-foreground text-sm transition-colors"
+            >
+              Forms
+            </Link>
+          </nav>
+          <div className="flex items-center gap-4">
+            <span className="text-muted-foreground text-sm">{user.email}</span>
+          </div>
         </div>
-
-        <Button render={<Link to="/" />} className="w-fit" size="lg" nativeButton={false}>
-          Back to home
-        </Button>
-      </div>
-
-      <Outlet />
+      </header>
+      <main className="mx-auto max-w-5xl px-4 py-8">
+        <Outlet />
+      </main>
     </div>
   );
 }

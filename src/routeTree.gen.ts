@@ -16,7 +16,12 @@ import { Route as authPagesSignupRouteImport } from './routes/(auth-pages)/signu
 import { Route as authPagesLoginRouteImport } from './routes/(auth-pages)/login'
 import { Route as authenticatedDashboardRouteRouteImport } from './routes/(authenticated)/dashboard/route'
 import { Route as authenticatedDashboardIndexRouteImport } from './routes/(authenticated)/dashboard/index'
+import { Route as ApiFSlugRouteImport } from './routes/api/f/$slug'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as authenticatedDashboardFormsIndexRouteImport } from './routes/(authenticated)/dashboard/forms/index'
+import { Route as authenticatedDashboardFormsNewRouteImport } from './routes/(authenticated)/dashboard/forms/new'
+import { Route as authenticatedDashboardFormsFormIdIndexRouteImport } from './routes/(authenticated)/dashboard/forms/$formId/index'
+import { Route as authenticatedDashboardFormsFormIdEditRouteImport } from './routes/(authenticated)/dashboard/forms/$formId/edit'
 
 const authenticatedRouteRoute = authenticatedRouteRouteImport.update({
   id: '/(authenticated)',
@@ -53,11 +58,40 @@ const authenticatedDashboardIndexRoute =
     path: '/',
     getParentRoute: () => authenticatedDashboardRouteRoute,
   } as any)
+const ApiFSlugRoute = ApiFSlugRouteImport.update({
+  id: '/api/f/$slug',
+  path: '/api/f/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authenticatedDashboardFormsIndexRoute =
+  authenticatedDashboardFormsIndexRouteImport.update({
+    id: '/forms/',
+    path: '/forms/',
+    getParentRoute: () => authenticatedDashboardRouteRoute,
+  } as any)
+const authenticatedDashboardFormsNewRoute =
+  authenticatedDashboardFormsNewRouteImport.update({
+    id: '/forms/new',
+    path: '/forms/new',
+    getParentRoute: () => authenticatedDashboardRouteRoute,
+  } as any)
+const authenticatedDashboardFormsFormIdIndexRoute =
+  authenticatedDashboardFormsFormIdIndexRouteImport.update({
+    id: '/forms/$formId/',
+    path: '/forms/$formId/',
+    getParentRoute: () => authenticatedDashboardRouteRoute,
+  } as any)
+const authenticatedDashboardFormsFormIdEditRoute =
+  authenticatedDashboardFormsFormIdEditRouteImport.update({
+    id: '/forms/$formId/edit',
+    path: '/forms/$formId/edit',
+    getParentRoute: () => authenticatedDashboardRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -65,14 +99,24 @@ export interface FileRoutesByFullPath {
   '/login': typeof authPagesLoginRoute
   '/signup': typeof authPagesSignupRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/f/$slug': typeof ApiFSlugRoute
   '/dashboard/': typeof authenticatedDashboardIndexRoute
+  '/dashboard/forms/new': typeof authenticatedDashboardFormsNewRoute
+  '/dashboard/forms': typeof authenticatedDashboardFormsIndexRoute
+  '/dashboard/forms/$formId/edit': typeof authenticatedDashboardFormsFormIdEditRoute
+  '/dashboard/forms/$formId': typeof authenticatedDashboardFormsFormIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof authPagesLoginRoute
   '/signup': typeof authPagesSignupRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/f/$slug': typeof ApiFSlugRoute
   '/dashboard': typeof authenticatedDashboardIndexRoute
+  '/dashboard/forms/new': typeof authenticatedDashboardFormsNewRoute
+  '/dashboard/forms': typeof authenticatedDashboardFormsIndexRoute
+  '/dashboard/forms/$formId/edit': typeof authenticatedDashboardFormsFormIdEditRoute
+  '/dashboard/forms/$formId': typeof authenticatedDashboardFormsFormIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -83,7 +127,12 @@ export interface FileRoutesById {
   '/(auth-pages)/login': typeof authPagesLoginRoute
   '/(auth-pages)/signup': typeof authPagesSignupRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/f/$slug': typeof ApiFSlugRoute
   '/(authenticated)/dashboard/': typeof authenticatedDashboardIndexRoute
+  '/(authenticated)/dashboard/forms/new': typeof authenticatedDashboardFormsNewRoute
+  '/(authenticated)/dashboard/forms/': typeof authenticatedDashboardFormsIndexRoute
+  '/(authenticated)/dashboard/forms/$formId/edit': typeof authenticatedDashboardFormsFormIdEditRoute
+  '/(authenticated)/dashboard/forms/$formId/': typeof authenticatedDashboardFormsFormIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -93,9 +142,24 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/api/auth/$'
+    | '/api/f/$slug'
     | '/dashboard/'
+    | '/dashboard/forms/new'
+    | '/dashboard/forms'
+    | '/dashboard/forms/$formId/edit'
+    | '/dashboard/forms/$formId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/signup' | '/api/auth/$' | '/dashboard'
+  to:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/api/auth/$'
+    | '/api/f/$slug'
+    | '/dashboard'
+    | '/dashboard/forms/new'
+    | '/dashboard/forms'
+    | '/dashboard/forms/$formId/edit'
+    | '/dashboard/forms/$formId'
   id:
     | '__root__'
     | '/'
@@ -105,7 +169,12 @@ export interface FileRouteTypes {
     | '/(auth-pages)/login'
     | '/(auth-pages)/signup'
     | '/api/auth/$'
+    | '/api/f/$slug'
     | '/(authenticated)/dashboard/'
+    | '/(authenticated)/dashboard/forms/new'
+    | '/(authenticated)/dashboard/forms/'
+    | '/(authenticated)/dashboard/forms/$formId/edit'
+    | '/(authenticated)/dashboard/forms/$formId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -113,6 +182,7 @@ export interface RootRouteChildren {
   authPagesRouteRoute: typeof authPagesRouteRouteWithChildren
   authenticatedRouteRoute: typeof authenticatedRouteRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiFSlugRoute: typeof ApiFSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -166,12 +236,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedDashboardIndexRouteImport
       parentRoute: typeof authenticatedDashboardRouteRoute
     }
+    '/api/f/$slug': {
+      id: '/api/f/$slug'
+      path: '/api/f/$slug'
+      fullPath: '/api/f/$slug'
+      preLoaderRoute: typeof ApiFSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
       fullPath: '/api/auth/$'
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/(authenticated)/dashboard/forms/': {
+      id: '/(authenticated)/dashboard/forms/'
+      path: '/forms'
+      fullPath: '/dashboard/forms'
+      preLoaderRoute: typeof authenticatedDashboardFormsIndexRouteImport
+      parentRoute: typeof authenticatedDashboardRouteRoute
+    }
+    '/(authenticated)/dashboard/forms/new': {
+      id: '/(authenticated)/dashboard/forms/new'
+      path: '/forms/new'
+      fullPath: '/dashboard/forms/new'
+      preLoaderRoute: typeof authenticatedDashboardFormsNewRouteImport
+      parentRoute: typeof authenticatedDashboardRouteRoute
+    }
+    '/(authenticated)/dashboard/forms/$formId/': {
+      id: '/(authenticated)/dashboard/forms/$formId/'
+      path: '/forms/$formId'
+      fullPath: '/dashboard/forms/$formId'
+      preLoaderRoute: typeof authenticatedDashboardFormsFormIdIndexRouteImport
+      parentRoute: typeof authenticatedDashboardRouteRoute
+    }
+    '/(authenticated)/dashboard/forms/$formId/edit': {
+      id: '/(authenticated)/dashboard/forms/$formId/edit'
+      path: '/forms/$formId/edit'
+      fullPath: '/dashboard/forms/$formId/edit'
+      preLoaderRoute: typeof authenticatedDashboardFormsFormIdEditRouteImport
+      parentRoute: typeof authenticatedDashboardRouteRoute
     }
   }
 }
@@ -192,11 +297,22 @@ const authPagesRouteRouteWithChildren = authPagesRouteRoute._addFileChildren(
 
 interface authenticatedDashboardRouteRouteChildren {
   authenticatedDashboardIndexRoute: typeof authenticatedDashboardIndexRoute
+  authenticatedDashboardFormsNewRoute: typeof authenticatedDashboardFormsNewRoute
+  authenticatedDashboardFormsIndexRoute: typeof authenticatedDashboardFormsIndexRoute
+  authenticatedDashboardFormsFormIdEditRoute: typeof authenticatedDashboardFormsFormIdEditRoute
+  authenticatedDashboardFormsFormIdIndexRoute: typeof authenticatedDashboardFormsFormIdIndexRoute
 }
 
 const authenticatedDashboardRouteRouteChildren: authenticatedDashboardRouteRouteChildren =
   {
     authenticatedDashboardIndexRoute: authenticatedDashboardIndexRoute,
+    authenticatedDashboardFormsNewRoute: authenticatedDashboardFormsNewRoute,
+    authenticatedDashboardFormsIndexRoute:
+      authenticatedDashboardFormsIndexRoute,
+    authenticatedDashboardFormsFormIdEditRoute:
+      authenticatedDashboardFormsFormIdEditRoute,
+    authenticatedDashboardFormsFormIdIndexRoute:
+      authenticatedDashboardFormsFormIdIndexRoute,
   }
 
 const authenticatedDashboardRouteRouteWithChildren =
@@ -221,6 +337,7 @@ const rootRouteChildren: RootRouteChildren = {
   authPagesRouteRoute: authPagesRouteRouteWithChildren,
   authenticatedRouteRoute: authenticatedRouteRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiFSlugRoute: ApiFSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
