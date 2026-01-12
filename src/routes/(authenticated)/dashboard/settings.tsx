@@ -26,6 +26,9 @@ import authClient from "~/lib/auth/auth-client";
 import { authQueryOptions } from "~/lib/auth/queries";
 
 export const Route = createFileRoute("/(authenticated)/dashboard/settings")({
+  head: () => ({
+    meta: [{ title: "Settings | BForms" }],
+  }),
   component: SettingsPage,
 });
 

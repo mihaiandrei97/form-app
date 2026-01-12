@@ -13,6 +13,9 @@ import { Button } from "~/components/ui/button";
 import { authQueryOptions } from "~/lib/auth/queries";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [{ title: "BForms - Form endpoints for your websites" }],
+  }),
   component: LandingPage,
 });
 

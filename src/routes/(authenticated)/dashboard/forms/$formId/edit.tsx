@@ -10,6 +10,9 @@ import { formQueryOptions } from "~/lib/forms/queries";
 export const Route = createFileRoute("/(authenticated)/dashboard/forms/$formId/edit")({
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(formQueryOptions(params.formId)),
+  head: () => ({
+    meta: [{ title: "Edit Form | BForms" }],
+  }),
   component: EditFormPage,
 });
 

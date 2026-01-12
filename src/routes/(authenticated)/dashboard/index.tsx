@@ -10,6 +10,9 @@ export const Route = createFileRoute("/(authenticated)/dashboard/")({
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData(dashboardStatsQueryOptions());
   },
+  head: () => ({
+    meta: [{ title: "Dashboard | BForms" }],
+  }),
   pendingComponent: DashboardSkeleton,
   component: DashboardIndex,
 });

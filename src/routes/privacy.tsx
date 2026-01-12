@@ -4,6 +4,9 @@ import { ThemeToggle } from "~/components/theme-toggle";
 import { Button } from "~/components/ui/button";
 
 export const Route = createFileRoute("/privacy")({
+  head: () => ({
+    meta: [{ title: "Privacy Policy | BForms" }],
+  }),
   component: PrivacyPage,
 });
 

@@ -7,6 +7,9 @@ import { Button } from "~/components/ui/button";
 import { $createForm } from "~/lib/forms/functions";
 
 export const Route = createFileRoute("/(authenticated)/dashboard/forms/new")({
+  head: () => ({
+    meta: [{ title: "Create Form | BForms" }],
+  }),
   component: NewFormPage,
 });
 

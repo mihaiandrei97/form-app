@@ -18,6 +18,9 @@ import { formsWithCountsQueryOptions } from "~/lib/forms/queries";
 export const Route = createFileRoute("/(authenticated)/dashboard/forms/")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(formsWithCountsQueryOptions()),
+  head: () => ({
+    meta: [{ title: "My Forms | BForms" }],
+  }),
   pendingComponent: FormsListSkeleton,
   component: FormsListPage,
 });

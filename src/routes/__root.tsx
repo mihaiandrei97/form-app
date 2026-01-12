@@ -40,11 +40,11 @@ export const Route = createRootRouteWithContext<{
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "React TanStarter",
+        title: "BForms",
       },
       {
         name: "description",
-        content: "A minimal starter template for 🏝️ TanStack Start.",
+        content: "Form endpoints for your website. No backend required.",
       },
     ],
     links: [{ rel: "stylesheet", href: appCss }],

@@ -45,6 +45,9 @@ export const Route = createFileRoute("/(authenticated)/dashboard/forms/$formId/"
       context.queryClient.ensureQueryData(submissionsQueryOptions(params.formId)),
     ]);
   },
+  head: () => ({
+    meta: [{ title: "Form Details | BForms" }],
+  }),
   pendingComponent: FormDetailSkeleton,
   component: FormDetailPage,
 });
