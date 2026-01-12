@@ -55,7 +55,7 @@ function DashboardLayout() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <DropdownMenu>
-              <DropdownMenuTrigger className="hover:bg-accent flex items-center gap-2 rounded-full p-1 pr-2 transition-colors focus:outline-none">
+              <DropdownMenuTrigger className="hover:bg-primary/10 flex items-center gap-2 rounded-full p-1 pr-2 transition-colors focus:outline-none">
                 <UserAvatar name={user.name} email={user.email} />
                 <ChevronDown className="text-muted-foreground h-4 w-4" />
               </DropdownMenuTrigger>

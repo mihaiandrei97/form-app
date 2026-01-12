@@ -12,13 +12,49 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { Skeleton } from "~/components/ui/skeleton";
 import { formsWithCountsQueryOptions } from "~/lib/forms/queries";
 
 export const Route = createFileRoute("/(authenticated)/dashboard/forms/")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(formsWithCountsQueryOptions()),
+  pendingComponent: FormsListSkeleton,
   component: FormsListPage,
 });
+
+function FormsListSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="mt-2 h-5 w-64" />
+        </div>
+        <Skeleton className="h-10 w-32" />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {[...Array(6)].map((_, i) => (
+          <Card key={i} size="sm">
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-5 w-16" />
+              </div>
+              <Skeleton className="mt-1 h-4 w-24" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-9 w-full" />
+            </CardContent>
+            <CardFooter className="justify-end">
+              <Skeleton className="h-8 w-24" />
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function FormsListPage() {
   const { data: forms } = useSuspenseQuery(formsWithCountsQueryOptions());
