@@ -28,5 +28,3 @@ Suggested Implementation Order
 | 5 | Form analytics | Medium |
 | 6 | Form templates | Medium |
 | 7 | Embeddable form builder | High |
-
-https://discord.com/api/webhooks/1460335093884387359/3Buf0TSfvRdEA2f8yC_FJYPmFJ-jEQg9KQJNEtoxEUzcFS2TQ1Md_RSycApm_Vj2IzQJ
