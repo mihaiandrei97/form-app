@@ -14,7 +14,7 @@ function PrivacyPage() {
       <header className="border-b">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
           <a href="/" className="text-xl font-bold">
-            FormFlow
+            BForms
           </a>
           <ThemeToggle />
         </div>
@@ -120,7 +120,7 @@ function PrivacyPage() {
               If you have any questions about this Privacy Policy, please contact us at:
             </p>
             <p className="text-muted-foreground mt-2">
-              <strong className="text-foreground">Email:</strong> privacy@formflow.app
+              <strong className="text-foreground">Email:</strong> privacy@bforms.dev
               <br />
               <strong className="text-foreground">Address:</strong> 123 Lorem Ipsum
               Street, City, Country
@@ -133,7 +133,7 @@ function PrivacyPage() {
       <footer className="border-t py-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 sm:flex-row">
           <p className="text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} FormFlow. All rights reserved.
+            &copy; {new Date().getFullYear()} BForms. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <a

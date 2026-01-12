@@ -1,4 +1,4 @@
-import { AlertTriangle, Eye, Loader2 } from "lucide-react";
+import { AlertTriangle, Eye, Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -6,6 +6,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
@@ -35,6 +36,8 @@ type SubmissionsTableProps = {
   hasMore: boolean;
   onLoadMore: () => void;
   isLoadingMore: boolean;
+  onDelete: (submissionId: string) => Promise<void>;
+  deletingId?: string | null;
 };
 
 /**
@@ -81,8 +84,12 @@ export function SubmissionsTable({
   hasMore,
   onLoadMore,
   isLoadingMore,
+  onDelete,
+  deletingId,
 }: SubmissionsTableProps) {
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  const [deleteConfirmSubmission, setDeleteConfirmSubmission] =
+    useState<Submission | null>(null);
 
   if (submissions.length === 0) {
     return (
@@ -107,7 +114,7 @@ export function SubmissionsTable({
                 <TableHead className="w-[120px]">IP Address</TableHead>
                 <TableHead className="w-[150px]">Referrer</TableHead>
                 <TableHead className="w-[80px]">Status</TableHead>
-                <TableHead className="w-[60px]"></TableHead>
+                <TableHead className="w-[80px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -141,14 +148,29 @@ export function SubmissionsTable({
                     )}
                   </TableCell>
                   <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      onClick={() => setSelectedSubmission(submission)}
-                    >
-                      <Eye className="h-4 w-4" />
-                      <span className="sr-only">View details</span>
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => setSelectedSubmission(submission)}
+                      >
+                        <Eye className="h-4 w-4" />
+                        <span className="sr-only">View details</span>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => setDeleteConfirmSubmission(submission)}
+                        disabled={deletingId === submission.id}
+                      >
+                        {deletingId === submission.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
+                        <span className="sr-only">Delete submission</span>
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -259,6 +281,54 @@ export function SubmissionsTable({
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteConfirmSubmission !== null}
+        onOpenChange={(open) => !open && setDeleteConfirmSubmission(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Submission</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this submission? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteConfirmSubmission(null)}
+              disabled={deletingId === deleteConfirmSubmission?.id}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={async () => {
+                if (deleteConfirmSubmission) {
+                  await onDelete(deleteConfirmSubmission.id);
+                  setDeleteConfirmSubmission(null);
+                  // Also close the detail modal if it was showing this submission
+                  if (selectedSubmission?.id === deleteConfirmSubmission.id) {
+                    setSelectedSubmission(null);
+                  }
+                }
+              }}
+              disabled={deletingId === deleteConfirmSubmission?.id}
+            >
+              {deletingId === deleteConfirmSubmission?.id ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

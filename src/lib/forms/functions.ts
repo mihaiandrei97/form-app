@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { and, count, desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import { authMiddleware } from "~/lib/auth/middleware";
 import { db } from "~/lib/db";
@@ -61,11 +61,7 @@ export const $getForms = createServerFn({ method: "GET" })
  * Get a single form by ID (must belong to current user)
  */
 export const $getForm = createServerFn({ method: "GET" })
-  .inputValidator((data: { id: string }) => {
-    const result = z.object({ id: z.string().min(1) }).safeParse(data);
-    if (!result.success) throw new Error("Invalid form ID");
-    return result.data;
-  })
+  .inputValidator(z.object({ id: z.string().min(1) }))
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
     const [result] = await db
@@ -85,11 +81,7 @@ export const $getForm = createServerFn({ method: "GET" })
  * Create a new form
  */
 export const $createForm = createServerFn({ method: "POST" })
-  .inputValidator((data: CreateFormInput) => {
-    const result = createFormSchema.safeParse(data);
-    if (!result.success) throw new Error(result.error.message);
-    return result.data;
-  })
+  .inputValidator(createFormSchema)
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
     const id = generateId();
@@ -116,11 +108,7 @@ export const $createForm = createServerFn({ method: "POST" })
  * Update an existing form
  */
 export const $updateForm = createServerFn({ method: "POST" })
-  .inputValidator((data: UpdateFormInput) => {
-    const result = updateFormSchema.safeParse(data);
-    if (!result.success) throw new Error(result.error.message);
-    return result.data;
-  })
+  .inputValidator(updateFormSchema)
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
     const { id, allowedDomains, honeypotField, redirectUrl, ...updates } = data;
@@ -150,11 +138,7 @@ export const $updateForm = createServerFn({ method: "POST" })
  * Delete a form
  */
 export const $deleteForm = createServerFn({ method: "POST" })
-  .inputValidator((data: { id: string }) => {
-    const result = z.object({ id: z.string().min(1) }).safeParse(data);
-    if (!result.success) throw new Error("Invalid form ID");
-    return result.data;
-  })
+  .inputValidator(z.object({ id: z.string().min(1) }))
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
     const [deleted] = await db
@@ -200,20 +184,168 @@ export const $getFormsWithCounts = createServerFn({ method: "GET" })
   });
 
 /**
+ * Delete a single submission (form must belong to current user)
+ */
+export const $deleteSubmission = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      submissionId: z.string().min(1),
+      formId: z.string().min(1),
+    }),
+  )
+  .middleware([authMiddleware])
+  .handler(async ({ context, data }) => {
+    // First verify the form belongs to the user
+    const [formRecord] = await db
+      .select({ id: form.id })
+      .from(form)
+      .where(and(eq(form.id, data.formId), eq(form.userId, context.user.id)))
+      .limit(1);
+
+    if (!formRecord) {
+      throw new Error("Form not found");
+    }
+
+    // Delete the submission
+    const [deleted] = await db
+      .delete(submission)
+      .where(
+        and(eq(submission.id, data.submissionId), eq(submission.formId, data.formId)),
+      )
+      .returning();
+
+    if (!deleted) {
+      throw new Error("Submission not found");
+    }
+
+    return { success: true };
+  });
+
+/**
+ * Export all submissions for a form (must belong to current user)
+ */
+export const $exportSubmissions = createServerFn({ method: "GET" })
+  .inputValidator(
+    z.object({
+      formId: z.string().min(1),
+      format: z.enum(["csv", "json"]),
+    }),
+  )
+  .middleware([authMiddleware])
+  .handler(async ({ context, data }) => {
+    // First verify the form belongs to the user
+    const [formRecord] = await db
+      .select({ id: form.id, name: form.name })
+      .from(form)
+      .where(and(eq(form.id, data.formId), eq(form.userId, context.user.id)))
+      .limit(1);
+
+    if (!formRecord) {
+      throw new Error("Form not found");
+    }
+
+    // Get all submissions (no pagination)
+    const submissions = await db
+      .select()
+      .from(submission)
+      .where(eq(submission.formId, data.formId))
+      .orderBy(desc(submission.createdAt));
+
+    const sanitizeFilename = (name: string) =>
+      name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+    const today = new Date().toISOString().split("T")[0];
+    const baseFilename = `${sanitizeFilename(formRecord.name)}-submissions-${today}`;
+
+    if (data.format === "json") {
+      const exportData = {
+        formName: formRecord.name,
+        exportedAt: new Date().toISOString(),
+        totalCount: submissions.length,
+        submissions: submissions.map((s) => ({
+          id: s.id,
+          data: s.data,
+          ipAddress: s.ipAddress,
+          referrer: s.referrer,
+          isSpam: s.isSpam,
+          createdAt: s.createdAt,
+        })),
+      };
+
+      return {
+        data: JSON.stringify(exportData, null, 2),
+        filename: `${baseFilename}.json`,
+        mimeType: "application/json",
+      };
+    }
+
+    // CSV format
+    if (submissions.length === 0) {
+      return {
+        data: "",
+        filename: `${baseFilename}.csv`,
+        mimeType: "text/csv",
+      };
+    }
+
+    // Gather all unique keys from all submissions' data
+    const allDataKeys = new Set<string>();
+    for (const s of submissions) {
+      const dataObj = s.data as Record<string, unknown>;
+      Object.keys(dataObj).forEach((k) => allDataKeys.add(k));
+    }
+
+    const dataKeys = Array.from(allDataKeys).sort();
+    const headers = [
+      "id",
+      "created_at",
+      "ip_address",
+      "referrer",
+      "is_spam",
+      ...dataKeys,
+    ];
+
+    const escapeCSV = (value: unknown): string => {
+      if (value === null || value === undefined) return "";
+      const str = typeof value === "string" ? value : JSON.stringify(value);
+      if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    };
+
+    const rows = submissions.map((s) => {
+      const dataObj = s.data as Record<string, unknown>;
+      return [
+        s.id,
+        s.createdAt.toISOString(),
+        s.ipAddress || "",
+        s.referrer || "",
+        s.isSpam ? "true" : "false",
+        ...dataKeys.map((k) => escapeCSV(dataObj[k])),
+      ].join(",");
+    });
+
+    const csv = [headers.join(","), ...rows].join("\n");
+
+    return {
+      data: csv,
+      filename: `${baseFilename}.csv`,
+      mimeType: "text/csv",
+    };
+  });
+
+/**
  * Get submissions for a form (must belong to current user)
  */
 export const $getSubmissions = createServerFn({ method: "GET" })
-  .inputValidator((data: { formId: string; limit?: number; offset?: number }) => {
-    const result = z
-      .object({
-        formId: z.string().min(1),
-        limit: z.number().min(1).max(100).optional().default(20),
-        offset: z.number().min(0).optional().default(0),
-      })
-      .safeParse(data);
-    if (!result.success) throw new Error("Invalid input");
-    return result.data;
-  })
+  .inputValidator(
+    z.object({
+      formId: z.string().min(1),
+      limit: z.number().min(1).max(100).optional().default(20),
+      offset: z.number().min(0).optional().default(0),
+    }),
+  )
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
     // First verify the form belongs to the user
@@ -251,5 +383,64 @@ export const $getSubmissions = createServerFn({ method: "GET" })
       })),
       total,
       hasMore: data.offset + submissions.length < total,
+    };
+  });
+
+/**
+ * Get dashboard statistics for the current user
+ */
+export const $getDashboardStats = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    // Get form counts
+    const [formStats] = await db
+      .select({
+        totalForms: count(),
+        activeForms: sql<number>`cast(sum(case when ${form.isActive} then 1 else 0 end) as int)`,
+      })
+      .from(form)
+      .where(eq(form.userId, context.user.id));
+
+    // Get user's form IDs for submission queries
+    const userForms = await db
+      .select({ id: form.id })
+      .from(form)
+      .where(eq(form.userId, context.user.id));
+
+    const formIds = userForms.map((f) => f.id);
+
+    if (formIds.length === 0) {
+      return {
+        totalForms: 0,
+        activeForms: 0,
+        totalSubmissions: 0,
+        monthSubmissions: 0,
+      };
+    }
+
+    // Get submission counts
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    // Total submissions
+    const [totalResult] = await db
+      .select({ count: count() })
+      .from(submission)
+      .where(inArray(submission.formId, formIds));
+
+    // Submissions this month
+    const [monthResult] = await db
+      .select({ count: count() })
+      .from(submission)
+      .where(
+        and(inArray(submission.formId, formIds), gte(submission.createdAt, startOfMonth)),
+      );
+
+    return {
+      totalForms: formStats?.totalForms ?? 0,
+      activeForms: formStats?.activeForms ?? 0,
+      totalSubmissions: totalResult?.count ?? 0,
+      monthSubmissions: monthResult?.count ?? 0,
     };
   });

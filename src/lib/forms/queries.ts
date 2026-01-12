@@ -1,5 +1,11 @@
 import { queryOptions } from "@tanstack/react-query";
-import { $getForm, $getForms, $getFormsWithCounts, $getSubmissions } from "./functions";
+import {
+  $getDashboardStats,
+  $getForm,
+  $getForms,
+  $getFormsWithCounts,
+  $getSubmissions,
+} from "./functions";
 
 /**
  * Query options for fetching all forms for the current user
@@ -39,4 +45,13 @@ export const submissionsQueryOptions = (
   queryOptions({
     queryKey: ["submissions", formId, { limit, offset }],
     queryFn: () => $getSubmissions({ data: { formId, limit, offset } }),
+  });
+
+/**
+ * Query options for fetching dashboard statistics
+ */
+export const dashboardStatsQueryOptions = () =>
+  queryOptions({
+    queryKey: ["dashboard", "stats"],
+    queryFn: () => $getDashboardStats(),
   });

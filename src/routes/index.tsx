@@ -27,7 +27,7 @@ function LandingPage() {
       <header className="border-b">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
           <Link to="/" className="text-xl font-bold">
-            FormFlow
+            BForms
           </Link>
           <div className="flex items-center gap-3">
             <Suspense fallback={null}>
@@ -63,7 +63,7 @@ function LandingPage() {
       {/* Features Section */}
       <section className="bg-muted/50 py-20">
         <div className="mx-auto max-w-6xl px-4">
-          <h2 className="text-center text-3xl font-bold">Why FormFlow?</h2>
+          <h2 className="text-center text-3xl font-bold">Why BForms?</h2>
           <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-center">
             Everything you need to collect form submissions without writing backend code.
           </p>
@@ -119,11 +119,11 @@ function LandingPage() {
         <div className="mx-auto max-w-4xl px-4">
           <h2 className="text-center text-3xl font-bold">Integration is Simple</h2>
           <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-center">
-            Just add your FormFlow endpoint URL to any HTML form.
+            Just add your BForms endpoint URL to any HTML form.
           </p>
           <div className="mt-12">
             <pre className="bg-card overflow-x-auto rounded-lg border p-6 text-sm">
-              <code>{`<form action="https://formflow.app/api/f/your-form-id" method="POST">
+              <code>{`<form action="https://bforms.dev/api/f/your-form-id" method="POST">
   <label for="email">Email</label>
   <input type="email" id="email" name="email" required />
 
@@ -150,9 +150,9 @@ function LandingPage() {
           <div className="mt-12">
             <Accordion className="w-full">
               <AccordionItem value="item-1">
-                <AccordionTrigger>Is FormFlow free?</AccordionTrigger>
+                <AccordionTrigger>Is BForms free?</AccordionTrigger>
                 <AccordionContent>
-                  Yes! FormFlow offers a generous free tier that includes unlimited forms
+                  Yes! BForms offers a generous free tier that includes unlimited forms
                   and up to 100 submissions per month. Perfect for personal projects and
                   small websites.
                 </AccordionContent>
@@ -167,10 +167,10 @@ function LandingPage() {
               </AccordionItem>
               <AccordionItem value="item-3">
                 <AccordionTrigger>
-                  Can I use FormFlow with any website builder?
+                  Can I use BForms with any website builder?
                 </AccordionTrigger>
                 <AccordionContent>
-                  Absolutely. FormFlow works with WordPress, Webflow, Squarespace, Wix,
+                  Absolutely. BForms works with WordPress, Webflow, Squarespace, Wix,
                   static sites, and any platform that allows custom HTML forms.
                 </AccordionContent>
               </AccordionItem>
@@ -218,7 +218,7 @@ function LandingPage() {
       <footer className="border-t py-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 sm:flex-row">
           <p className="text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} FormFlow. All rights reserved.
+            &copy; {new Date().getFullYear()} BForms. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <a

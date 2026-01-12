@@ -20,6 +20,7 @@ import { Route as authenticatedDashboardRouteRouteImport } from './routes/(authe
 import { Route as authenticatedDashboardIndexRouteImport } from './routes/(authenticated)/dashboard/index'
 import { Route as ApiFSlugRouteImport } from './routes/api/f/$slug'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as authenticatedDashboardSettingsRouteImport } from './routes/(authenticated)/dashboard/settings'
 import { Route as authenticatedDashboardFormsIndexRouteImport } from './routes/(authenticated)/dashboard/forms/index'
 import { Route as authenticatedDashboardFormsNewRouteImport } from './routes/(authenticated)/dashboard/forms/new'
 import { Route as authenticatedDashboardFormsFormIdIndexRouteImport } from './routes/(authenticated)/dashboard/forms/$formId/index'
@@ -80,6 +81,12 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authenticatedDashboardSettingsRoute =
+  authenticatedDashboardSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => authenticatedDashboardRouteRoute,
+  } as any)
 const authenticatedDashboardFormsIndexRoute =
   authenticatedDashboardFormsIndexRouteImport.update({
     id: '/forms/',
@@ -112,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof authenticatedDashboardRouteRouteWithChildren
   '/login': typeof authPagesLoginRoute
   '/signup': typeof authPagesSignupRoute
+  '/dashboard/settings': typeof authenticatedDashboardSettingsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/f/$slug': typeof ApiFSlugRoute
   '/dashboard/': typeof authenticatedDashboardIndexRoute
@@ -126,6 +134,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/login': typeof authPagesLoginRoute
   '/signup': typeof authPagesSignupRoute
+  '/dashboard/settings': typeof authenticatedDashboardSettingsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/f/$slug': typeof ApiFSlugRoute
   '/dashboard': typeof authenticatedDashboardIndexRoute
@@ -144,6 +153,7 @@ export interface FileRoutesById {
   '/(authenticated)/dashboard': typeof authenticatedDashboardRouteRouteWithChildren
   '/(auth-pages)/login': typeof authPagesLoginRoute
   '/(auth-pages)/signup': typeof authPagesSignupRoute
+  '/(authenticated)/dashboard/settings': typeof authenticatedDashboardSettingsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/f/$slug': typeof ApiFSlugRoute
   '/(authenticated)/dashboard/': typeof authenticatedDashboardIndexRoute
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/signup'
+    | '/dashboard/settings'
     | '/api/auth/$'
     | '/api/f/$slug'
     | '/dashboard/'
@@ -175,6 +186,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/login'
     | '/signup'
+    | '/dashboard/settings'
     | '/api/auth/$'
     | '/api/f/$slug'
     | '/dashboard'
@@ -192,6 +204,7 @@ export interface FileRouteTypes {
     | '/(authenticated)/dashboard'
     | '/(auth-pages)/login'
     | '/(auth-pages)/signup'
+    | '/(authenticated)/dashboard/settings'
     | '/api/auth/$'
     | '/api/f/$slug'
     | '/(authenticated)/dashboard/'
@@ -290,6 +303,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(authenticated)/dashboard/settings': {
+      id: '/(authenticated)/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof authenticatedDashboardSettingsRouteImport
+      parentRoute: typeof authenticatedDashboardRouteRoute
+    }
     '/(authenticated)/dashboard/forms/': {
       id: '/(authenticated)/dashboard/forms/'
       path: '/forms'
@@ -336,6 +356,7 @@ const authPagesRouteRouteWithChildren = authPagesRouteRoute._addFileChildren(
 )
 
 interface authenticatedDashboardRouteRouteChildren {
+  authenticatedDashboardSettingsRoute: typeof authenticatedDashboardSettingsRoute
   authenticatedDashboardIndexRoute: typeof authenticatedDashboardIndexRoute
   authenticatedDashboardFormsNewRoute: typeof authenticatedDashboardFormsNewRoute
   authenticatedDashboardFormsIndexRoute: typeof authenticatedDashboardFormsIndexRoute
@@ -345,6 +366,7 @@ interface authenticatedDashboardRouteRouteChildren {
 
 const authenticatedDashboardRouteRouteChildren: authenticatedDashboardRouteRouteChildren =
   {
+    authenticatedDashboardSettingsRoute: authenticatedDashboardSettingsRoute,
     authenticatedDashboardIndexRoute: authenticatedDashboardIndexRoute,
     authenticatedDashboardFormsNewRoute: authenticatedDashboardFormsNewRoute,
     authenticatedDashboardFormsIndexRoute:

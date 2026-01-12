@@ -1,10 +1,12 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
   CheckCircle,
   Copy,
+  Download,
   ExternalLink,
+  Loader2,
   PauseCircle,
   Pencil,
 } from "lucide-react";
@@ -22,7 +24,17 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { $getSubmissions } from "~/lib/forms/functions";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import {
+  $deleteSubmission,
+  $exportSubmissions,
+  $getSubmissions,
+} from "~/lib/forms/functions";
 import { formQueryOptions, submissionsQueryOptions } from "~/lib/forms/queries";
 
 export const Route = createFileRoute("/(authenticated)/dashboard/forms/$formId/")({
@@ -39,12 +51,15 @@ function FormDetailPage() {
   const { formId } = Route.useParams();
   const { data: form } = useSuspenseQuery(formQueryOptions(formId));
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // Submissions state with pagination
   const [allSubmissions, setAllSubmissions] = useState<
     Awaited<ReturnType<typeof $getSubmissions>>["submissions"]
   >([]);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const { data: submissionsData } = useSuspenseQuery(submissionsQueryOptions(formId));
 
@@ -64,6 +79,50 @@ function FormDetailPage() {
       setAllSubmissions([...submissions, ...result.submissions]);
     } finally {
       setIsLoadingMore(false);
+    }
+  };
+
+  const handleDeleteSubmission = async (submissionId: string) => {
+    setDeletingId(submissionId);
+    try {
+      await $deleteSubmission({ data: { submissionId, formId } });
+      // Remove from local state
+      if (allSubmissions.length > 0) {
+        setAllSubmissions(allSubmissions.filter((s) => s.id !== submissionId));
+      }
+      // Invalidate queries to refresh counts
+      await queryClient.invalidateQueries({ queryKey: ["submissions", formId] });
+      toast.success("Submission deleted");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete submission");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleExport = async (format: "csv" | "json") => {
+    setIsExporting(true);
+    try {
+      const result = await $exportSubmissions({ data: { formId, format } });
+
+      // Create blob and trigger download
+      const blob = new Blob([result.data], { type: result.mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = result.filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      toast.success(`Exported ${total} submissions as ${format.toUpperCase()}`);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to export submissions",
+      );
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -212,11 +271,41 @@ function FormDetailPage() {
 
       {/* Submissions */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Recent Submissions</CardTitle>
-          <CardDescription>
-            View and manage submissions received through this form.
-          </CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-base">Recent Submissions</CardTitle>
+            <CardDescription>
+              View and manage submissions received through this form.
+            </CardDescription>
+          </div>
+          {total > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className="border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center justify-center gap-2 rounded-md border px-3 text-sm font-medium whitespace-nowrap disabled:pointer-events-none disabled:opacity-50"
+                disabled={isExporting}
+              >
+                {isExporting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Exporting...
+                  </>
+                ) : (
+                  <>
+                    <Download className="h-4 w-4" />
+                    Export
+                  </>
+                )}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleExport("csv")}>
+                  Export as CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport("json")}>
+                  Export as JSON
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </CardHeader>
         <CardContent>
           <SubmissionsTable
@@ -225,6 +314,8 @@ function FormDetailPage() {
             hasMore={hasMore}
             onLoadMore={handleLoadMore}
             isLoadingMore={isLoadingMore}
+            onDelete={handleDeleteSubmission}
+            deletingId={deletingId}
           />
         </CardContent>
       </Card>
