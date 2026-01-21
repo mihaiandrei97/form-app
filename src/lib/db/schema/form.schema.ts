@@ -15,7 +15,6 @@ export const form = pgTable(
       .references(() => user.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     slug: text("slug").notNull().unique(),
-    emailTo: text("email_to").notNull(),
     redirectUrl: text("redirect_url"),
     isActive: boolean("is_active").default(true).notNull(),
     allowedDomains: text("allowed_domains").array(),
@@ -64,6 +63,7 @@ export const formRelations = relations(form, ({ one, many }) => ({
     references: [user.id],
   }),
   submissions: many(submission),
+  // Note: notificationChannels relation defined in notification.schema.ts to avoid circular imports
 }));
 
 export const submissionRelations = relations(submission, ({ one }) => ({

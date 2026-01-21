@@ -3,13 +3,13 @@ import { and, count, desc, eq, gte, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import { authMiddleware } from "~/lib/auth/middleware";
 import { db } from "~/lib/db";
-import { form, submission } from "~/lib/db/schema";
+import { form, notificationChannel, submission } from "~/lib/db/schema";
 import { generateId, generateSlug } from "~/lib/id";
 
 // Validation schemas
 const createFormSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
-  emailTo: z.email("Invalid email address"),
+  emailTo: z.email("Invalid email address").optional().or(z.literal("")),
   redirectUrl: z.url("Invalid URL").optional().or(z.literal("")),
   allowedDomains: z.string().optional().or(z.literal("")),
   honeypotField: z.string().max(50).optional().or(z.literal("")),
@@ -18,7 +18,7 @@ const createFormSchema = z.object({
 const updateFormSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1, "Name is required").max(100).optional(),
-  emailTo: z.email("Invalid email address").optional(),
+  emailTo: z.email("Invalid email address").optional().or(z.literal("")),
   redirectUrl: z.url("Invalid URL").optional().or(z.literal("")),
   allowedDomains: z.string().optional().or(z.literal("")),
   honeypotField: z.string().max(50).optional().or(z.literal("")),
@@ -58,7 +58,7 @@ export const $getForms = createServerFn({ method: "GET" })
   });
 
 /**
- * Get a single form by ID (must belong to current user)
+ * Get a single form by ID with its notification channels (must belong to current user)
  */
 export const $getForm = createServerFn({ method: "GET" })
   .inputValidator(z.object({ id: z.string().min(1) }))
@@ -74,7 +74,17 @@ export const $getForm = createServerFn({ method: "GET" })
       throw new Error("Form not found");
     }
 
-    return result;
+    // Get notification channels for this form
+    const channels = await db
+      .select()
+      .from(notificationChannel)
+      .where(eq(notificationChannel.formId, data.id))
+      .orderBy(notificationChannel.createdAt);
+
+    return {
+      ...result,
+      notificationChannels: channels,
+    };
   });
 
 /**
@@ -87,6 +97,7 @@ export const $createForm = createServerFn({ method: "POST" })
     const id = generateId();
     const slug = generateSlug();
 
+    // Create form
     const [newForm] = await db
       .insert(form)
       .values({
@@ -94,12 +105,22 @@ export const $createForm = createServerFn({ method: "POST" })
         slug,
         userId: context.user.id,
         name: data.name,
-        emailTo: data.emailTo,
         redirectUrl: data.redirectUrl || null,
         allowedDomains: parseAllowedDomains(data.allowedDomains),
         honeypotField: data.honeypotField || null,
       })
       .returning();
+
+    // Create email notification channel if email is provided
+    if (data.emailTo && data.emailTo.trim() !== "") {
+      await db.insert(notificationChannel).values({
+        id: generateId(),
+        formId: id,
+        type: "email",
+        enabled: true,
+        config: { to: data.emailTo },
+      });
+    }
 
     return newForm;
   });
@@ -111,7 +132,7 @@ export const $updateForm = createServerFn({ method: "POST" })
   .inputValidator(updateFormSchema)
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
-    const { id, allowedDomains, honeypotField, redirectUrl, ...updates } = data;
+    const { id, allowedDomains, honeypotField, redirectUrl, emailTo, ...updates } = data;
 
     // Clean up values for database
     const cleanUpdates = {
@@ -129,6 +150,43 @@ export const $updateForm = createServerFn({ method: "POST" })
 
     if (!updated) {
       throw new Error("Form not found");
+    }
+
+    // Handle email notification channel
+    if (emailTo !== undefined) {
+      // Find existing email channel
+      const [existingChannel] = await db
+        .select()
+        .from(notificationChannel)
+        .where(
+          and(eq(notificationChannel.formId, id), eq(notificationChannel.type, "email")),
+        )
+        .limit(1);
+
+      if (emailTo && emailTo.trim() !== "") {
+        // Create or update email channel
+        if (existingChannel) {
+          await db
+            .update(notificationChannel)
+            .set({ config: { to: emailTo } })
+            .where(eq(notificationChannel.id, existingChannel.id));
+        } else {
+          await db.insert(notificationChannel).values({
+            id: generateId(),
+            formId: id,
+            type: "email",
+            enabled: true,
+            config: { to: emailTo },
+          });
+        }
+      } else {
+        // Remove email channel if email is cleared
+        if (existingChannel) {
+          await db
+            .delete(notificationChannel)
+            .where(eq(notificationChannel.id, existingChannel.id));
+        }
+      }
     }
 
     return updated;
@@ -154,18 +212,18 @@ export const $deleteForm = createServerFn({ method: "POST" })
   });
 
 /**
- * Get all forms with submission counts for the current user
+ * Get all forms with submission counts and email notification info for the current user
  */
 export const $getFormsWithCounts = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
+    // Get forms with submission counts
     const formsWithCounts = await db
       .select({
         id: form.id,
         userId: form.userId,
         name: form.name,
         slug: form.slug,
-        emailTo: form.emailTo,
         redirectUrl: form.redirectUrl,
         isActive: form.isActive,
         allowedDomains: form.allowedDomains,
@@ -180,7 +238,37 @@ export const $getFormsWithCounts = createServerFn({ method: "GET" })
       .groupBy(form.id)
       .orderBy(desc(form.createdAt));
 
-    return formsWithCounts;
+    // Get all email notification channels for these forms
+    const formIds = formsWithCounts.map((f) => f.id);
+    if (formIds.length === 0) {
+      return [];
+    }
+
+    const emailChannels = await db
+      .select({
+        formId: notificationChannel.formId,
+        config: notificationChannel.config,
+      })
+      .from(notificationChannel)
+      .where(
+        and(
+          inArray(notificationChannel.formId, formIds),
+          eq(notificationChannel.type, "email"),
+        ),
+      );
+
+    // Create a map of formId -> emailTo
+    const emailMap = new Map<string, string>();
+    for (const channel of emailChannels) {
+      const config = channel.config as { to: string };
+      emailMap.set(channel.formId, config.to);
+    }
+
+    // Merge email info into forms
+    return formsWithCounts.map((f) => ({
+      ...f,
+      emailTo: emailMap.get(f.id) || null,
+    }));
   });
 
 /**

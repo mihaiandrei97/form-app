@@ -91,9 +91,13 @@ export const Route = createFileRoute("/api/f/$slug")({
             isSpam,
           });
 
-          // 6. TODO: Send email notification if not spam
-          // if (!isSpam && formRecord.emailTo) {
-          //   await sendEmailNotification(formRecord.emailTo, formRecord.name, data);
+          // 6. TODO: Queue notification jobs
+          // In Phase 2, we'll enqueue jobs to pg-boss here for each enabled notification channel
+          // const channels = await db.query.notificationChannel.findMany({
+          //   where: eq(notificationChannel.formId, formRecord.id),
+          // });
+          // for (const channel of channels) {
+          //   await queue.send('send-notification', { submissionId, channelId: channel.id });
           // }
 
           // 7. Return success response

@@ -302,10 +302,6 @@ function FormDetailPage() {
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <p className="text-muted-foreground text-sm">Notification Email</p>
-              <p className="font-medium">{form.emailTo}</p>
-            </div>
-            <div>
               <p className="text-muted-foreground text-sm">Redirect URL</p>
               <p className="font-medium">
                 {form.redirectUrl || (
@@ -332,6 +328,50 @@ function FormDetailPage() {
               </p>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Notification Channels */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Notifications</CardTitle>
+          <CardDescription>
+            Channels configured to receive alerts when submissions are received.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {form.notificationChannels.length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              No notification channels configured.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {form.notificationChannels.map((channel) => {
+                const config = channel.config as { to?: string; webhookUrl?: string };
+                return (
+                  <div
+                    key={channel.id}
+                    className="flex items-center justify-between rounded-lg border p-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Badge variant={channel.enabled ? "default" : "secondary"}>
+                        {channel.type}
+                      </Badge>
+                      <span className="text-sm">
+                        {channel.type === "email" && config.to}
+                        {(channel.type === "discord" || channel.type === "slack") &&
+                          "Webhook configured"}
+                        {channel.type === "webhook" && "Custom webhook"}
+                      </span>
+                    </div>
+                    <span className="text-muted-foreground text-xs">
+                      {channel.enabled ? "Enabled" : "Disabled"}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </CardContent>
       </Card>
 
