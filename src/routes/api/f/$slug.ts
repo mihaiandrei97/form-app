@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getRequestIP } from "@tanstack/react-start/server";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "~/lib/db";
-import { form, submission } from "~/lib/db/schema";
+import { form, notificationChannel, submission } from "~/lib/db/schema";
 import { generateId } from "~/lib/id";
+import { enqueueSendEmail } from "~/lib/queue";
 
 /**
  * Form submission API endpoint.
@@ -91,14 +92,34 @@ export const Route = createFileRoute("/api/f/$slug")({
             isSpam,
           });
 
-          // 6. TODO: Queue notification jobs
-          // In Phase 2, we'll enqueue jobs to pg-boss here for each enabled notification channel
-          // const channels = await db.query.notificationChannel.findMany({
-          //   where: eq(notificationChannel.formId, formRecord.id),
-          // });
-          // for (const channel of channels) {
-          //   await queue.send('send-notification', { submissionId, channelId: channel.id });
-          // }
+          // 6. Queue notification jobs (only for non-spam submissions)
+          if (!isSpam) {
+            const channels = await db.query.notificationChannel.findMany({
+              where: and(
+                eq(notificationChannel.formId, formRecord.id),
+                eq(notificationChannel.enabled, true),
+              ),
+            });
+
+            const submittedAt = new Date().toISOString();
+
+            for (const channel of channels) {
+              if (channel.type === "email") {
+                const config = channel.config as { to: string };
+                await enqueueSendEmail({
+                  channelId: channel.id,
+                  submissionId,
+                  to: config.to,
+                  formId: formRecord.id,
+                  formName: formRecord.name,
+                  formSlug: formRecord.slug,
+                  submissionData: data,
+                  submittedAt,
+                });
+              }
+              // Future: handle discord, slack, webhook channels
+            }
+          }
 
           // 7. Return success response
           // If redirect URL is set and this is a browser form submission, redirect

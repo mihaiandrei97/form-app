@@ -1,5 +1,6 @@
 {
   "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["worker/**"],
   "compilerOptions": {
     "strict": true,
     "esModuleInterop": true,
