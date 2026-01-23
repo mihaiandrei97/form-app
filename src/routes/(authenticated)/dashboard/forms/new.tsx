@@ -16,14 +16,12 @@ export const Route = createFileRoute("/(authenticated)/dashboard/forms/new")({
 function NewFormPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { user } = Route.useRouteContext();
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (values: FormFormValues) =>
       $createForm({
         data: {
           name: values.name,
-          emailTo: values.emailTo,
           redirectUrl: values.redirectUrl || "",
           allowedDomains: values.allowedDomains || "",
           honeypotField: values.honeypotField || "",
@@ -64,9 +62,6 @@ function NewFormPage() {
 
       <FormForm
         mode="create"
-        defaultValues={{
-          emailTo: user.email,
-        }}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         isSubmitting={isPending}

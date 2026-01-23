@@ -17,7 +17,6 @@ import { Textarea } from "~/components/ui/textarea";
 // Form validation schema
 const formSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
-  emailTo: z.email("Invalid email address"),
   redirectUrl: z.string(),
   allowedDomains: z.string(),
   honeypotField: z.string().max(50, "Field name is too long"),
@@ -44,7 +43,6 @@ export function FormForm({
   const form = useForm({
     defaultValues: {
       name: defaultValues?.name ?? "",
-      emailTo: defaultValues?.emailTo ?? "",
       redirectUrl: defaultValues?.redirectUrl ?? "",
       allowedDomains: defaultValues?.allowedDomains ?? "",
       honeypotField: defaultValues?.honeypotField ?? "",
@@ -93,34 +91,6 @@ export function FormForm({
                     />
                     <FieldDescription>
                       A descriptive name for your form endpoint.
-                    </FieldDescription>
-                    {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                  </Field>
-                );
-              }}
-            />
-
-            {/* Email To */}
-            <form.Field
-              name="emailTo"
-              children={(field) => {
-                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
-                return (
-                  <Field data-invalid={isInvalid}>
-                    <FieldLabel htmlFor={field.name}>Notification Email</FieldLabel>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      type="email"
-                      value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      aria-invalid={isInvalid}
-                      placeholder="you@example.com"
-                      autoComplete="email"
-                    />
-                    <FieldDescription>
-                      Email address where form submissions will be sent.
                     </FieldDescription>
                     {isInvalid && <FieldError errors={field.state.meta.errors} />}
                   </Field>

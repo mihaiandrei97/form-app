@@ -8,6 +8,7 @@ import { env } from "~/env/server";
 
 // Queue names
 export const SEND_EMAIL_QUEUE = "send-email";
+export const SEND_DISCORD_QUEUE = "send-discord";
 
 // Singleton pg-boss instance
 let boss: PgBoss | null = null;
@@ -61,4 +62,34 @@ export async function enqueueSendEmail(
 ): Promise<string | null> {
   const queue = await getQueue();
   return queue.send(SEND_EMAIL_QUEUE, payload);
+}
+
+/**
+ * Payload for send-discord job.
+ * Contains all data needed to post to Discord webhook - no DB reads required by worker.
+ */
+export type SendDiscordJobPayload = {
+  // For notification_log FK references
+  channelId: string;
+  submissionId: string;
+
+  // Discord config (from channel.config)
+  webhookUrl: string;
+
+  // Submission context for message content
+  formId: string;
+  formName: string;
+  formSlug: string;
+  submissionData: Record<string, unknown>;
+  submittedAt: string; // ISO string
+};
+
+/**
+ * Enqueue a Discord webhook notification job.
+ */
+export async function enqueueSendDiscord(
+  payload: SendDiscordJobPayload,
+): Promise<string | null> {
+  const queue = await getQueue();
+  return queue.send(SEND_DISCORD_QUEUE, payload);
 }

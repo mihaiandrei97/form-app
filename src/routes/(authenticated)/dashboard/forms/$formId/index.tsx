@@ -333,41 +333,51 @@ function FormDetailPage() {
 
       {/* Notification Channels */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Notifications</CardTitle>
-          <CardDescription>
-            Channels configured to receive alerts when submissions are received.
-          </CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-base">Notifications</CardTitle>
+            <CardDescription>
+              Channels configured to receive submission alerts.
+            </CardDescription>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            render={
+              <Link
+                to="/dashboard/forms/$formId/notifications"
+                params={{ formId: formId }}
+              />
+            }
+          >
+            Manage
+          </Button>
         </CardHeader>
         <CardContent>
           {form.notificationChannels.length === 0 ? (
             <p className="text-muted-foreground text-sm">
-              No notification channels configured.
+              No notification channels configured.{" "}
+              <Link
+                to="/dashboard/forms/$formId/notifications"
+                params={{ formId: formId }}
+                className="text-primary hover:underline"
+              >
+                Add one now
+              </Link>
             </p>
           ) : (
-            <div className="space-y-3">
+            <div className="flex flex-wrap gap-2">
               {form.notificationChannels.map((channel) => {
                 const config = channel.config as { to?: string; webhookUrl?: string };
                 return (
-                  <div
+                  <Badge
                     key={channel.id}
-                    className="flex items-center justify-between rounded-lg border p-3"
+                    variant={channel.enabled ? "default" : "secondary"}
                   >
-                    <div className="flex items-center gap-3">
-                      <Badge variant={channel.enabled ? "default" : "secondary"}>
-                        {channel.type}
-                      </Badge>
-                      <span className="text-sm">
-                        {channel.type === "email" && config.to}
-                        {(channel.type === "discord" || channel.type === "slack") &&
-                          "Webhook configured"}
-                        {channel.type === "webhook" && "Custom webhook"}
-                      </span>
-                    </div>
-                    <span className="text-muted-foreground text-xs">
-                      {channel.enabled ? "Enabled" : "Disabled"}
-                    </span>
-                  </div>
+                    {channel.type === "email" && config.to}
+                    {channel.type === "discord" && "Discord"}
+                    {channel.type === "webhook" && "Webhook"}
+                  </Badge>
                 );
               })}
             </div>

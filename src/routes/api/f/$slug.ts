@@ -4,7 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { db } from "~/lib/db";
 import { form, notificationChannel, submission } from "~/lib/db/schema";
 import { generateId } from "~/lib/id";
-import { enqueueSendEmail } from "~/lib/queue";
+import { enqueueSendDiscord, enqueueSendEmail } from "~/lib/queue";
 
 /**
  * Form submission API endpoint.
@@ -116,8 +116,20 @@ export const Route = createFileRoute("/api/f/$slug")({
                   submissionData: data,
                   submittedAt,
                 });
+              } else if (channel.type === "discord") {
+                const config = channel.config as { webhookUrl: string };
+                await enqueueSendDiscord({
+                  channelId: channel.id,
+                  submissionId,
+                  webhookUrl: config.webhookUrl,
+                  formId: formRecord.id,
+                  formName: formRecord.name,
+                  formSlug: formRecord.slug,
+                  submissionData: data,
+                  submittedAt,
+                });
               }
-              // Future: handle discord, slack, webhook channels
+              // Future: handle webhook channels
             }
           }
 

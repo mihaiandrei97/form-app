@@ -22,17 +22,12 @@ function EditFormPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // Extract email from notification channels
-  const emailChannel = form.notificationChannels.find((c) => c.type === "email");
-  const emailTo = emailChannel ? (emailChannel.config as { to: string }).to : "";
-
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (values: FormFormValues) =>
       $updateForm({
         data: {
           id: formId,
           name: values.name,
-          emailTo: values.emailTo,
           redirectUrl: values.redirectUrl || "",
           allowedDomains: values.allowedDomains || "",
           honeypotField: values.honeypotField || "",
@@ -75,7 +70,6 @@ function EditFormPage() {
         mode="edit"
         defaultValues={{
           name: form.name,
-          emailTo: emailTo,
           redirectUrl: form.redirectUrl || "",
           allowedDomains: form.allowedDomains?.join(", ") || "",
           honeypotField: form.honeypotField || "",

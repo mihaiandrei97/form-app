@@ -25,6 +25,26 @@ export type SendEmailJob = {
 };
 
 /**
+ * Payload for send-discord job.
+ * Contains all data needed to post to Discord webhook - no DB reads required.
+ */
+export type SendDiscordJob = {
+  // For notification_log FK references
+  channelId: string;
+  submissionId: string;
+
+  // Discord config (from channel.config)
+  webhookUrl: string;
+
+  // Submission context for message content
+  formId: string;
+  formName: string;
+  formSlug: string;
+  submissionData: Record<string, unknown>;
+  submittedAt: string; // ISO string
+};
+
+/**
  * Notification log entry for tracking job results.
  */
 export type NotificationLogInsert = {

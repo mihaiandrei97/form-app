@@ -24,6 +24,7 @@ import { Route as authenticatedDashboardSettingsRouteImport } from './routes/(au
 import { Route as authenticatedDashboardFormsIndexRouteImport } from './routes/(authenticated)/dashboard/forms/index'
 import { Route as authenticatedDashboardFormsNewRouteImport } from './routes/(authenticated)/dashboard/forms/new'
 import { Route as authenticatedDashboardFormsFormIdIndexRouteImport } from './routes/(authenticated)/dashboard/forms/$formId/index'
+import { Route as authenticatedDashboardFormsFormIdNotificationsRouteImport } from './routes/(authenticated)/dashboard/forms/$formId/notifications'
 import { Route as authenticatedDashboardFormsFormIdEditRouteImport } from './routes/(authenticated)/dashboard/forms/$formId/edit'
 
 const TermsRoute = TermsRouteImport.update({
@@ -105,6 +106,12 @@ const authenticatedDashboardFormsFormIdIndexRoute =
     path: '/forms/$formId/',
     getParentRoute: () => authenticatedDashboardRouteRoute,
   } as any)
+const authenticatedDashboardFormsFormIdNotificationsRoute =
+  authenticatedDashboardFormsFormIdNotificationsRouteImport.update({
+    id: '/forms/$formId/notifications',
+    path: '/forms/$formId/notifications',
+    getParentRoute: () => authenticatedDashboardRouteRoute,
+  } as any)
 const authenticatedDashboardFormsFormIdEditRoute =
   authenticatedDashboardFormsFormIdEditRouteImport.update({
     id: '/forms/$formId/edit',
@@ -126,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/forms/new': typeof authenticatedDashboardFormsNewRoute
   '/dashboard/forms': typeof authenticatedDashboardFormsIndexRoute
   '/dashboard/forms/$formId/edit': typeof authenticatedDashboardFormsFormIdEditRoute
+  '/dashboard/forms/$formId/notifications': typeof authenticatedDashboardFormsFormIdNotificationsRoute
   '/dashboard/forms/$formId': typeof authenticatedDashboardFormsFormIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -141,6 +149,7 @@ export interface FileRoutesByTo {
   '/dashboard/forms/new': typeof authenticatedDashboardFormsNewRoute
   '/dashboard/forms': typeof authenticatedDashboardFormsIndexRoute
   '/dashboard/forms/$formId/edit': typeof authenticatedDashboardFormsFormIdEditRoute
+  '/dashboard/forms/$formId/notifications': typeof authenticatedDashboardFormsFormIdNotificationsRoute
   '/dashboard/forms/$formId': typeof authenticatedDashboardFormsFormIdIndexRoute
 }
 export interface FileRoutesById {
@@ -160,6 +169,7 @@ export interface FileRoutesById {
   '/(authenticated)/dashboard/forms/new': typeof authenticatedDashboardFormsNewRoute
   '/(authenticated)/dashboard/forms/': typeof authenticatedDashboardFormsIndexRoute
   '/(authenticated)/dashboard/forms/$formId/edit': typeof authenticatedDashboardFormsFormIdEditRoute
+  '/(authenticated)/dashboard/forms/$formId/notifications': typeof authenticatedDashboardFormsFormIdNotificationsRoute
   '/(authenticated)/dashboard/forms/$formId/': typeof authenticatedDashboardFormsFormIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/dashboard/forms/new'
     | '/dashboard/forms'
     | '/dashboard/forms/$formId/edit'
+    | '/dashboard/forms/$formId/notifications'
     | '/dashboard/forms/$formId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -193,6 +204,7 @@ export interface FileRouteTypes {
     | '/dashboard/forms/new'
     | '/dashboard/forms'
     | '/dashboard/forms/$formId/edit'
+    | '/dashboard/forms/$formId/notifications'
     | '/dashboard/forms/$formId'
   id:
     | '__root__'
@@ -211,6 +223,7 @@ export interface FileRouteTypes {
     | '/(authenticated)/dashboard/forms/new'
     | '/(authenticated)/dashboard/forms/'
     | '/(authenticated)/dashboard/forms/$formId/edit'
+    | '/(authenticated)/dashboard/forms/$formId/notifications'
     | '/(authenticated)/dashboard/forms/$formId/'
   fileRoutesById: FileRoutesById
 }
@@ -331,6 +344,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedDashboardFormsFormIdIndexRouteImport
       parentRoute: typeof authenticatedDashboardRouteRoute
     }
+    '/(authenticated)/dashboard/forms/$formId/notifications': {
+      id: '/(authenticated)/dashboard/forms/$formId/notifications'
+      path: '/forms/$formId/notifications'
+      fullPath: '/dashboard/forms/$formId/notifications'
+      preLoaderRoute: typeof authenticatedDashboardFormsFormIdNotificationsRouteImport
+      parentRoute: typeof authenticatedDashboardRouteRoute
+    }
     '/(authenticated)/dashboard/forms/$formId/edit': {
       id: '/(authenticated)/dashboard/forms/$formId/edit'
       path: '/forms/$formId/edit'
@@ -361,6 +381,7 @@ interface authenticatedDashboardRouteRouteChildren {
   authenticatedDashboardFormsNewRoute: typeof authenticatedDashboardFormsNewRoute
   authenticatedDashboardFormsIndexRoute: typeof authenticatedDashboardFormsIndexRoute
   authenticatedDashboardFormsFormIdEditRoute: typeof authenticatedDashboardFormsFormIdEditRoute
+  authenticatedDashboardFormsFormIdNotificationsRoute: typeof authenticatedDashboardFormsFormIdNotificationsRoute
   authenticatedDashboardFormsFormIdIndexRoute: typeof authenticatedDashboardFormsFormIdIndexRoute
 }
 
@@ -373,6 +394,8 @@ const authenticatedDashboardRouteRouteChildren: authenticatedDashboardRouteRoute
       authenticatedDashboardFormsIndexRoute,
     authenticatedDashboardFormsFormIdEditRoute:
       authenticatedDashboardFormsFormIdEditRoute,
+    authenticatedDashboardFormsFormIdNotificationsRoute:
+      authenticatedDashboardFormsFormIdNotificationsRoute,
     authenticatedDashboardFormsFormIdIndexRoute:
       authenticatedDashboardFormsFormIdIndexRoute,
   }

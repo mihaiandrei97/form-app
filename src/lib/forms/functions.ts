@@ -3,13 +3,13 @@ import { and, count, desc, eq, gte, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import { authMiddleware } from "~/lib/auth/middleware";
 import { db } from "~/lib/db";
+import type { NotificationChannelConfig } from "~/lib/db/schema";
 import { form, notificationChannel, submission } from "~/lib/db/schema";
 import { generateId, generateSlug } from "~/lib/id";
 
 // Validation schemas
 const createFormSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
-  emailTo: z.email("Invalid email address").optional().or(z.literal("")),
   redirectUrl: z.url("Invalid URL").optional().or(z.literal("")),
   allowedDomains: z.string().optional().or(z.literal("")),
   honeypotField: z.string().max(50).optional().or(z.literal("")),
@@ -18,7 +18,6 @@ const createFormSchema = z.object({
 const updateFormSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1, "Name is required").max(100).optional(),
-  emailTo: z.email("Invalid email address").optional().or(z.literal("")),
   redirectUrl: z.url("Invalid URL").optional().or(z.literal("")),
   allowedDomains: z.string().optional().or(z.literal("")),
   honeypotField: z.string().max(50).optional().or(z.literal("")),
@@ -111,17 +110,6 @@ export const $createForm = createServerFn({ method: "POST" })
       })
       .returning();
 
-    // Create email notification channel if email is provided
-    if (data.emailTo && data.emailTo.trim() !== "") {
-      await db.insert(notificationChannel).values({
-        id: generateId(),
-        formId: id,
-        type: "email",
-        enabled: true,
-        config: { to: data.emailTo },
-      });
-    }
-
     return newForm;
   });
 
@@ -132,7 +120,7 @@ export const $updateForm = createServerFn({ method: "POST" })
   .inputValidator(updateFormSchema)
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
-    const { id, allowedDomains, honeypotField, redirectUrl, emailTo, ...updates } = data;
+    const { id, allowedDomains, honeypotField, redirectUrl, ...updates } = data;
 
     // Clean up values for database
     const cleanUpdates = {
@@ -150,43 +138,6 @@ export const $updateForm = createServerFn({ method: "POST" })
 
     if (!updated) {
       throw new Error("Form not found");
-    }
-
-    // Handle email notification channel
-    if (emailTo !== undefined) {
-      // Find existing email channel
-      const [existingChannel] = await db
-        .select()
-        .from(notificationChannel)
-        .where(
-          and(eq(notificationChannel.formId, id), eq(notificationChannel.type, "email")),
-        )
-        .limit(1);
-
-      if (emailTo && emailTo.trim() !== "") {
-        // Create or update email channel
-        if (existingChannel) {
-          await db
-            .update(notificationChannel)
-            .set({ config: { to: emailTo } })
-            .where(eq(notificationChannel.id, existingChannel.id));
-        } else {
-          await db.insert(notificationChannel).values({
-            id: generateId(),
-            formId: id,
-            type: "email",
-            enabled: true,
-            config: { to: emailTo },
-          });
-        }
-      } else {
-        // Remove email channel if email is cleared
-        if (existingChannel) {
-          await db
-            .delete(notificationChannel)
-            .where(eq(notificationChannel.id, existingChannel.id));
-        }
-      }
     }
 
     return updated;
@@ -531,4 +482,164 @@ export const $getDashboardStats = createServerFn({ method: "GET" })
       totalSubmissions: totalResult?.count ?? 0,
       monthSubmissions: monthResult?.count ?? 0,
     };
+  });
+
+// ============================================
+// Notification Channel CRUD Functions
+// ============================================
+
+// Notification channel config schemas
+const emailConfigSchema = z.object({ to: z.string().email() });
+const webhookUrlConfigSchema = z.object({ webhookUrl: z.string().url() });
+const customWebhookConfigSchema = z.object({
+  url: z.string().url(),
+  secret: z.string().optional(),
+  headers: z.record(z.string(), z.string()).optional(),
+});
+
+const notificationConfigSchema = z.union([
+  emailConfigSchema,
+  webhookUrlConfigSchema,
+  customWebhookConfigSchema,
+]);
+
+const createNotificationChannelSchema = z.object({
+  formId: z.string().min(1),
+  type: z.enum(["email", "discord", "webhook"]),
+  config: notificationConfigSchema,
+  enabled: z.boolean().optional().default(true),
+});
+
+const updateNotificationChannelSchema = z.object({
+  id: z.string().min(1),
+  config: notificationConfigSchema.optional(),
+  enabled: z.boolean().optional(),
+});
+
+/**
+ * Create a new notification channel for a form
+ */
+export const $createNotificationChannel = createServerFn({ method: "POST" })
+  .inputValidator(createNotificationChannelSchema)
+  .middleware([authMiddleware])
+  .handler(async ({ context, data }) => {
+    // Verify form belongs to user
+    const [formRecord] = await db
+      .select({ id: form.id })
+      .from(form)
+      .where(and(eq(form.id, data.formId), eq(form.userId, context.user.id)))
+      .limit(1);
+
+    if (!formRecord) {
+      throw new Error("Form not found");
+    }
+
+    const id = generateId();
+
+    const [channel] = await db
+      .insert(notificationChannel)
+      .values({
+        id,
+        formId: data.formId,
+        type: data.type,
+        enabled: data.enabled,
+        config: data.config as NotificationChannelConfig,
+      })
+      .returning();
+
+    return channel;
+  });
+
+/**
+ * Update an existing notification channel
+ */
+export const $updateNotificationChannel = createServerFn({ method: "POST" })
+  .inputValidator(updateNotificationChannelSchema)
+  .middleware([authMiddleware])
+  .handler(async ({ context, data }) => {
+    // Find channel and verify ownership
+    const [existingChannel] = await db
+      .select({
+        id: notificationChannel.id,
+        formId: notificationChannel.formId,
+      })
+      .from(notificationChannel)
+      .where(eq(notificationChannel.id, data.id))
+      .limit(1);
+
+    if (!existingChannel) {
+      throw new Error("Notification channel not found");
+    }
+
+    // Verify form belongs to user
+    const [formRecord] = await db
+      .select({ id: form.id })
+      .from(form)
+      .where(and(eq(form.id, existingChannel.formId), eq(form.userId, context.user.id)))
+      .limit(1);
+
+    if (!formRecord) {
+      throw new Error("Form not found");
+    }
+
+    // Build update object
+    const updates: { config?: NotificationChannelConfig; enabled?: boolean } = {};
+    if (data.config !== undefined)
+      updates.config = data.config as NotificationChannelConfig;
+    if (data.enabled !== undefined) updates.enabled = data.enabled;
+
+    if (Object.keys(updates).length === 0) {
+      // Nothing to update, return existing
+      const [channel] = await db
+        .select()
+        .from(notificationChannel)
+        .where(eq(notificationChannel.id, data.id))
+        .limit(1);
+      return channel;
+    }
+
+    const [updated] = await db
+      .update(notificationChannel)
+      .set(updates)
+      .where(eq(notificationChannel.id, data.id))
+      .returning();
+
+    return updated;
+  });
+
+/**
+ * Delete a notification channel
+ */
+export const $deleteNotificationChannel = createServerFn({ method: "POST" })
+  .inputValidator(z.object({ id: z.string().min(1) }))
+  .middleware([authMiddleware])
+  .handler(async ({ context, data }) => {
+    // Find channel and verify ownership
+    const [existingChannel] = await db
+      .select({
+        id: notificationChannel.id,
+        formId: notificationChannel.formId,
+      })
+      .from(notificationChannel)
+      .where(eq(notificationChannel.id, data.id))
+      .limit(1);
+
+    if (!existingChannel) {
+      throw new Error("Notification channel not found");
+    }
+
+    // Verify form belongs to user
+    const [formRecord] = await db
+      .select({ id: form.id })
+      .from(form)
+      .where(and(eq(form.id, existingChannel.formId), eq(form.userId, context.user.id)))
+      .limit(1);
+
+    if (!formRecord) {
+      throw new Error("Form not found");
+    }
+
+    await db.delete(notificationChannel).where(eq(notificationChannel.id, data.id));
+
+    return { success: true };
   });
