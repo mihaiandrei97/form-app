@@ -1,6 +1,5 @@
-import { AlertTriangle, Eye, Loader2, Trash2 } from "lucide-react";
+import { Eye, Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -26,7 +25,6 @@ type Submission = {
   ipAddress: string | null;
   userAgent: string | null;
   referrer: string | null;
-  isSpam: boolean;
   createdAt: Date;
 };
 
@@ -113,7 +111,6 @@ export function SubmissionsTable({
                 <TableHead>Data</TableHead>
                 <TableHead className="w-[120px]">IP Address</TableHead>
                 <TableHead className="w-[150px]">Referrer</TableHead>
-                <TableHead className="w-[80px]">Status</TableHead>
                 <TableHead className="w-[80px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -134,18 +131,6 @@ export function SubmissionsTable({
                     title={submission.referrer || undefined}
                   >
                     {truncate(submission.referrer, 30)}
-                  </TableCell>
-                  <TableCell>
-                    {submission.isSpam ? (
-                      <Badge variant="destructive" className="text-xs">
-                        <AlertTriangle className="mr-1 h-3 w-3" />
-                        Spam
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="text-xs">
-                        Valid
-                      </Badge>
-                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
@@ -218,14 +203,6 @@ export function SubmissionsTable({
 
           {selectedSubmission && (
             <div className="space-y-6">
-              {/* Status */}
-              {selectedSubmission.isSpam && (
-                <div className="bg-destructive/10 text-destructive flex items-center gap-2 rounded-md px-3 py-2 text-sm">
-                  <AlertTriangle className="h-4 w-4" />
-                  This submission was flagged as spam (honeypot triggered)
-                </div>
-              )}
-
               {/* Form Data */}
               <div>
                 <h4 className="mb-2 text-sm font-medium">Form Data</h4>

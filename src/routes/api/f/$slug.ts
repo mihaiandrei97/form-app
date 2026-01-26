@@ -3,6 +3,7 @@ import { getRequestIP } from "@tanstack/react-start/server";
 import { and, eq } from "drizzle-orm";
 import { db } from "~/lib/db";
 import { form, notificationChannel, submission } from "~/lib/db/schema";
+import { validateSubmission } from "~/lib/forms/validation";
 import { generateId } from "~/lib/id";
 import { enqueueSendDiscord, enqueueSendEmail } from "~/lib/queue";
 
@@ -69,10 +70,14 @@ export const Route = createFileRoute("/api/f/$slug")({
           // 3. Parse form data
           const data = await parseFormData(request);
 
-          // 4. Check honeypot field (spam detection)
-          let isSpam = false;
+          // 4. Check honeypot field (spam detection) - silently discard spam
           if (formRecord.honeypotField && data[formRecord.honeypotField]) {
-            isSpam = true;
+            // Return success to not tip off bots, but don't save or notify
+            return jsonResponse(
+              { success: true, message: "Form submitted successfully" },
+              200,
+              origin,
+            );
           }
 
           // Remove honeypot field from stored data
@@ -80,57 +85,74 @@ export const Route = createFileRoute("/api/f/$slug")({
             delete data[formRecord.honeypotField];
           }
 
-          // 5. Save submission
+          // 5. Validate submission data against form fields (if defined)
+          let submissionData = data;
+          if (formRecord.fields && formRecord.fields.length > 0) {
+            const validationResult = validateSubmission(formRecord.fields, data);
+
+            if (!validationResult.success) {
+              return jsonResponse(
+                {
+                  error: "Validation failed",
+                  details: validationResult.errors,
+                },
+                400,
+                origin,
+              );
+            }
+
+            // Use only the validated/transformed data (strips unknown fields)
+            submissionData = validationResult.data ?? {};
+          }
+
+          // 6. Save submission
           const submissionId = generateId();
           await db.insert(submission).values({
             id: submissionId,
             formId: formRecord.id,
-            data,
+            data: submissionData,
             ipAddress: requestIp || getClientIp(request),
             userAgent: request.headers.get("user-agent") || null,
             referrer: referer || null,
-            isSpam,
           });
 
-          // 6. Queue notification jobs (only for non-spam submissions)
-          if (!isSpam) {
-            const channels = await db.query.notificationChannel.findMany({
-              where: and(
-                eq(notificationChannel.formId, formRecord.id),
-                eq(notificationChannel.enabled, true),
-              ),
-            });
+          // 6. Queue notification jobs
+          const channels = await db.query.notificationChannel.findMany({
+            where: and(
+              eq(notificationChannel.formId, formRecord.id),
+              eq(notificationChannel.enabled, true),
+            ),
+          });
 
-            const submittedAt = new Date().toISOString();
+          const submittedAt = new Date().toISOString();
 
-            for (const channel of channels) {
-              if (channel.type === "email") {
-                const config = channel.config as { to: string };
-                await enqueueSendEmail({
-                  channelId: channel.id,
-                  submissionId,
-                  to: config.to,
-                  formId: formRecord.id,
-                  formName: formRecord.name,
-                  formSlug: formRecord.slug,
-                  submissionData: data,
-                  submittedAt,
-                });
-              } else if (channel.type === "discord") {
-                const config = channel.config as { webhookUrl: string };
-                await enqueueSendDiscord({
-                  channelId: channel.id,
-                  submissionId,
-                  webhookUrl: config.webhookUrl,
-                  formId: formRecord.id,
-                  formName: formRecord.name,
-                  formSlug: formRecord.slug,
-                  submissionData: data,
-                  submittedAt,
-                });
-              }
-              // Future: handle webhook channels
+          for (const channel of channels) {
+            if (channel.type === "email") {
+              const config = channel.config as { to: string };
+              await enqueueSendEmail({
+                channelId: channel.id,
+                submissionId,
+                to: config.to,
+                formId: formRecord.id,
+                formName: formRecord.name,
+                formSlug: formRecord.slug,
+                submissionData,
+                submittedAt,
+              });
+            } else if (channel.type === "discord") {
+              const config = channel.config as { webhookUrl: string };
+              await enqueueSendDiscord({
+                channelId: channel.id,
+                submissionId,
+                webhookUrl: config.webhookUrl,
+                formId: formRecord.id,
+                formName: formRecord.name,
+                formSlug: formRecord.slug,
+                submissionData,
+                submittedAt,
+              });
             }
+            // Future: handle webhook channels
           }
 
           // 7. Return success response

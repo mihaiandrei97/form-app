@@ -5,6 +5,7 @@ import { authMiddleware } from "~/lib/auth/middleware";
 import { db } from "~/lib/db";
 import type { NotificationChannelConfig } from "~/lib/db/schema";
 import { form, notificationChannel, submission } from "~/lib/db/schema";
+import { formFieldsSchema } from "~/lib/forms/field-types";
 import { generateId, generateSlug } from "~/lib/id";
 
 // Validation schemas
@@ -13,6 +14,7 @@ const createFormSchema = z.object({
   redirectUrl: z.url("Invalid URL").optional().or(z.literal("")),
   allowedDomains: z.string().optional().or(z.literal("")),
   honeypotField: z.string().max(50).optional().or(z.literal("")),
+  fields: formFieldsSchema.optional(),
 });
 
 const updateFormSchema = z.object({
@@ -22,6 +24,7 @@ const updateFormSchema = z.object({
   allowedDomains: z.string().optional().or(z.literal("")),
   honeypotField: z.string().max(50).optional().or(z.literal("")),
   isActive: z.boolean().optional(),
+  fields: formFieldsSchema.optional(),
 });
 
 // Types
@@ -107,6 +110,7 @@ export const $createForm = createServerFn({ method: "POST" })
         redirectUrl: data.redirectUrl || null,
         allowedDomains: parseAllowedDomains(data.allowedDomains),
         honeypotField: data.honeypotField || null,
+        fields: data.fields || null,
       })
       .returning();
 
@@ -120,15 +124,20 @@ export const $updateForm = createServerFn({ method: "POST" })
   .inputValidator(updateFormSchema)
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
-    const { id, allowedDomains, honeypotField, redirectUrl, ...updates } = data;
+    const { id, allowedDomains, honeypotField, redirectUrl, fields, ...updates } = data;
 
     // Clean up values for database
-    const cleanUpdates = {
+    const cleanUpdates: Record<string, unknown> = {
       ...updates,
       redirectUrl: redirectUrl === "" ? null : redirectUrl,
       allowedDomains: parseAllowedDomains(allowedDomains),
       honeypotField: honeypotField === "" ? null : honeypotField,
     };
+
+    // Only include fields if it was provided
+    if (fields !== undefined) {
+      cleanUpdates.fields = fields;
+    }
 
     const [updated] = await db
       .update(form)
@@ -306,7 +315,6 @@ export const $exportSubmissions = createServerFn({ method: "GET" })
           data: s.data,
           ipAddress: s.ipAddress,
           referrer: s.referrer,
-          isSpam: s.isSpam,
           createdAt: s.createdAt,
         })),
       };
@@ -335,14 +343,7 @@ export const $exportSubmissions = createServerFn({ method: "GET" })
     }
 
     const dataKeys = Array.from(allDataKeys).sort();
-    const headers = [
-      "id",
-      "created_at",
-      "ip_address",
-      "referrer",
-      "is_spam",
-      ...dataKeys,
-    ];
+    const headers = ["id", "created_at", "ip_address", "referrer", ...dataKeys];
 
     const escapeCSV = (value: unknown): string => {
       if (value === null || value === undefined) return "";
@@ -360,7 +361,6 @@ export const $exportSubmissions = createServerFn({ method: "GET" })
         s.createdAt.toISOString(),
         s.ipAddress || "",
         s.referrer || "",
-        s.isSpam ? "true" : "false",
         ...dataKeys.map((k) => escapeCSV(dataObj[k])),
       ].join(",");
     });

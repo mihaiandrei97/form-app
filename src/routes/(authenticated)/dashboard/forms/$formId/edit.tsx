@@ -32,6 +32,7 @@ function EditFormPage() {
           allowedDomains: values.allowedDomains || "",
           honeypotField: values.honeypotField || "",
           isActive: values.isActive,
+          fields: values.fields,
         },
       }),
     onSuccess: () => {
@@ -74,6 +75,7 @@ function EditFormPage() {
           allowedDomains: form.allowedDomains?.join(", ") || "",
           honeypotField: form.honeypotField || "",
           isActive: form.isActive,
+          fields: form.fields || [],
         }}
         onSubmit={handleSubmit}
         onCancel={handleCancel}

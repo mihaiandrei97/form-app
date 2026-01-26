@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import { boolean, index, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import type { FormField } from "~/lib/forms/field-types";
 import { user } from "./auth.schema";
 
 /**
@@ -19,6 +20,7 @@ export const form = pgTable(
     isActive: boolean("is_active").default(true).notNull(),
     allowedDomains: text("allowed_domains").array(),
     honeypotField: text("honeypot_field"),
+    fields: jsonb("fields").$type<FormField[]>(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
@@ -46,7 +48,6 @@ export const submission = pgTable(
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
     referrer: text("referrer"),
-    isSpam: boolean("is_spam").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => [

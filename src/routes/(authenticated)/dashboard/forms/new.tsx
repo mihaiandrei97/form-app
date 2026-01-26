@@ -25,6 +25,7 @@ function NewFormPage() {
           redirectUrl: values.redirectUrl || "",
           allowedDomains: values.allowedDomains || "",
           honeypotField: values.honeypotField || "",
+          fields: values.fields,
         },
       }),
     onSuccess: (data) => {

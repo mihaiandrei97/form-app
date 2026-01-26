@@ -394,7 +394,11 @@ function FormDetailPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <CodeSnippets endpointUrl={endpointUrl} honeypotField={form.honeypotField} />
+          <CodeSnippets
+            endpointUrl={endpointUrl}
+            honeypotField={form.honeypotField}
+            fields={form.fields}
+          />
         </CardContent>
       </Card>
 
