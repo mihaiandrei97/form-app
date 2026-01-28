@@ -25,7 +25,13 @@ function TermsPage() {
 
       {/* Content */}
       <main className="mx-auto max-w-3xl px-4 py-12">
-        <Button variant="ghost" size="sm" className="mb-6" render={<a href="/" />}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="mb-6"
+          nativeButton={false}
+          render={<a href="/" />}
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Home
         </Button>

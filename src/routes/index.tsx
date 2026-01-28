@@ -52,7 +52,7 @@ function LandingPage() {
             required.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button size="lg" render={<Link to="/login" />}>
+            <Button size="lg" nativeButton={false} render={<Link to="/login" />}>
               Get Started Free
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -209,6 +209,7 @@ function LandingPage() {
             size="lg"
             variant="secondary"
             className="mt-8"
+            nativeButton={false}
             render={<Link to="/login" />}
           >
             Get Started Free
@@ -248,7 +249,12 @@ function HeaderActions() {
 
   if (user) {
     return (
-      <Button variant="outline" size="sm" render={<Link to="/dashboard" />}>
+      <Button
+        variant="outline"
+        size="sm"
+        nativeButton={false}
+        render={<Link to="/dashboard" />}
+      >
         Dashboard
       </Button>
     );
@@ -256,10 +262,15 @@ function HeaderActions() {
 
   return (
     <>
-      <Button variant="ghost" size="sm" render={<Link to="/login" />}>
+      <Button
+        variant="ghost"
+        size="sm"
+        nativeButton={false}
+        render={<Link to="/login" />}
+      >
         Login
       </Button>
-      <Button size="sm" render={<Link to="/login" />}>
+      <Button size="sm" nativeButton={false} render={<Link to="/login" />}>
         Get Started
       </Button>
     </>

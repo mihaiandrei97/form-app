@@ -75,7 +75,7 @@ function FormsListPage() {
           <h1 className="text-2xl font-bold">My Forms</h1>
           <p className="text-muted-foreground">Create and manage your form endpoints.</p>
         </div>
-        <Button render={<Link to="/dashboard/forms/new" />}>
+        <Button nativeButton={false} render={<Link to="/dashboard/forms/new" />}>
           <Plus className="mr-2 h-4 w-4" />
           Create Form
         </Button>
@@ -88,7 +88,11 @@ function FormsListPage() {
             <p className="text-muted-foreground mt-1 text-sm">
               Create your first form endpoint to start receiving submissions.
             </p>
-            <Button render={<Link to="/dashboard/forms/new" />} className="mt-4">
+            <Button
+              nativeButton={false}
+              render={<Link to="/dashboard/forms/new" />}
+              className="mt-4"
+            >
               <Plus className="mr-2 h-4 w-4" />
               Create Your First Form
             </Button>
@@ -138,6 +142,7 @@ function FormsListPage() {
                 <Button
                   variant="outline"
                   size="sm"
+                  nativeButton={false}
                   render={
                     <Link to="/dashboard/forms/$formId" params={{ formId: form.id }} />
                   }

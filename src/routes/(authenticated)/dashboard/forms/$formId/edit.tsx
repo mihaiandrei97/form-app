@@ -1,9 +1,7 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { FormForm, type FormFormValues } from "~/components/forms/form-form";
-import { Button } from "~/components/ui/button";
 import { $updateForm } from "~/lib/forms/functions";
 import { formQueryOptions } from "~/lib/forms/queries";
 
@@ -56,15 +54,9 @@ function EditFormPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon-sm" onClick={handleCancel}>
-          <ArrowLeft className="h-4 w-4" />
-          <span className="sr-only">Back to form</span>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold">Edit Form</h1>
-          <p className="text-muted-foreground">Update the settings for {form.name}.</p>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold">Edit Form</h1>
+        <p className="text-muted-foreground">Update the settings for {form.name}.</p>
       </div>
 
       <FormForm

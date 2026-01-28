@@ -1,7 +1,6 @@
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  ArrowLeft,
   CheckCircle,
   Copy,
   Download,
@@ -129,7 +128,6 @@ function FormDetailSkeleton() {
 function FormDetailPage() {
   const { formId } = Route.useParams();
   const { data: form } = useSuspenseQuery(formQueryOptions(formId));
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   // Submissions state with pagination
@@ -219,41 +217,32 @@ function FormDetailPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-start justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={() => navigate({ to: "/dashboard/forms" })}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="sr-only">Back to forms</span>
-          </Button>
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold">{form.name}</h1>
-              <Badge variant={form.isActive ? "default" : "secondary"}>
-                {form.isActive ? (
-                  <>
-                    <CheckCircle className="mr-1 h-3 w-3" />
-                    Active
-                  </>
-                ) : (
-                  <>
-                    <PauseCircle className="mr-1 h-3 w-3" />
-                    Inactive
-                  </>
-                )}
-              </Badge>
-            </div>
-            <p className="text-muted-foreground text-sm">
-              Created {new Date(form.createdAt).toLocaleDateString()}
-            </p>
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold">{form.name}</h1>
+            <Badge variant={form.isActive ? "default" : "secondary"}>
+              {form.isActive ? (
+                <>
+                  <CheckCircle className="mr-1 h-3 w-3" />
+                  Active
+                </>
+              ) : (
+                <>
+                  <PauseCircle className="mr-1 h-3 w-3" />
+                  Inactive
+                </>
+              )}
+            </Badge>
           </div>
+          <p className="text-muted-foreground text-sm">
+            Created {new Date(form.createdAt).toLocaleDateString()}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
+            nativeButton={false}
             render={
               <Link to="/dashboard/forms/$formId/edit" params={{ formId: formId }} />
             }
@@ -284,6 +273,7 @@ function FormDetailPage() {
               <Button
                 variant="ghost"
                 size="icon-sm"
+                nativeButton={false}
                 render={<a href={endpointUrl} target="_blank" rel="noopener" />}
               >
                 <ExternalLink className="h-4 w-4" />
@@ -343,6 +333,7 @@ function FormDetailPage() {
           <Button
             variant="outline"
             size="sm"
+            nativeButton={false}
             render={
               <Link
                 to="/dashboard/forms/$formId/notifications"

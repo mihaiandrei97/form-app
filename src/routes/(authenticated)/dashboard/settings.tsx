@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, LoaderCircle } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -72,15 +72,9 @@ function SettingsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon-sm" render={<Link to="/dashboard" />}>
-          <ArrowLeft className="h-4 w-4" />
-          <span className="sr-only">Back to dashboard</span>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold">Settings</h1>
-          <p className="text-muted-foreground text-sm">Manage your account settings</p>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold">Settings</h1>
+        <p className="text-muted-foreground text-sm">Manage your account settings</p>
       </div>
 
       {/* Account Information */}
@@ -95,7 +89,7 @@ function SettingsPage() {
             <CardTitle className="text-base">Account Information</CardTitle>
             <CardDescription>Update your personal information.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pb-6">
             <FieldGroup>
               {/* Email (read-only) */}
               <Field>
@@ -137,7 +131,7 @@ function SettingsPage() {
               />
             </FieldGroup>
           </CardContent>
-          <CardFooter className="justify-end border-t pt-4">
+          <CardFooter className="justify-end border-t pt-6">
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>

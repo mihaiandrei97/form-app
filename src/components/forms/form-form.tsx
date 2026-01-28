@@ -102,7 +102,7 @@ export function FormForm({
             </TabsList>
           </div>
 
-          <CardContent className="pt-6">
+          <CardContent className="py-6">
             <TabsContent value="settings" className="mt-0">
               <FieldGroup>
                 {/* Name */}
@@ -268,7 +268,7 @@ export function FormForm({
           </CardContent>
         </Tabs>
 
-        <CardFooter className="justify-end gap-2 border-t pt-4">
+        <CardFooter className="justify-end gap-2 border-t pt-6">
           <Button
             type="button"
             variant="outline"

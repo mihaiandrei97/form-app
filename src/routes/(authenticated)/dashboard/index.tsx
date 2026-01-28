@@ -109,7 +109,11 @@ function DashboardIndex() {
               Get started by creating a form endpoint. You&apos;ll get a unique URL to
               receive submissions from any website.
             </p>
-            <Button render={<Link to="/dashboard/forms/new" />} className="mt-4">
+            <Button
+              nativeButton={false}
+              render={<Link to="/dashboard/forms/new" />}
+              className="mt-4"
+            >
               <Plus className="mr-2 h-4 w-4" />
               Create Form
             </Button>

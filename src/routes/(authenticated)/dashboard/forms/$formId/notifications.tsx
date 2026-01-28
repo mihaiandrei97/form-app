@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Bell, Mail, MessageSquare, Pencil, Plus, Trash2 } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { Bell, Mail, MessageSquare, Pencil, Plus, Trash2 } from "lucide-react";
 import {
   DeleteNotificationChannelDialog,
   NotificationChannelDialog,
@@ -95,21 +95,11 @@ function NotificationsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-start justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            render={<Link to="/dashboard/forms/$formId" params={{ formId }} />}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="sr-only">Back to form</span>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold">Notifications</h1>
-            <p className="text-muted-foreground text-sm">
-              Manage notification channels for {form.name}
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold">Notifications</h1>
+          <p className="text-muted-foreground text-sm">
+            Manage notification channels for {form.name}
+          </p>
         </div>
         <NotificationChannelDialog
           formId={formId}
