@@ -1,0 +1,11 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "tanstack": {
+      // ...
+      "enabled": true,
+      "type": "local",
+      "command": ["npx", "@tanstack/cli", "mcp"]
+    }
+  }
+}
