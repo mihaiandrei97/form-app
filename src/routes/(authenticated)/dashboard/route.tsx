@@ -1,15 +1,18 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { DashboardSidebar } from "~/components/dashboard-sidebar";
 import { ThemeToggle } from "~/components/theme-toggle";
 import { Separator } from "~/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "~/components/ui/sidebar";
+import { authQueryOptions } from "~/lib/auth/queries";
 
 export const Route = createFileRoute("/(authenticated)/dashboard")({
   component: DashboardLayout,
 });
 
 function DashboardLayout() {
-  const { user } = Route.useRouteContext();
+  const { data: user } = useSuspenseQuery(authQueryOptions());
+  if (!user) throw new Error("User should be authenticated already.");
 
   return (
     <SidebarProvider>
