@@ -33,20 +33,20 @@ BForms uses a **subscription-based pricing model** with an aggressive market pos
 
 **Target:** Freelancers, small business websites, side projects
 
-| Feature                       | Included  |
-| ----------------------------- | --------- |
-| Submissions/month             | 1,000     |
-| Forms                         | Unlimited |
-| Spam protection (honeypot)    | Yes       |
-| Domain restrictions           | Yes       |
-| Dashboard & submission viewer | Yes       |
-| Export (CSV/JSON)             | Yes       |
-| Submission history            | 30 days   |
-| Email notifications           | Yes       |
-| Discord notifications         | Yes       |
-| Webhooks                      | No        |
-| File uploads                  | No        |
-| Branding removal              | Yes       |
+| Feature                       | Included                    |
+| ----------------------------- | --------------------------- |
+| Submissions/month             | 1,000                       |
+| Forms                         | Unlimited                   |
+| Spam protection (honeypot)    | Yes                         |
+| Domain restrictions           | Yes                         |
+| Dashboard & submission viewer | Yes                         |
+| Export (CSV/JSON)             | Yes                         |
+| Submission history            | 30 days                     |
+| Email notifications           | Limited (50/day, 500/month) |
+| Discord notifications         | Yes                         |
+| Webhooks                      | No                          |
+| File uploads                  | No                          |
+| Branding removal              | Yes                         |
 
 ---
 
@@ -63,7 +63,7 @@ BForms uses a **subscription-based pricing model** with an aggressive market pos
 | Dashboard & submission viewer | Yes            |
 | Export (CSV/JSON)             | Yes            |
 | Submission history            | 90 days        |
-| Email notifications           | Yes            |
+| Email notifications           | Unlimited      |
 | Discord notifications         | Yes            |
 | Webhooks                      | Yes            |
 | File uploads                  | Yes (5MB/file) |
@@ -72,38 +72,13 @@ BForms uses a **subscription-based pricing model** with an aggressive market pos
 
 ---
 
-### Business - $29/month (Future)
-
-**Target:** Enterprises, high-volume applications
-
-| Feature                       | Included        |
-| ----------------------------- | --------------- |
-| Submissions/month             | 50,000          |
-| Forms                         | Unlimited       |
-| Spam protection (honeypot)    | Yes             |
-| Domain restrictions           | Yes             |
-| Dashboard & submission viewer | Yes             |
-| Export (CSV/JSON)             | Yes             |
-| Submission history            | Unlimited       |
-| Email notifications           | Yes             |
-| Discord notifications         | Yes             |
-| Webhooks                      | Yes             |
-| File uploads                  | Yes (25MB/file) |
-| Branding removal              | Yes             |
-| Priority support              | Yes             |
-| API access                    | Yes             |
-| Team members                  | Up to 5         |
-
----
-
 ## Competitive Analysis
 
-| Plan       | BForms       | Formspree   | Formspark    | Basin        |
-| ---------- | ------------ | ----------- | ------------ | ------------ |
-| Free       | 100 subs     | 50 subs     | 250 subs     | 100 subs     |
-| ~$5-10/mo  | 1,000 @ $5   | 100 @ $10   | 1,000 @ $9   | 2,500 @ $8   |
-| ~$12-15/mo | 10,000 @ $12 | 1,000 @ $25 | N/A          | N/A          |
-| ~$25-30/mo | 50,000 @ $29 | 5,000 @ $50 | 10,000 @ $29 | 10,000 @ $24 |
+| Plan       | BForms       | Formspree   | Formspark  | Basin      |
+| ---------- | ------------ | ----------- | ---------- | ---------- |
+| Free       | 100 subs     | 50 subs     | 250 subs   | 100 subs   |
+| ~$5-10/mo  | 1,000 @ $5   | 100 @ $10   | 1,000 @ $9 | 2,500 @ $8 |
+| ~$12-15/mo | 10,000 @ $12 | 1,000 @ $25 | N/A        | N/A        |
 
 **Positioning:** BForms offers significantly more submissions at lower price points, particularly at the Pro tier.
 
@@ -111,15 +86,13 @@ BForms uses a **subscription-based pricing model** with an aggressive market pos
 
 ## Feature Gating Summary
 
-| Feature               | Free | Starter | Pro | Business |
-| --------------------- | ---- | ------- | --- | -------- |
-| Email notifications   | No   | Yes     | Yes | Yes      |
-| Discord notifications | No   | Yes     | Yes | Yes      |
-| Webhooks              | No   | No      | Yes | Yes      |
-| File uploads          | No   | No      | Yes | Yes      |
-| Remove branding       | No   | Yes     | Yes | Yes      |
-| API access            | No   | No      | No  | Yes      |
-| Team members          | No   | No      | No  | Yes      |
+| Feature               | Free | Starter | Pro       |
+| --------------------- | ---- | ------- | --------- |
+| Email notifications   | No   | Limited | Unlimited |
+| Discord notifications | No   | Yes     | Yes       |
+| Webhooks              | No   | No      | Yes       |
+| File uploads          | No   | No      | Yes       |
+| Remove branding       | No   | Yes     | Yes       |
 
 ---
 
@@ -133,13 +106,14 @@ BForms uses a **subscription-based pricing model** with an aggressive market pos
 
 ### Feature Flags to Implement
 
-1. `canUseEmailNotifications` - Starter+
-2. `canUseDiscordNotifications` - Starter+
-3. `canUseWebhooks` - Pro+
-4. `canUploadFiles` - Pro+
-5. `maxFileSize` - Pro: 5MB, Business: 25MB
-6. `showBranding` - Free only
-7. `submissionHistoryDays` - Free: 7, Starter: 30, Pro: 90, Business: unlimited
+1. `canUseEmailNotifications` - Starter+ (Starter: 50/day, 500/month; Pro: unlimited)
+2. `emailDailyLimit` - 50 for Starter, null for Pro
+3. `emailMonthlyLimit` - 500 for Starter, null for Pro
+4. `canUseDiscordNotifications` - Starter+
+5. `canUseWebhooks` - Pro+
+6. `canUploadFiles` - Pro+ (5MB/file)
+7. `showBranding` - Free only
+8. `submissionHistoryDays` - Free: 7, Starter: 30, Pro: 90
 
 ### Third-Party Integrations
 
@@ -153,11 +127,10 @@ BForms uses a **subscription-based pricing model** with an aggressive market pos
 Assuming 1,000 users after 12 months:
 
 - 70% Free (700 users) = $0
-- 20% Starter (200 users) = $1,000/mo
+- 22% Starter (220 users) = $1,100/mo
 - 8% Pro (80 users) = $960/mo
-- 2% Business (20 users) = $580/mo
 
-**Estimated MRR:** $2,540/month
+**Estimated MRR:** $2,060/month
 
 ---
 
