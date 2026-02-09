@@ -33,6 +33,14 @@ function LandingPage() {
             BForms
           </Link>
           <div className="flex items-center gap-3">
+            <Button
+              size="sm"
+              variant="ghost"
+              nativeButton={false}
+              render={<Link to="/pricing" />}
+            >
+              Pricing
+            </Button>
             <Suspense fallback={null}>
               <HeaderActions />
             </Suspense>
@@ -225,6 +233,12 @@ function LandingPage() {
             &copy; {new Date().getFullYear()} BForms. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
+            <a
+              href="/pricing"
+              className="text-muted-foreground hover:text-foreground text-sm"
+            >
+              Pricing
+            </a>
             <a
               href="/privacy"
               className="text-muted-foreground hover:text-foreground text-sm"

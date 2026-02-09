@@ -12,20 +12,20 @@ BForms uses a **subscription-based pricing model** with an aggressive market pos
 
 **Target:** Hobby developers, testing, small personal projects
 
-| Feature                       | Included  |
-| ----------------------------- | --------- |
-| Submissions/month             | 100       |
-| Forms                         | Unlimited |
-| Spam protection (honeypot)    | Yes       |
-| Domain restrictions           | Yes       |
-| Dashboard & submission viewer | Yes       |
-| Export (CSV/JSON)             | Yes       |
-| Submission history            | 7 days    |
-| Email notifications           | No        |
-| Discord notifications         | No        |
-| Webhooks                      | No        |
-| File uploads                  | No        |
-| Branding removal              | No        |
+| Feature                       | Included |
+| ----------------------------- | -------- |
+| Submissions/month             | 100      |
+| Forms                         | 5        |
+| Spam protection (honeypot)    | Yes      |
+| Domain restrictions           | Yes      |
+| Dashboard & submission viewer | Yes      |
+| Export (CSV/JSON)             | Yes      |
+| Submission history            | 7 days   |
+| Email notifications           | No       |
+| Discord notifications         | No       |
+| Webhooks                      | No       |
+| File uploads                  | No       |
+| Branding removal              | No       |
 
 ---
 

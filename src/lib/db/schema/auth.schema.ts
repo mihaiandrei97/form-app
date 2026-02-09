@@ -12,6 +12,9 @@ export const user = pgTable("user", {
     .defaultNow()
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
+  creemCustomerId: text("creem_customer_id"),
+  hadTrial: boolean("had_trial").default(false),
+  plan: text("plan").default("free"),
 });
 
 export const session = pgTable(
@@ -72,6 +75,19 @@ export const verification = pgTable(
   },
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
+
+export const creem_subscription = pgTable("creem_subscription", {
+  id: text("id").primaryKey(),
+  productId: text("product_id").notNull(),
+  referenceId: text("reference_id").notNull(),
+  creemCustomerId: text("creem_customer_id"),
+  creemSubscriptionId: text("creem_subscription_id"),
+  creemOrderId: text("creem_order_id"),
+  status: text("status").default("pending"),
+  periodStart: timestamp("period_start"),
+  periodEnd: timestamp("period_end"),
+  cancelAtPeriodEnd: boolean("cancel_at_period_end").default(false),
+});
 
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),

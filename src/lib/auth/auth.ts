@@ -1,10 +1,12 @@
+import { creem } from "@creem_io/better-auth";
 import { createServerOnlyFn } from "@tanstack/react-start";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { betterAuth } from "better-auth/minimal";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
-
+import { eq } from "drizzle-orm";
 import { env } from "~/env/server";
 import { db } from "~/lib/db";
+import { user } from "../db/schema";
 
 const getAuthConfig = createServerOnlyFn(() =>
   betterAuth({
@@ -15,9 +17,52 @@ const getAuthConfig = createServerOnlyFn(() =>
     database: drizzleAdapter(db, {
       provider: "pg",
     }),
+    user: {
+      additionalFields: {
+        plan: {
+          type: "string",
+          defaultValue: "free",
+          input: false,
+        },
+      },
+    },
 
     // https://www.better-auth.com/docs/integrations/tanstack#usage-tips
-    plugins: [tanstackStartCookies()],
+    plugins: [
+      tanstackStartCookies(),
+      creem({
+        apiKey: env.CREEM_API_KEY,
+        webhookSecret: env.CREEM_WEBHOOK_SECRET, // Optional
+        testMode: true, // Use test mode for development
+        defaultSuccessUrl: "/success", // Redirect URL after payments
+        persistSubscriptions: true, // Enable database persistence (recommended)
+        onGrantAccess: async ({ reason, product, customer, metadata }) => {
+          console.log("Granting access", { reason, product, customer, metadata });
+          const userId = metadata?.referenceId as string;
+
+          // Grant access in your database
+          await db
+            .update(user)
+            .set({
+              plan: product.name,
+            })
+            .where(eq(user.id, userId));
+
+          console.log(`Granted access to ${customer.email}`);
+        },
+        onRevokeAccess: async ({ reason, product, customer, metadata }) => {
+          console.log("Revoking access", { reason, product, customer, metadata });
+          const userId = metadata?.referenceId as string;
+          await db
+            .update(user)
+            .set({
+              plan: "free",
+            })
+            .where(eq(user.id, userId));
+          console.log(`Revoked access from ${customer.email}`);
+        },
+      }),
+    ],
 
     // https://www.better-auth.com/docs/concepts/session-management#session-caching
     session: {

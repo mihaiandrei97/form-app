@@ -11,6 +11,9 @@ importers:
       '@base-ui/react':
         specifier: ^1.0.0
         version: 1.0.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@creem_io/better-auth':
+        specifier: ^0.0.13
+        version: 0.0.13(better-auth@1.4.10(@tanstack/react-start@1.146.0(crossws@0.4.1(srvx@0.10.0))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@8.0.0-beta.7(@types/node@24.10.4)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)))(drizzle-kit@0.31.8)(drizzle-orm@0.45.1(kysely@0.28.9)(pg@8.17.2)(postgres@3.4.8))(pg@8.17.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10))(creem@0.4.0)(zod@4.3.5)
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -352,6 +355,13 @@ packages:
 
   '@better-fetch/fetch@1.1.21':
     resolution: {integrity: sha512-/ImESw0sskqlVR94jB+5+Pxjf+xBwDZF/N5+y2/q4EqD7IARUTSpPfIo8uf39SYpCxyOCtbyYpUrZ3F/k0zT4A==}
+
+  '@creem_io/better-auth@0.0.13':
+    resolution: {integrity: sha512-88Zode7OTu/HNh61aIt6F7BrTEubFA7Xdth921TTT0zAAH5gnwrTU7Z0HgPNT2YLgqk6MlUpX8jAvHnK+JuAHA==}
+    peerDependencies:
+      better-auth: ^1.3.34
+      creem: ^0.4.0
+      zod: ^3.23.8 || ^4
 
   '@dnd-kit/accessibility@3.1.1':
     resolution: {integrity: sha512-2P+YgaXF+gRsIihwwY1gCsQSYnu9Zyj2py8kY5fFvUM1qm2WA2u639R6YNVfU4GWr+ZM5mqEsfHZZLoRONbemw==}
@@ -2204,6 +2214,15 @@ packages:
       typescript: '>=4.9.5'
     peerDependenciesMeta:
       typescript:
+        optional: true
+
+  creem@0.4.0:
+    resolution: {integrity: sha512-1RENze+vqUSq478DzisYaFuHmHt24QKg2zASuThQ9GqXi1XnW1KQa6ekuO0rA2RGqiDSYyfR6+DxaGJBYuVghg==}
+    hasBin: true
+    peerDependencies:
+      '@modelcontextprotocol/sdk': '>=1.5.0 <1.10.0'
+    peerDependenciesMeta:
+      '@modelcontextprotocol/sdk':
         optional: true
 
   cron-parser@5.5.0:
@@ -4490,6 +4509,12 @@ snapshots:
 
   '@better-fetch/fetch@1.1.21': {}
 
+  '@creem_io/better-auth@0.0.13(better-auth@1.4.10(@tanstack/react-start@1.146.0(crossws@0.4.1(srvx@0.10.0))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@8.0.0-beta.7(@types/node@24.10.4)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)))(drizzle-kit@0.31.8)(drizzle-orm@0.45.1(kysely@0.28.9)(pg@8.17.2)(postgres@3.4.8))(pg@8.17.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10))(creem@0.4.0)(zod@4.3.5)':
+    dependencies:
+      better-auth: 1.4.10(@tanstack/react-start@1.146.0(crossws@0.4.1(srvx@0.10.0))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@8.0.0-beta.7(@types/node@24.10.4)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)))(drizzle-kit@0.31.8)(drizzle-orm@0.45.1(kysely@0.28.9)(pg@8.17.2)(postgres@3.4.8))(pg@8.17.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.10)
+      creem: 0.4.0
+      zod: 4.3.5
+
   '@dnd-kit/accessibility@3.1.1(react@19.2.3)':
     dependencies:
       react: 19.2.3
@@ -6121,6 +6146,10 @@ snapshots:
       parse-json: 5.2.0
     optionalDependencies:
       typescript: 5.9.3
+
+  creem@0.4.0:
+    dependencies:
+      zod: 3.25.76
 
   cron-parser@5.5.0:
     dependencies:

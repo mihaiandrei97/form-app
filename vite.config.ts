@@ -9,6 +9,9 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
+  server: {
+    allowedHosts: ["localhost", "live-meerkat-initially.ngrok-free.app"],
+  },
   plugins: [
     devtools(),
     tanstackStart(),

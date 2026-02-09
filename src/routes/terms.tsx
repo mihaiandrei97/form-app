@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { ThemeToggle } from "~/components/theme-toggle";
 import { Button } from "~/components/ui/button";
@@ -19,7 +19,17 @@ function TermsPage() {
           <a href="/" className="text-xl font-bold">
             BForms
           </a>
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            <Button
+              size="sm"
+              variant="ghost"
+              nativeButton={false}
+              render={<Link to="/pricing" />}
+            >
+              Pricing
+            </Button>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
@@ -155,6 +165,12 @@ function TermsPage() {
             &copy; {new Date().getFullYear()} BForms. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
+            <a
+              href="/pricing"
+              className="text-muted-foreground hover:text-foreground text-sm"
+            >
+              Pricing
+            </a>
             <a
               href="/privacy"
               className="text-muted-foreground hover:text-foreground text-sm"

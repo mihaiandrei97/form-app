@@ -12,6 +12,8 @@ export const env = createEnv({
     GITHUB_CLIENT_SECRET: z.string().optional(),
     GOOGLE_CLIENT_ID: z.string().optional(),
     GOOGLE_CLIENT_SECRET: z.string().optional(),
+    CREEM_API_KEY: z.string(),
+    CREEM_WEBHOOK_SECRET: z.string(),
   },
   runtimeEnv: process.env,
 });
