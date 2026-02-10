@@ -27,6 +27,7 @@ function SignupForm() {
         {
           ...data,
           callbackURL: redirectUrl,
+          plan: "free",
         },
         {
           onError: ({ error }) => {

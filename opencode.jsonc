@@ -5,12 +5,12 @@
       // ...
       "enabled": true,
       "type": "local",
-      "command": ["npx", "@tanstack/cli", "mcp"]
+      "command": ["npx", "@tanstack/cli", "mcp"],
     },
     "shadcn": {
       "type": "local",
       "command": ["npx", "shadcn@latest", "mcp"],
-      "enabled": true
-    }
-  }
+      "enabled": true,
+    },
+  },
 }

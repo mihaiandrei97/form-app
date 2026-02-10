@@ -1,73 +1,25 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Check, Sparkles } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { ThemeToggle } from "~/components/theme-toggle";
 import { Button } from "~/components/ui/button";
 import authClient from "~/lib/auth/auth-client";
+import { productsQueryOptions } from "~/lib/pricing/queries";
 
 export const Route = createFileRoute("/pricing")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions()),
   head: () => ({
     meta: [{ title: "Pricing | BForms" }],
   }),
   component: PricingPage,
 });
 
-const plans = [
-  {
-    name: "Free",
-    prodId: "creem_prod_free",
-    price: "$0",
-    description: "For hobby projects and quick tests.",
-    cta: "Get started",
-    highlight: false,
-    features: [
-      "100 submissions/month",
-      "5 forms",
-      "Spam protection (honeypot)",
-      "Domain restrictions",
-      "Dashboard & submissions",
-      "CSV/JSON exports",
-      "7-day submission history",
-    ],
-  },
-  {
-    name: "Starter",
-    prodId: "prod_2RqgPMctLGY0S0p8dM93Do",
-    price: "$5",
-    description: "For freelancers and small business websites.",
-    cta: "Upgrade to Starter",
-    highlight: true,
-    features: [
-      "1,000 submissions/month",
-      "Unlimited forms",
-      "Email notifications (50/day, 500/month)",
-      "Discord notifications",
-      "Branding removal",
-      "30-day submission history",
-      "CSV/JSON exports",
-    ],
-  },
-  {
-    name: "Pro",
-    prodId: "creem_prod_pro",
-    price: "$12",
-    description: "For agencies and higher-traffic sites.",
-    cta: "Go Pro",
-    highlight: false,
-    features: [
-      "10,000 submissions/month",
-      "Unlimited forms",
-      "Unlimited email notifications",
-      "Webhooks + file uploads",
-      "Priority support",
-      "90-day submission history",
-      "Branding removal",
-    ],
-  },
-];
-
 function PricingPage() {
+  const navigate = useNavigate();
+  const { data: plans } = useSuspenseQuery(productsQueryOptions());
+
   useEffect(() => {
     async function checkSubcription() {
       const { data } = await authClient.creem.hasAccessGranted();
@@ -78,13 +30,25 @@ function PricingPage() {
     checkSubcription();
   }, []);
 
-  const handlePlanClick = async (prodId: string) => {
+  const handlePlanClick = async (prodId: string, planName: string) => {
     console.log("Selected plan", prodId);
+
+    // Free plan - navigate to dashboard
+    if (planName === "Free") {
+      navigate({ to: "/dashboard" });
+      return;
+    }
+
+    // Paid plans - create checkout
     const session = await authClient.getSession();
     if (!session?.data?.user) {
       toast.error("You must be logged in to subscribe. Redirecting to login...");
       setTimeout(() => {
-        window.location.href = "/login";
+        // Navigate to login with redirect back to pricing
+        navigate({
+          to: "/login",
+          search: { redirect: "/pricing" },
+        });
       }, 2000);
       return;
     }
@@ -92,7 +56,7 @@ function PricingPage() {
     const { error } = await authClient.creem.createCheckout({
       productId: prodId,
       successUrl: "/success",
-      metadata: { referenceId: session.data.user.id }, // Optional
+      metadata: { referenceId: session.data.user.id },
     });
     if (error) {
       console.error("Error creating checkout", error);
@@ -175,7 +139,7 @@ function PricingPage() {
                 <Button
                   className="mt-6 w-full"
                   variant={plan.highlight ? "default" : "outline"}
-                  onClick={() => handlePlanClick(plan.prodId)}
+                  onClick={() => handlePlanClick(plan.prodId, plan.name)}
                 >
                   {plan.cta}
                 </Button>

@@ -1,10 +1,17 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import * as z from "zod";
 import { authQueryOptions } from "~/lib/auth/queries";
+
+const authSearchSchema = z.object({
+  redirect: z.string().optional(),
+});
 
 export const Route = createFileRoute("/(auth-pages)")({
   component: RouteComponent,
-  beforeLoad: async ({ context }) => {
-    const REDIRECT_URL = "/dashboard";
+  validateSearch: authSearchSchema,
+  beforeLoad: async ({ context, search }) => {
+    // Read redirect from query params, default to dashboard
+    const redirectUrl = search.redirect || "/dashboard";
 
     const user = await context.queryClient.ensureQueryData({
       ...authQueryOptions(),
@@ -12,12 +19,12 @@ export const Route = createFileRoute("/(auth-pages)")({
     });
     if (user) {
       throw redirect({
-        to: REDIRECT_URL,
+        to: redirectUrl,
       });
     }
 
     return {
-      redirectUrl: REDIRECT_URL,
+      redirectUrl,
     };
   },
 });

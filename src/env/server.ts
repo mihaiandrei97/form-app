@@ -14,6 +14,8 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: z.string().optional(),
     CREEM_API_KEY: z.string(),
     CREEM_WEBHOOK_SECRET: z.string(),
+    PRODUCT_ID_STARTER: z.string(),
+    PRODUCT_ID_PRO: z.string(),
   },
   runtimeEnv: process.env,
 });

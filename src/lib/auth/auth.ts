@@ -22,6 +22,7 @@ const getAuthConfig = createServerOnlyFn(() =>
         plan: {
           type: "string",
           defaultValue: "free",
+          required: false,
           input: false,
         },
       },
@@ -40,15 +41,23 @@ const getAuthConfig = createServerOnlyFn(() =>
           console.log("Granting access", { reason, product, customer, metadata });
           const userId = metadata?.referenceId as string;
 
+          // Map product IDs to plan names
+          let planName = product.name.toLowerCase();
+          if (product.id === env.PRODUCT_ID_STARTER) {
+            planName = "starter";
+          } else if (product.id === env.PRODUCT_ID_PRO) {
+            planName = "pro";
+          }
+
           // Grant access in your database
           await db
             .update(user)
             .set({
-              plan: product.name,
+              plan: planName,
             })
             .where(eq(user.id, userId));
 
-          console.log(`Granted access to ${customer.email}`);
+          console.log(`Granted access to ${customer.email} with plan ${planName}`);
         },
         onRevokeAccess: async ({ reason, product, customer, metadata }) => {
           console.log("Revoking access", { reason, product, customer, metadata });
