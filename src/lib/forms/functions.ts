@@ -7,6 +7,7 @@ import type { NotificationChannelConfig } from "~/lib/db/schema";
 import { form, notificationChannel, submission } from "~/lib/db/schema";
 import { formFieldsSchema } from "~/lib/forms/field-types";
 import { generateId, generateSlug } from "~/lib/id";
+import { getPlanLimits, requiredPlanForChannel } from "~/lib/pricing/plans";
 
 // Validation schemas
 const createFormSchema = z.object({
@@ -96,6 +97,23 @@ export const $createForm = createServerFn({ method: "POST" })
   .inputValidator(createFormSchema)
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
+    // Check form creation limit
+    const plan = (context.user as { plan?: string }).plan ?? "free";
+    const limits = getPlanLimits(plan);
+
+    if (limits.forms !== Infinity) {
+      const [{ formCount }] = await db
+        .select({ formCount: count() })
+        .from(form)
+        .where(eq(form.userId, context.user.id));
+
+      if (formCount >= limits.forms) {
+        throw new Error(
+          `Form limit reached. Your ${plan} plan allows up to ${limits.forms} forms. Upgrade to create more.`,
+        );
+      }
+    }
+
     const id = generateId();
     const slug = generateSlug();
 
@@ -523,6 +541,17 @@ export const $createNotificationChannel = createServerFn({ method: "POST" })
   .inputValidator(createNotificationChannelSchema)
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
+    // Check if user's plan allows this channel type
+    const plan = (context.user as { plan?: string }).plan ?? "free";
+    const limits = getPlanLimits(plan);
+
+    if (!limits.channels[data.type]) {
+      const required = requiredPlanForChannel(data.type);
+      throw new Error(
+        `${data.type} notifications require the ${required} plan or higher. Please upgrade to use this feature.`,
+      );
+    }
+
     // Verify form belongs to user
     const [formRecord] = await db
       .select({ id: form.id })

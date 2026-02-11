@@ -1,12 +1,12 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Bell, Mail, MessageSquare, Pencil, Plus, Trash2 } from "lucide-react";
 import {
   DeleteNotificationChannelDialog,
   NotificationChannelDialog,
 } from "~/components/forms/notification-channel-dialog";
 import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import {
   Card,
   CardContent,
@@ -15,7 +15,9 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
+import { authQueryOptions } from "~/lib/auth/queries";
 import { formQueryOptions } from "~/lib/forms/queries";
+import { cn } from "~/lib/utils";
 
 export const Route = createFileRoute(
   "/(authenticated)/dashboard/forms/$formId/notifications",
@@ -60,6 +62,8 @@ function NotificationsPageSkeleton() {
 function NotificationsPage() {
   const { formId } = Route.useParams();
   const { data: form } = useSuspenseQuery(formQueryOptions(formId));
+  const { data: user } = useSuspenseQuery(authQueryOptions());
+  const userPlan = user?.plan ?? "free";
 
   // Extract existing channel types to prevent duplicates
   const existingChannelTypes = form.notificationChannels.map((c) => c.type);
@@ -104,6 +108,7 @@ function NotificationsPage() {
         <NotificationChannelDialog
           formId={formId}
           existingChannelTypes={existingChannelTypes}
+          userPlan={userPlan}
           trigger={
             <Button size="sm">
               <Plus className="mr-2 h-4 w-4" />
@@ -112,6 +117,24 @@ function NotificationsPage() {
           }
         />
       </div>
+
+      {/* Plan banner for free users */}
+      {userPlan === "free" && (
+        <div className="rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 dark:border-yellow-900 dark:bg-yellow-950">
+          <p className="text-sm text-yellow-800 dark:text-yellow-200">
+            Notifications are available on the Starter plan and above.{" "}
+            <Link
+              to="/pricing"
+              className={cn(
+                buttonVariants({ variant: "link", size: "xs" }),
+                "h-auto p-0 text-yellow-800 underline dark:text-yellow-200",
+              )}
+            >
+              Upgrade your plan
+            </Link>
+          </p>
+        </div>
+      )}
 
       {/* Notification Channels */}
       <Card>
@@ -134,6 +157,7 @@ function NotificationsPage() {
               <NotificationChannelDialog
                 formId={formId}
                 existingChannelTypes={existingChannelTypes}
+                userPlan={userPlan}
                 trigger={
                   <Button variant="outline" className="mt-4">
                     <Plus className="mr-2 h-4 w-4" />
@@ -178,6 +202,7 @@ function NotificationsPage() {
                       <NotificationChannelDialog
                         formId={formId}
                         channel={channel}
+                        userPlan={userPlan}
                         trigger={
                           <Button variant="ghost" size="icon-sm">
                             <Pencil className="h-4 w-4" />
@@ -224,6 +249,9 @@ function NotificationsPage() {
               <li>
                 <strong>Discord</strong> - Post submission details to a Discord channel
                 via webhook
+              </li>
+              <li>
+                <strong>Webhook</strong> - Send submission data to any URL via HTTP POST
               </li>
             </ul>
           </div>

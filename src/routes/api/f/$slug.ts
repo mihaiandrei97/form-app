@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getRequestIP } from "@tanstack/react-start/server";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { db } from "~/lib/db";
-import { form, notificationChannel, submission } from "~/lib/db/schema";
+import { form, notificationChannel, submission, usage, user } from "~/lib/db/schema";
 import { validateSubmission } from "~/lib/forms/validation";
 import { generateId } from "~/lib/id";
+import { getPlanLimits } from "~/lib/pricing/plans";
 import { enqueueSendDiscord, enqueueSendEmail } from "~/lib/queue";
 
 /**
@@ -33,6 +34,10 @@ export const Route = createFileRoute("/api/f/$slug")({
         const requestIp = getRequestIP();
 
         try {
+          // Extract origin early — needed for CORS headers throughout
+          const origin = request.headers.get("origin");
+          const referer = request.headers.get("referer");
+
           // 1. Find the form by slug
           const formRecord = await db.query.form.findFirst({
             where: eq(form.slug, slug),
@@ -46,9 +51,44 @@ export const Route = createFileRoute("/api/f/$slug")({
             return jsonResponse({ error: "Form is not active" }, 403);
           }
 
-          // 2. Validate origin/referer domain
-          const origin = request.headers.get("origin");
-          const referer = request.headers.get("referer");
+          // 2. Check submission limit for form owner's plan
+          const owner = await db.query.user.findFirst({
+            where: eq(user.id, formRecord.userId),
+            columns: { id: true, plan: true },
+          });
+
+          const plan = owner?.plan ?? "free";
+          const limits = getPlanLimits(plan);
+          const now = new Date();
+          const currentYear = now.getUTCFullYear();
+          const currentMonth = now.getUTCMonth() + 1;
+
+          const [usageRow] = await db
+            .select({ submissionCount: usage.submissionCount })
+            .from(usage)
+            .where(
+              and(
+                eq(usage.userId, formRecord.userId),
+                eq(usage.year, currentYear),
+                eq(usage.month, currentMonth),
+              ),
+            )
+            .limit(1);
+
+          const currentCount = usageRow?.submissionCount ?? 0;
+
+          if (currentCount >= limits.submissions) {
+            return jsonResponse(
+              {
+                error: "Monthly submission limit reached",
+                limit: limits.submissions,
+              },
+              429,
+              origin,
+            );
+          }
+
+          // 3. Validate origin/referer domain
           const allowedDomains = formRecord.allowedDomains;
 
           if (allowedDomains && allowedDomains.length > 0) {
@@ -116,7 +156,24 @@ export const Route = createFileRoute("/api/f/$slug")({
             referrer: referer || null,
           });
 
-          // 6. Queue notification jobs
+          // 7. Increment monthly usage count (upsert)
+          await db
+            .insert(usage)
+            .values({
+              id: generateId(),
+              userId: formRecord.userId,
+              year: currentYear,
+              month: currentMonth,
+              submissionCount: 1,
+            })
+            .onConflictDoUpdate({
+              target: [usage.userId, usage.year, usage.month],
+              set: {
+                submissionCount: sql`${usage.submissionCount} + 1`,
+              },
+            });
+
+          // 8. Queue notification jobs
           const channels = await db.query.notificationChannel.findMany({
             where: and(
               eq(notificationChannel.formId, formRecord.id),
@@ -155,7 +212,7 @@ export const Route = createFileRoute("/api/f/$slug")({
             // Future: handle webhook channels
           }
 
-          // 7. Return success response
+          // 9. Return success response
           // If redirect URL is set and this is a browser form submission, redirect
           const acceptHeader = request.headers.get("accept") || "";
           const isHtmlRequest = acceptHeader.includes("text/html");

@@ -2,11 +2,12 @@
 
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { LoaderCircle, Mail, MessageSquare } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Globe, LoaderCircle, LockKeyhole, Mail, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -32,9 +33,10 @@ import {
   $deleteNotificationChannel,
   $updateNotificationChannel,
 } from "~/lib/forms/functions";
+import { getPlanLimits, requiredPlanForChannel } from "~/lib/pricing/plans";
 import { cn } from "~/lib/utils";
 
-type NotificationChannelType = "email" | "discord";
+type NotificationChannelType = "email" | "discord" | "webhook";
 
 // Discord webhook URL validation
 const discordWebhookRegex =
@@ -68,6 +70,7 @@ interface NotificationChannelDialogProps {
   formId: string;
   channel?: NotificationChannel;
   existingChannelTypes?: string[];
+  userPlan?: string;
   trigger: React.ReactNode;
 }
 
@@ -75,6 +78,7 @@ export function NotificationChannelDialog({
   formId,
   channel,
   existingChannelTypes = [],
+  userPlan = "free",
   trigger,
 }: NotificationChannelDialogProps) {
   const [open, setOpen] = useState(false);
@@ -84,6 +88,11 @@ export function NotificationChannelDialog({
   const queryClient = useQueryClient();
 
   const isEditing = !!channel;
+  const planLimits = getPlanLimits(userPlan);
+  const allLocked =
+    !planLimits.channels.email &&
+    !planLimits.channels.discord &&
+    !planLimits.channels.webhook;
 
   const createMutation = useMutation({
     mutationFn: $createNotificationChannel,
@@ -124,11 +133,14 @@ export function NotificationChannelDialog({
 
   const handleTypeSelect = (type: NotificationChannelType) => {
     if (existingChannelTypes.includes(type)) return;
+    if (!planLimits.channels[type]) return;
     setSelectedType(type);
   };
 
   const isTypeDisabled = (type: NotificationChannelType) =>
     existingChannelTypes.includes(type);
+
+  const isTypeLocked = (type: NotificationChannelType) => !planLimits.channels[type];
 
   const handleBack = () => {
     setSelectedType(null);
@@ -144,79 +156,105 @@ export function NotificationChannelDialog({
             <DialogHeader>
               <DialogTitle>Add Notification Channel</DialogTitle>
               <DialogDescription>
-                Choose how you want to receive notifications when this form receives a
-                submission.
+                {allLocked
+                  ? "Notification channels are available on paid plans. Upgrade to get notified when your forms receive submissions."
+                  : "Choose how you want to receive notifications when this form receives a submission."}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-3">
-              <button
-                type="button"
-                onClick={() => handleTypeSelect("email")}
-                disabled={isTypeDisabled("email")}
-                className={cn(
-                  "flex items-center gap-4 rounded-lg border p-4 text-left transition-colors",
-                  isTypeDisabled("email")
-                    ? "cursor-not-allowed opacity-50"
-                    : "hover:bg-accent",
-                )}
-              >
-                <div
-                  className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded-full",
-                    isTypeDisabled("email") ? "bg-muted" : "bg-primary/10",
-                  )}
-                >
-                  <Mail
+              {(
+                [
+                  {
+                    type: "email" as const,
+                    label: "Email",
+                    description: "Receive submissions via email",
+                    icon: Mail,
+                  },
+                  {
+                    type: "discord" as const,
+                    label: "Discord",
+                    description: "Send to a Discord channel via webhook",
+                    icon: MessageSquare,
+                  },
+                  {
+                    type: "webhook" as const,
+                    label: "Webhook",
+                    description: "Send to any URL via HTTP POST",
+                    icon: Globe,
+                  },
+                ] as const
+              ).map(({ type, label, description, icon: Icon }) => {
+                const disabled = isTypeDisabled(type);
+                const locked = isTypeLocked(type);
+                const inactive = disabled || locked;
+                const requiredPlan = locked ? requiredPlanForChannel(type) : null;
+
+                return (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => handleTypeSelect(type)}
+                    disabled={inactive}
                     className={cn(
-                      "h-5 w-5",
-                      isTypeDisabled("email") ? "text-muted-foreground" : "text-primary",
+                      "flex items-center gap-4 rounded-lg border p-4 text-left transition-colors",
+                      inactive ? "cursor-not-allowed opacity-60" : "hover:bg-accent",
                     )}
-                  />
-                </div>
-                <div>
-                  <p className="font-medium">Email</p>
-                  <p className="text-muted-foreground text-sm">
-                    {isTypeDisabled("email")
-                      ? "Already configured"
-                      : "Receive submissions via email"}
+                  >
+                    <div
+                      className={cn(
+                        "flex h-10 w-10 items-center justify-center rounded-full",
+                        inactive ? "bg-muted" : "bg-primary/10",
+                      )}
+                    >
+                      {locked ? (
+                        <LockKeyhole className="text-muted-foreground h-5 w-5" />
+                      ) : (
+                        <Icon
+                          className={cn(
+                            "h-5 w-5",
+                            disabled ? "text-muted-foreground" : "text-primary",
+                          )}
+                        />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium">{label}</p>
+                        {locked && requiredPlan && (
+                          <span className="bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs font-medium capitalize">
+                            {requiredPlan}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-muted-foreground text-sm">
+                        {disabled
+                          ? "Already configured"
+                          : locked
+                            ? `Upgrade to ${requiredPlan} to enable`
+                            : description}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+
+              {allLocked && (
+                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-900 dark:bg-yellow-950">
+                  <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                    Upgrade to unlock notifications
                   </p>
-                </div>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleTypeSelect("discord")}
-                disabled={isTypeDisabled("discord")}
-                className={cn(
-                  "flex items-center gap-4 rounded-lg border p-4 text-left transition-colors",
-                  isTypeDisabled("discord")
-                    ? "cursor-not-allowed opacity-50"
-                    : "hover:bg-accent",
-                )}
-              >
-                <div
-                  className={cn(
-                    "flex h-10 w-10 items-center justify-center rounded-full",
-                    isTypeDisabled("discord") ? "bg-muted" : "bg-primary/10",
-                  )}
-                >
-                  <MessageSquare
-                    className={cn(
-                      "h-5 w-5",
-                      isTypeDisabled("discord")
-                        ? "text-muted-foreground"
-                        : "text-primary",
-                    )}
-                  />
-                </div>
-                <div>
-                  <p className="font-medium">Discord</p>
-                  <p className="text-muted-foreground text-sm">
-                    {isTypeDisabled("discord")
-                      ? "Already configured"
-                      : "Send to a Discord channel via webhook"}
+                  <p className="mt-1 text-xs text-yellow-700 dark:text-yellow-300">
+                    Get email, Discord, and webhook notifications starting with the
+                    Starter plan.
                   </p>
+                  <Link
+                    to="/pricing"
+                    className={cn(buttonVariants({ size: "sm" }), "mt-3 w-full")}
+                  >
+                    View Plans
+                  </Link>
                 </div>
-              </button>
+              )}
             </div>
             <DialogFooter>
               <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
