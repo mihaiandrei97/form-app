@@ -69,8 +69,17 @@ async function insertNotificationLog(
  * Process a single Discord job.
  */
 async function processDiscordJob(job: Job<SendDiscordJob>): Promise<void> {
-  const { channelId, submissionId, webhookUrl, formName, submissionData, submittedAt } =
-    job.data;
+  const {
+    channelId,
+    submissionId,
+    webhookUrl,
+    formName,
+    submissionData,
+    submittedAt,
+    userPlan,
+  } = job.data;
+
+  const showBranding = !userPlan || userPlan === "free";
 
   console.log(`[send-discord] Processing job ${job.id} for submission ${submissionId}`);
 
@@ -82,7 +91,7 @@ async function processDiscordJob(job: Job<SendDiscordJob>): Promise<void> {
           color: EMBED_COLOR,
           fields: formatEmbedFields(submissionData),
           timestamp: submittedAt,
-          footer: { text: "BForms" },
+          ...(showBranding ? { footer: { text: "BForms" } } : {}),
         },
       ],
     };

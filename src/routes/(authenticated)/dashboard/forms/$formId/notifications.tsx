@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Bell, Mail, MessageSquare, Pencil, Plus, Trash2 } from "lucide-react";
+import { Bell, Info, Mail, MessageSquare, Pencil, Plus, Trash2 } from "lucide-react";
 import {
   DeleteNotificationChannelDialog,
   NotificationChannelDialog,
@@ -16,14 +16,16 @@ import {
 } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
 import { authQueryOptions } from "~/lib/auth/queries";
-import { formQueryOptions } from "~/lib/forms/queries";
+import { emailUsageQueryOptions, formQueryOptions } from "~/lib/forms/queries";
 import { cn } from "~/lib/utils";
 
 export const Route = createFileRoute(
   "/(authenticated)/dashboard/forms/$formId/notifications",
 )({
-  loader: ({ context, params }) =>
-    context.queryClient.ensureQueryData(formQueryOptions(params.formId)),
+  loader: ({ context, params }) => {
+    context.queryClient.ensureQueryData(emailUsageQueryOptions());
+    return context.queryClient.ensureQueryData(formQueryOptions(params.formId));
+  },
   head: () => ({
     meta: [{ title: "Notifications | BForms" }],
   }),
@@ -64,6 +66,7 @@ function NotificationsPage() {
   const { data: form } = useSuspenseQuery(formQueryOptions(formId));
   const { data: user } = useSuspenseQuery(authQueryOptions());
   const userPlan = user?.plan ?? "free";
+  const { data: emailUsage } = useSuspenseQuery(emailUsageQueryOptions());
 
   // Extract existing channel types to prevent duplicates
   const existingChannelTypes = form.notificationChannels.map((c) => c.type);
@@ -131,6 +134,36 @@ function NotificationsPage() {
               Upgrade your plan
             </Link>
           </p>
+        </div>
+      )}
+
+      {/* Email usage info for paid users */}
+      {userPlan !== "free" && emailUsage.today.limit !== Infinity && (
+        <div className="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 dark:border-blue-900 dark:bg-blue-950">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600 dark:text-blue-400" />
+          <div className="text-sm text-blue-800 dark:text-blue-200">
+            <p>
+              <strong>Email usage today:</strong> {emailUsage.today.used} /{" "}
+              {emailUsage.today.limit} &middot; <strong>This month:</strong>{" "}
+              {emailUsage.month.used} / {emailUsage.month.limit}
+            </p>
+            {(emailUsage.today.used >= emailUsage.today.limit ||
+              emailUsage.month.used >= emailUsage.month.limit) && (
+              <p className="mt-1 font-medium text-orange-700 dark:text-orange-400">
+                Email limit reached. Submissions are still accepted but email
+                notifications are paused.{" "}
+                <Link
+                  to="/pricing"
+                  className={cn(
+                    buttonVariants({ variant: "link", size: "xs" }),
+                    "h-auto p-0 text-orange-700 underline dark:text-orange-400",
+                  )}
+                >
+                  Upgrade for more
+                </Link>
+              </p>
+            )}
+          </div>
         </div>
       )}
 

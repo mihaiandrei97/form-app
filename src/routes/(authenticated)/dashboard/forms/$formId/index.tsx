@@ -5,6 +5,7 @@ import {
   Copy,
   Download,
   ExternalLink,
+  Info,
   Loader2,
   PauseCircle,
   Pencil,
@@ -15,7 +16,7 @@ import { CodeSnippets } from "~/components/forms/code-snippets";
 import { DeleteFormDialog } from "~/components/forms/delete-form-dialog";
 import { SubmissionsTable } from "~/components/forms/submissions-table";
 import { Badge } from "~/components/ui/badge";
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import {
   Card,
   CardContent,
@@ -36,6 +37,7 @@ import {
   $getSubmissions,
 } from "~/lib/forms/functions";
 import { formQueryOptions, submissionsQueryOptions } from "~/lib/forms/queries";
+import { cn } from "~/lib/utils";
 
 export const Route = createFileRoute("/(authenticated)/dashboard/forms/$formId/")({
   loader: async ({ context, params }) => {
@@ -430,7 +432,25 @@ function FormDetailPage() {
             </DropdownMenu>
           )}
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          {/* Retention info note */}
+          {submissionsData.historyDays < 90 && (
+            <div className="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 dark:border-blue-900 dark:bg-blue-950">
+              <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600 dark:text-blue-400" />
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                Showing submissions from the last {submissionsData.historyDays} days.{" "}
+                <Link
+                  to="/pricing"
+                  className={cn(
+                    buttonVariants({ variant: "link", size: "xs" }),
+                    "h-auto p-0 text-blue-800 underline dark:text-blue-200",
+                  )}
+                >
+                  Upgrade for longer history
+                </Link>
+              </p>
+            </div>
+          )}
           <SubmissionsTable
             submissions={submissions}
             total={total}

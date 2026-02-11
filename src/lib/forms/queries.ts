@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import {
   $getDashboardStats,
+  $getEmailUsage,
   $getForm,
   $getForms,
   $getFormsWithCounts,
@@ -54,4 +55,13 @@ export const dashboardStatsQueryOptions = () =>
   queryOptions({
     queryKey: ["dashboard", "stats"],
     queryFn: () => $getDashboardStats(),
+  });
+
+/**
+ * Query options for fetching email usage stats
+ */
+export const emailUsageQueryOptions = () =>
+  queryOptions({
+    queryKey: ["email-usage"],
+    queryFn: () => $getEmailUsage(),
   });

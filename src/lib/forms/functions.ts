@@ -1,10 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
-import { and, count, desc, eq, gte, inArray, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, inArray, sql, sum } from "drizzle-orm";
 import { z } from "zod";
 import { authMiddleware } from "~/lib/auth/middleware";
 import { db } from "~/lib/db";
 import type { NotificationChannelConfig } from "~/lib/db/schema";
-import { form, notificationChannel, submission } from "~/lib/db/schema";
+import { form, notificationChannel, submission, usage } from "~/lib/db/schema";
 import { formFieldsSchema } from "~/lib/forms/field-types";
 import { generateId, generateSlug } from "~/lib/id";
 import { getPlanLimits, requiredPlanForChannel } from "~/lib/pricing/plans";
@@ -310,11 +310,19 @@ export const $exportSubmissions = createServerFn({ method: "GET" })
       throw new Error("Form not found");
     }
 
-    // Get all submissions (no pagination)
+    // Apply submission history retention filter based on plan
+    const plan = context.user.plan ?? "free";
+    const limits = getPlanLimits(plan);
+    const cutoffDate = new Date();
+    cutoffDate.setUTCDate(cutoffDate.getUTCDate() - limits.historyDays);
+
+    // Get submissions within retention window
     const submissions = await db
       .select()
       .from(submission)
-      .where(eq(submission.formId, data.formId))
+      .where(
+        and(eq(submission.formId, data.formId), gte(submission.createdAt, cutoffDate)),
+      )
       .orderBy(desc(submission.createdAt));
 
     const sanitizeFilename = (name: string) =>
@@ -416,11 +424,22 @@ export const $getSubmissions = createServerFn({ method: "GET" })
       throw new Error("Form not found");
     }
 
+    // Apply submission history retention filter based on plan
+    const plan = context.user.plan ?? "free";
+    const limits = getPlanLimits(plan);
+    const cutoffDate = new Date();
+    cutoffDate.setUTCDate(cutoffDate.getUTCDate() - limits.historyDays);
+
+    const whereClause = and(
+      eq(submission.formId, data.formId),
+      gte(submission.createdAt, cutoffDate),
+    );
+
     // Get submissions
     const submissions = await db
       .select()
       .from(submission)
-      .where(eq(submission.formId, data.formId))
+      .where(whereClause)
       .orderBy(desc(submission.createdAt))
       .limit(data.limit)
       .offset(data.offset);
@@ -429,7 +448,7 @@ export const $getSubmissions = createServerFn({ method: "GET" })
     const [countResult] = await db
       .select({ total: count() })
       .from(submission)
-      .where(eq(submission.formId, data.formId));
+      .where(whereClause);
 
     const total = countResult?.total ?? 0;
 
@@ -440,6 +459,7 @@ export const $getSubmissions = createServerFn({ method: "GET" })
       })),
       total,
       hasMore: data.offset + submissions.length < total,
+      historyDays: limits.historyDays,
     };
   });
 
@@ -662,4 +682,62 @@ export const $deleteNotificationChannel = createServerFn({ method: "POST" })
     await db.delete(notificationChannel).where(eq(notificationChannel.id, data.id));
 
     return { success: true };
+  });
+
+/**
+ * Get email usage stats for the current user (today + this month)
+ */
+export const $getEmailUsage = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    const now = new Date();
+    const currentYear = now.getUTCFullYear();
+    const currentMonth = now.getUTCMonth() + 1;
+    const currentDay = now.getUTCDate();
+
+    const plan = context.user.plan ?? "free";
+    const limits = getPlanLimits(plan);
+
+    // Get today's email count
+    const [todayRow] = await db
+      .select({ emailCount: usage.emailCount })
+      .from(usage)
+      .where(
+        and(
+          eq(usage.userId, context.user.id),
+          eq(usage.year, currentYear),
+          eq(usage.month, currentMonth),
+          eq(usage.day, currentDay),
+        ),
+      )
+      .limit(1);
+
+    const todayEmailCount = todayRow?.emailCount ?? 0;
+
+    // Get this month's total email count
+    const [monthlyRow] = await db
+      .select({
+        totalEmails: sum(usage.emailCount),
+      })
+      .from(usage)
+      .where(
+        and(
+          eq(usage.userId, context.user.id),
+          eq(usage.year, currentYear),
+          eq(usage.month, currentMonth),
+        ),
+      );
+
+    const monthlyEmailCount = Number(monthlyRow?.totalEmails ?? 0);
+
+    return {
+      today: {
+        used: todayEmailCount,
+        limit: limits.emailsPerDay,
+      },
+      month: {
+        used: monthlyEmailCount,
+        limit: limits.emailsPerMonth,
+      },
+    };
   });

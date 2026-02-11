@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getRequestIP } from "@tanstack/react-start/server";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, sql, sum } from "drizzle-orm";
 import { db } from "~/lib/db";
 import { form, notificationChannel, submission, usage, user } from "~/lib/db/schema";
 import { validateSubmission } from "~/lib/forms/validation";
@@ -62,9 +62,13 @@ export const Route = createFileRoute("/api/f/$slug")({
           const now = new Date();
           const currentYear = now.getUTCFullYear();
           const currentMonth = now.getUTCMonth() + 1;
+          const currentDay = now.getUTCDate();
 
+          // Sum submission count across all days in the current month
           const [usageRow] = await db
-            .select({ submissionCount: usage.submissionCount })
+            .select({
+              totalSubmissions: sum(usage.submissionCount),
+            })
             .from(usage)
             .where(
               and(
@@ -72,10 +76,9 @@ export const Route = createFileRoute("/api/f/$slug")({
                 eq(usage.year, currentYear),
                 eq(usage.month, currentMonth),
               ),
-            )
-            .limit(1);
+            );
 
-          const currentCount = usageRow?.submissionCount ?? 0;
+          const currentCount = Number(usageRow?.totalSubmissions ?? 0);
 
           if (currentCount >= limits.submissions) {
             return jsonResponse(
@@ -156,7 +159,7 @@ export const Route = createFileRoute("/api/f/$slug")({
             referrer: referer || null,
           });
 
-          // 7. Increment monthly usage count (upsert)
+          // 7. Increment daily usage count (upsert)
           await db
             .insert(usage)
             .values({
@@ -164,10 +167,11 @@ export const Route = createFileRoute("/api/f/$slug")({
               userId: formRecord.userId,
               year: currentYear,
               month: currentMonth,
+              day: currentDay,
               submissionCount: 1,
             })
             .onConflictDoUpdate({
-              target: [usage.userId, usage.year, usage.month],
+              target: [usage.userId, usage.year, usage.month, usage.day],
               set: {
                 submissionCount: sql`${usage.submissionCount} + 1`,
               },
@@ -183,8 +187,54 @@ export const Route = createFileRoute("/api/f/$slug")({
 
           const submittedAt = new Date().toISOString();
 
+          // Check email limits before enqueuing
+          const hasEmailChannels = channels.some((c) => c.type === "email");
+          let canSendEmail = false;
+
+          if (hasEmailChannels && limits.emailsPerDay > 0) {
+            // Get today's email count
+            const [todayUsage] = await db
+              .select({ emailCount: usage.emailCount })
+              .from(usage)
+              .where(
+                and(
+                  eq(usage.userId, formRecord.userId),
+                  eq(usage.year, currentYear),
+                  eq(usage.month, currentMonth),
+                  eq(usage.day, currentDay),
+                ),
+              )
+              .limit(1);
+
+            const todayEmailCount = todayUsage?.emailCount ?? 0;
+
+            // Get this month's total email count
+            const [monthlyUsage] = await db
+              .select({
+                totalEmails: sum(usage.emailCount),
+              })
+              .from(usage)
+              .where(
+                and(
+                  eq(usage.userId, formRecord.userId),
+                  eq(usage.year, currentYear),
+                  eq(usage.month, currentMonth),
+                ),
+              );
+
+            const monthlyEmailCount = Number(monthlyUsage?.totalEmails ?? 0);
+
+            canSendEmail =
+              todayEmailCount < limits.emailsPerDay &&
+              monthlyEmailCount < limits.emailsPerMonth;
+          }
+
+          let emailsSentThisSubmission = 0;
+
           for (const channel of channels) {
             if (channel.type === "email") {
+              if (!canSendEmail) continue; // Skip if email limit reached
+
               const config = channel.config as { to: string };
               await enqueueSendEmail({
                 channelId: channel.id,
@@ -195,7 +245,9 @@ export const Route = createFileRoute("/api/f/$slug")({
                 formSlug: formRecord.slug,
                 submissionData,
                 submittedAt,
+                userPlan: plan,
               });
+              emailsSentThisSubmission++;
             } else if (channel.type === "discord") {
               const config = channel.config as { webhookUrl: string };
               await enqueueSendDiscord({
@@ -207,8 +259,29 @@ export const Route = createFileRoute("/api/f/$slug")({
                 formSlug: formRecord.slug,
                 submissionData,
                 submittedAt,
+                userPlan: plan,
               });
             }
+          }
+
+          // Increment email count for today if any emails were sent
+          if (emailsSentThisSubmission > 0) {
+            await db
+              .insert(usage)
+              .values({
+                id: generateId(),
+                userId: formRecord.userId,
+                year: currentYear,
+                month: currentMonth,
+                day: currentDay,
+                emailCount: emailsSentThisSubmission,
+              })
+              .onConflictDoUpdate({
+                target: [usage.userId, usage.year, usage.month, usage.day],
+                set: {
+                  emailCount: sql`${usage.emailCount} + ${emailsSentThisSubmission}`,
+                },
+              });
           }
 
           // 9. Return success response
