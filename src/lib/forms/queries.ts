@@ -5,6 +5,7 @@ import {
   $getForm,
   $getForms,
   $getFormsWithCounts,
+  $getRecentSubmissions,
   $getSubmissions,
 } from "./functions";
 
@@ -64,4 +65,13 @@ export const emailUsageQueryOptions = () =>
   queryOptions({
     queryKey: ["email-usage"],
     queryFn: () => $getEmailUsage(),
+  });
+
+/**
+ * Query options for fetching the 5 most recent submissions across all forms
+ */
+export const recentSubmissionsQueryOptions = () =>
+  queryOptions({
+    queryKey: ["dashboard", "recent-submissions"],
+    queryFn: () => $getRecentSubmissions(),
   });

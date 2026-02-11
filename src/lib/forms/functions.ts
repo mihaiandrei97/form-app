@@ -338,7 +338,7 @@ export const $exportSubmissions = createServerFn({ method: "GET" })
         totalCount: submissions.length,
         submissions: submissions.map((s) => ({
           id: s.id,
-          data: s.data,
+          data: s.data as Record<string, string>,
           ipAddress: s.ipAddress,
           referrer: s.referrer,
           createdAt: s.createdAt,
@@ -520,6 +520,60 @@ export const $getDashboardStats = createServerFn({ method: "GET" })
       totalSubmissions: totalResult?.count ?? 0,
       monthSubmissions: monthResult?.count ?? 0,
     };
+  });
+
+/**
+ * Get the most recent submissions across all user forms (for dashboard)
+ */
+export const $getRecentSubmissions = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    const userForms = await db
+      .select({ id: form.id, name: form.name })
+      .from(form)
+      .where(eq(form.userId, context.user.id));
+
+    if (userForms.length === 0) {
+      return [] as {
+        id: string;
+        formId: string;
+        preview: string;
+        createdAt: Date;
+        formName: string;
+      }[];
+    }
+
+    const formIds = userForms.map((f) => f.id);
+    const formNameMap = new Map(userForms.map((f) => [f.id, f.name]));
+
+    const recentSubmissions = await db
+      .select({
+        id: submission.id,
+        formId: submission.formId,
+        data: submission.data,
+        createdAt: submission.createdAt,
+      })
+      .from(submission)
+      .where(inArray(submission.formId, formIds))
+      .orderBy(desc(submission.createdAt))
+      .limit(5);
+
+    return recentSubmissions.map((s) => {
+      const data = s.data as Record<string, string>;
+      // Build a short preview of the first 3 fields
+      const entries = Object.entries(data).slice(0, 3);
+      const preview =
+        entries.length > 0
+          ? entries.map(([k, v]) => `${k}: ${String(v)}`).join(", ")
+          : "";
+      return {
+        id: s.id,
+        formId: s.formId,
+        preview,
+        createdAt: s.createdAt,
+        formName: formNameMap.get(s.formId) ?? "Unknown",
+      };
+    });
   });
 
 // ============================================
