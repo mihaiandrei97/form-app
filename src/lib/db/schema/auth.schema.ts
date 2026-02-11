@@ -14,7 +14,7 @@ export const user = pgTable("user", {
     .notNull(),
   creemCustomerId: text("creem_customer_id"),
   hadTrial: boolean("had_trial").default(false),
-  plan: text("plan").default("free"),
+  plan: text("plan").default("free").notNull(),
 });
 
 export const session = pgTable(

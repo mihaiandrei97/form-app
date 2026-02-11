@@ -57,7 +57,11 @@ export const Route = createFileRoute("/api/f/$slug")({
             columns: { id: true, plan: true },
           });
 
-          const plan = owner?.plan ?? "free";
+          if (!owner) {
+            return jsonResponse({ error: "Form owner not found" }, 404);
+          }
+
+          const plan = owner.plan;
           const limits = getPlanLimits(plan);
           const now = new Date();
           const currentYear = now.getUTCFullYear();

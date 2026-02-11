@@ -3,7 +3,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { FormForm, type FormFormValues } from "~/components/forms/form-form";
 import { buttonVariants } from "~/components/ui/button";
-import { authQueryOptions } from "~/lib/auth/queries";
 import { $createForm } from "~/lib/forms/functions";
 import { formsQueryOptions } from "~/lib/forms/queries";
 import { getPlanLimits } from "~/lib/pricing/plans";
@@ -23,10 +22,10 @@ function NewFormPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: user } = useSuspenseQuery(authQueryOptions());
+  const { user } = Route.useRouteContext();
   const { data: forms } = useSuspenseQuery(formsQueryOptions());
 
-  const plan = user?.plan ?? "free";
+  const plan = user.plan;
   const limits = getPlanLimits(plan);
   const formCount = forms.length;
   const atLimit = limits.forms !== Infinity && formCount >= limits.forms;

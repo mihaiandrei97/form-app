@@ -98,7 +98,7 @@ export const $createForm = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
     // Check form creation limit
-    const plan = (context.user as { plan?: string }).plan ?? "free";
+    const plan = context.user.plan;
     const limits = getPlanLimits(plan);
 
     if (limits.forms !== Infinity) {
@@ -311,7 +311,7 @@ export const $exportSubmissions = createServerFn({ method: "GET" })
     }
 
     // Apply submission history retention filter based on plan
-    const plan = context.user.plan ?? "free";
+    const plan = context.user.plan;
     const limits = getPlanLimits(plan);
     const cutoffDate = new Date();
     cutoffDate.setUTCDate(cutoffDate.getUTCDate() - limits.historyDays);
@@ -425,7 +425,7 @@ export const $getSubmissions = createServerFn({ method: "GET" })
     }
 
     // Apply submission history retention filter based on plan
-    const plan = context.user.plan ?? "free";
+    const plan = context.user.plan;
     const limits = getPlanLimits(plan);
     const cutoffDate = new Date();
     cutoffDate.setUTCDate(cutoffDate.getUTCDate() - limits.historyDays);
@@ -553,7 +553,7 @@ export const $createNotificationChannel = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .handler(async ({ context, data }) => {
     // Check if user's plan allows this channel type
-    const plan = (context.user as { plan?: string }).plan ?? "free";
+    const plan = context.user.plan;
     const limits = getPlanLimits(plan);
 
     if (!limits.channels[data.type]) {
@@ -695,7 +695,7 @@ export const $getEmailUsage = createServerFn({ method: "GET" })
     const currentMonth = now.getUTCMonth() + 1;
     const currentDay = now.getUTCDate();
 
-    const plan = context.user.plan ?? "free";
+    const plan = context.user.plan;
     const limits = getPlanLimits(plan);
 
     // Get today's email count

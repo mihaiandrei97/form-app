@@ -22,7 +22,7 @@ const getAuthConfig = createServerOnlyFn(() =>
         plan: {
           type: "string",
           defaultValue: "free",
-          required: false,
+          required: true,
           input: false,
         },
       },

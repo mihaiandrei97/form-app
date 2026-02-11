@@ -15,7 +15,6 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
-import { authQueryOptions } from "~/lib/auth/queries";
 import { emailUsageQueryOptions, formQueryOptions } from "~/lib/forms/queries";
 import { cn } from "~/lib/utils";
 
@@ -63,9 +62,9 @@ function NotificationsPageSkeleton() {
 
 function NotificationsPage() {
   const { formId } = Route.useParams();
+  const { user } = Route.useRouteContext();
   const { data: form } = useSuspenseQuery(formQueryOptions(formId));
-  const { data: user } = useSuspenseQuery(authQueryOptions());
-  const userPlan = user?.plan ?? "free";
+  const userPlan = user.plan;
   const { data: emailUsage } = useSuspenseQuery(emailUsageQueryOptions());
 
   // Extract existing channel types to prevent duplicates
