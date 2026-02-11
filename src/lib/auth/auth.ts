@@ -18,6 +18,9 @@ const getAuthConfig = createServerOnlyFn(() =>
       provider: "pg",
     }),
     user: {
+      deleteUser: {
+        enabled: true,
+      },
       additionalFields: {
         plan: {
           type: "string",
