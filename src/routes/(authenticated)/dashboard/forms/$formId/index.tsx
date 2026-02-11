@@ -367,7 +367,6 @@ function FormDetailPage() {
                   >
                     {channel.type === "email" && config.to}
                     {channel.type === "discord" && "Discord"}
-                    {channel.type === "webhook" && "Webhook"}
                   </Badge>
                 );
               })}

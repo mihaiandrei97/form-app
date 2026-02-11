@@ -3,7 +3,7 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Globe, LoaderCircle, LockKeyhole, Mail, MessageSquare } from "lucide-react";
+import { LoaderCircle, LockKeyhole, Mail, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -27,7 +27,7 @@ import {
 } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
-import type { NotificationChannelConfig } from "~/lib/db/schema";
+import type { NotificationChannelConfig, NotificationChannelType } from "~/lib/db/schema";
 import {
   $createNotificationChannel,
   $deleteNotificationChannel,
@@ -35,8 +35,6 @@ import {
 } from "~/lib/forms/functions";
 import { getPlanLimits, requiredPlanForChannel } from "~/lib/pricing/plans";
 import { cn } from "~/lib/utils";
-
-type NotificationChannelType = "email" | "discord" | "webhook";
 
 // Discord webhook URL validation
 const discordWebhookRegex =
@@ -89,10 +87,7 @@ export function NotificationChannelDialog({
 
   const isEditing = !!channel;
   const planLimits = getPlanLimits(userPlan);
-  const allLocked =
-    !planLimits.channels.email &&
-    !planLimits.channels.discord &&
-    !planLimits.channels.webhook;
+  const allLocked = !planLimits.channels.email && !planLimits.channels.discord;
 
   const createMutation = useMutation({
     mutationFn: $createNotificationChannel,
@@ -176,12 +171,6 @@ export function NotificationChannelDialog({
                     description: "Send to a Discord channel via webhook",
                     icon: MessageSquare,
                   },
-                  {
-                    type: "webhook" as const,
-                    label: "Webhook",
-                    description: "Send to any URL via HTTP POST",
-                    icon: Globe,
-                  },
                 ] as const
               ).map(({ type, label, description, icon: Icon }) => {
                 const disabled = isTypeDisabled(type);
@@ -244,8 +233,7 @@ export function NotificationChannelDialog({
                     Upgrade to unlock notifications
                   </p>
                   <p className="mt-1 text-xs text-yellow-700 dark:text-yellow-300">
-                    Get email, Discord, and webhook notifications starting with the
-                    Starter plan.
+                    Get email and Discord notifications starting with the Starter plan.
                   </p>
                   <Link
                     to="/pricing"

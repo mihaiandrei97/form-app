@@ -10,17 +10,17 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
   free: {
     submissions: 100,
     forms: 5,
-    channels: { email: false, discord: false, webhook: false },
+    channels: { email: false, discord: false },
   },
   starter: {
     submissions: 1_000,
     forms: Infinity,
-    channels: { email: true, discord: true, webhook: false },
+    channels: { email: true, discord: true },
   },
   pro: {
     submissions: 10_000,
     forms: Infinity,
-    channels: { email: true, discord: true, webhook: true },
+    channels: { email: true, discord: true },
   },
 };
 
@@ -34,7 +34,7 @@ export function getPlanLimits(plan: string): PlanLimits {
  * Returns the minimum plan name required to use a given notification
  * channel type.
  */
-export function requiredPlanForChannel(type: NotificationChannelType): PlanName {
-  if (type === "webhook") return "pro";
+export function requiredPlanForChannel(_type: NotificationChannelType): PlanName {
+  void _type; // All current channel types require starter plan
   return "starter";
 }

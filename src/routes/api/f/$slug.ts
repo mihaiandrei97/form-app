@@ -209,7 +209,6 @@ export const Route = createFileRoute("/api/f/$slug")({
                 submittedAt,
               });
             }
-            // Future: handle webhook channels
           }
 
           // 9. Return success response

@@ -81,15 +81,13 @@ function NotificationsPage() {
 
   const getChannelDescription = (
     type: string,
-    config: { to?: string; webhookUrl?: string; url?: string },
+    config: { to?: string; webhookUrl?: string },
   ) => {
     switch (type) {
       case "email":
         return config.to;
       case "discord":
         return "Webhook configured";
-      case "webhook":
-        return config.url;
       default:
         return "Unknown configuration";
     }
@@ -249,9 +247,6 @@ function NotificationsPage() {
               <li>
                 <strong>Discord</strong> - Post submission details to a Discord channel
                 via webhook
-              </li>
-              <li>
-                <strong>Webhook</strong> - Send submission data to any URL via HTTP POST
               </li>
             </ul>
           </div>

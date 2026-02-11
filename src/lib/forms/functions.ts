@@ -509,21 +509,12 @@ export const $getDashboardStats = createServerFn({ method: "GET" })
 // Notification channel config schemas
 const emailConfigSchema = z.object({ to: z.string().email() });
 const webhookUrlConfigSchema = z.object({ webhookUrl: z.string().url() });
-const customWebhookConfigSchema = z.object({
-  url: z.string().url(),
-  secret: z.string().optional(),
-  headers: z.record(z.string(), z.string()).optional(),
-});
 
-const notificationConfigSchema = z.union([
-  emailConfigSchema,
-  webhookUrlConfigSchema,
-  customWebhookConfigSchema,
-]);
+const notificationConfigSchema = z.union([emailConfigSchema, webhookUrlConfigSchema]);
 
 const createNotificationChannelSchema = z.object({
   formId: z.string().min(1),
-  type: z.enum(["email", "discord", "webhook"]),
+  type: z.enum(["email", "discord"]),
   config: notificationConfigSchema,
   enabled: z.boolean().optional().default(true),
 });

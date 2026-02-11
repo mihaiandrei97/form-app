@@ -5,19 +5,18 @@ import { form, submission } from "./form.schema";
 /**
  * Notification channel types
  */
-export type NotificationChannelType = "email" | "discord" | "webhook";
+export type NotificationChannelType = "email" | "discord";
 
 /**
  * Type-specific configuration for each notification channel
  */
 export type NotificationChannelConfig =
   | { to: string } // email
-  | { webhookUrl: string } // discord
-  | { url: string; secret?: string; headers?: Record<string, string> }; // webhook
+  | { webhookUrl: string }; // discord
 
 /**
  * Notification channels configured for each form.
- * Users can add multiple notification channels (email, Discord, webhook)
+ * Users can add multiple notification channels (email, Discord)
  * to receive alerts when forms are submitted.
  */
 export const notificationChannel = pgTable(
