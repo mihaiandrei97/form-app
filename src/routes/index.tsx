@@ -49,6 +49,14 @@ function LandingPage() {
             >
               Pricing
             </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              nativeButton={false}
+              render={<Link to="/docs" />}
+            >
+              Docs
+            </Button>
             <Suspense fallback={null}>
               <HeaderActions />
             </Suspense>

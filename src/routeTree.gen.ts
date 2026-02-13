@@ -16,10 +16,17 @@ import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as authenticatedRouteRouteImport } from './routes/(authenticated)/route'
 import { Route as authPagesRouteRouteImport } from './routes/(auth-pages)/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as authPagesSignupRouteImport } from './routes/(auth-pages)/signup'
 import { Route as authPagesLoginRouteImport } from './routes/(auth-pages)/login'
 import { Route as authenticatedDashboardRouteRouteImport } from './routes/(authenticated)/dashboard/route'
+import { Route as DocsTemplatesIndexRouteImport } from './routes/docs/templates/index'
 import { Route as authenticatedDashboardIndexRouteImport } from './routes/(authenticated)/dashboard/index'
+import { Route as DocsTemplatesWaitingListRouteImport } from './routes/docs/templates/waiting-list'
+import { Route as DocsTemplatesNewsletterRouteImport } from './routes/docs/templates/newsletter'
+import { Route as DocsTemplatesFeedbackRouteImport } from './routes/docs/templates/feedback'
+import { Route as DocsTemplatesContactRouteImport } from './routes/docs/templates/contact'
+import { Route as DocsTemplatesBugReportRouteImport } from './routes/docs/templates/bug-report'
 import { Route as ApiFSlugRouteImport } from './routes/api/f/$slug'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as authenticatedDashboardSettingsRouteImport } from './routes/(authenticated)/dashboard/settings'
@@ -62,6 +69,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsIndexRoute = DocsIndexRouteImport.update({
+  id: '/docs/',
+  path: '/docs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const authPagesSignupRoute = authPagesSignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -78,12 +90,43 @@ const authenticatedDashboardRouteRoute =
     path: '/dashboard',
     getParentRoute: () => authenticatedRouteRoute,
   } as any)
+const DocsTemplatesIndexRoute = DocsTemplatesIndexRouteImport.update({
+  id: '/docs/templates/',
+  path: '/docs/templates/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const authenticatedDashboardIndexRoute =
   authenticatedDashboardIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => authenticatedDashboardRouteRoute,
   } as any)
+const DocsTemplatesWaitingListRoute =
+  DocsTemplatesWaitingListRouteImport.update({
+    id: '/docs/templates/waiting-list',
+    path: '/docs/templates/waiting-list',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DocsTemplatesNewsletterRoute = DocsTemplatesNewsletterRouteImport.update({
+  id: '/docs/templates/newsletter',
+  path: '/docs/templates/newsletter',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsTemplatesFeedbackRoute = DocsTemplatesFeedbackRouteImport.update({
+  id: '/docs/templates/feedback',
+  path: '/docs/templates/feedback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsTemplatesContactRoute = DocsTemplatesContactRouteImport.update({
+  id: '/docs/templates/contact',
+  path: '/docs/templates/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsTemplatesBugReportRoute = DocsTemplatesBugReportRouteImport.update({
+  id: '/docs/templates/bug-report',
+  path: '/docs/templates/bug-report',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiFSlugRoute = ApiFSlugRouteImport.update({
   id: '/api/f/$slug',
   path: '/api/f/$slug',
@@ -140,10 +183,17 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof authenticatedDashboardRouteRouteWithChildren
   '/login': typeof authPagesLoginRoute
   '/signup': typeof authPagesSignupRoute
+  '/docs': typeof DocsIndexRoute
   '/dashboard/settings': typeof authenticatedDashboardSettingsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/f/$slug': typeof ApiFSlugRoute
+  '/docs/templates/bug-report': typeof DocsTemplatesBugReportRoute
+  '/docs/templates/contact': typeof DocsTemplatesContactRoute
+  '/docs/templates/feedback': typeof DocsTemplatesFeedbackRoute
+  '/docs/templates/newsletter': typeof DocsTemplatesNewsletterRoute
+  '/docs/templates/waiting-list': typeof DocsTemplatesWaitingListRoute
   '/dashboard/': typeof authenticatedDashboardIndexRoute
+  '/docs/templates': typeof DocsTemplatesIndexRoute
   '/dashboard/forms/new': typeof authenticatedDashboardFormsNewRoute
   '/dashboard/forms': typeof authenticatedDashboardFormsIndexRoute
   '/dashboard/forms/$formId/edit': typeof authenticatedDashboardFormsFormIdEditRoute
@@ -158,10 +208,17 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/login': typeof authPagesLoginRoute
   '/signup': typeof authPagesSignupRoute
+  '/docs': typeof DocsIndexRoute
   '/dashboard/settings': typeof authenticatedDashboardSettingsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/f/$slug': typeof ApiFSlugRoute
+  '/docs/templates/bug-report': typeof DocsTemplatesBugReportRoute
+  '/docs/templates/contact': typeof DocsTemplatesContactRoute
+  '/docs/templates/feedback': typeof DocsTemplatesFeedbackRoute
+  '/docs/templates/newsletter': typeof DocsTemplatesNewsletterRoute
+  '/docs/templates/waiting-list': typeof DocsTemplatesWaitingListRoute
   '/dashboard': typeof authenticatedDashboardIndexRoute
+  '/docs/templates': typeof DocsTemplatesIndexRoute
   '/dashboard/forms/new': typeof authenticatedDashboardFormsNewRoute
   '/dashboard/forms': typeof authenticatedDashboardFormsIndexRoute
   '/dashboard/forms/$formId/edit': typeof authenticatedDashboardFormsFormIdEditRoute
@@ -180,10 +237,17 @@ export interface FileRoutesById {
   '/(authenticated)/dashboard': typeof authenticatedDashboardRouteRouteWithChildren
   '/(auth-pages)/login': typeof authPagesLoginRoute
   '/(auth-pages)/signup': typeof authPagesSignupRoute
+  '/docs/': typeof DocsIndexRoute
   '/(authenticated)/dashboard/settings': typeof authenticatedDashboardSettingsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/f/$slug': typeof ApiFSlugRoute
+  '/docs/templates/bug-report': typeof DocsTemplatesBugReportRoute
+  '/docs/templates/contact': typeof DocsTemplatesContactRoute
+  '/docs/templates/feedback': typeof DocsTemplatesFeedbackRoute
+  '/docs/templates/newsletter': typeof DocsTemplatesNewsletterRoute
+  '/docs/templates/waiting-list': typeof DocsTemplatesWaitingListRoute
   '/(authenticated)/dashboard/': typeof authenticatedDashboardIndexRoute
+  '/docs/templates/': typeof DocsTemplatesIndexRoute
   '/(authenticated)/dashboard/forms/new': typeof authenticatedDashboardFormsNewRoute
   '/(authenticated)/dashboard/forms/': typeof authenticatedDashboardFormsIndexRoute
   '/(authenticated)/dashboard/forms/$formId/edit': typeof authenticatedDashboardFormsFormIdEditRoute
@@ -201,10 +265,17 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/signup'
+    | '/docs'
     | '/dashboard/settings'
     | '/api/auth/$'
     | '/api/f/$slug'
+    | '/docs/templates/bug-report'
+    | '/docs/templates/contact'
+    | '/docs/templates/feedback'
+    | '/docs/templates/newsletter'
+    | '/docs/templates/waiting-list'
     | '/dashboard/'
+    | '/docs/templates'
     | '/dashboard/forms/new'
     | '/dashboard/forms'
     | '/dashboard/forms/$formId/edit'
@@ -219,10 +290,17 @@ export interface FileRouteTypes {
     | '/terms'
     | '/login'
     | '/signup'
+    | '/docs'
     | '/dashboard/settings'
     | '/api/auth/$'
     | '/api/f/$slug'
+    | '/docs/templates/bug-report'
+    | '/docs/templates/contact'
+    | '/docs/templates/feedback'
+    | '/docs/templates/newsletter'
+    | '/docs/templates/waiting-list'
     | '/dashboard'
+    | '/docs/templates'
     | '/dashboard/forms/new'
     | '/dashboard/forms'
     | '/dashboard/forms/$formId/edit'
@@ -240,10 +318,17 @@ export interface FileRouteTypes {
     | '/(authenticated)/dashboard'
     | '/(auth-pages)/login'
     | '/(auth-pages)/signup'
+    | '/docs/'
     | '/(authenticated)/dashboard/settings'
     | '/api/auth/$'
     | '/api/f/$slug'
+    | '/docs/templates/bug-report'
+    | '/docs/templates/contact'
+    | '/docs/templates/feedback'
+    | '/docs/templates/newsletter'
+    | '/docs/templates/waiting-list'
     | '/(authenticated)/dashboard/'
+    | '/docs/templates/'
     | '/(authenticated)/dashboard/forms/new'
     | '/(authenticated)/dashboard/forms/'
     | '/(authenticated)/dashboard/forms/$formId/edit'
@@ -259,8 +344,15 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   SuccessRoute: typeof SuccessRoute
   TermsRoute: typeof TermsRoute
+  DocsIndexRoute: typeof DocsIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiFSlugRoute: typeof ApiFSlugRoute
+  DocsTemplatesBugReportRoute: typeof DocsTemplatesBugReportRoute
+  DocsTemplatesContactRoute: typeof DocsTemplatesContactRoute
+  DocsTemplatesFeedbackRoute: typeof DocsTemplatesFeedbackRoute
+  DocsTemplatesNewsletterRoute: typeof DocsTemplatesNewsletterRoute
+  DocsTemplatesWaitingListRoute: typeof DocsTemplatesWaitingListRoute
+  DocsTemplatesIndexRoute: typeof DocsTemplatesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -314,6 +406,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs/': {
+      id: '/docs/'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(auth-pages)/signup': {
       id: '/(auth-pages)/signup'
       path: '/signup'
@@ -335,12 +434,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedDashboardRouteRouteImport
       parentRoute: typeof authenticatedRouteRoute
     }
+    '/docs/templates/': {
+      id: '/docs/templates/'
+      path: '/docs/templates'
+      fullPath: '/docs/templates'
+      preLoaderRoute: typeof DocsTemplatesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(authenticated)/dashboard/': {
       id: '/(authenticated)/dashboard/'
       path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof authenticatedDashboardIndexRouteImport
       parentRoute: typeof authenticatedDashboardRouteRoute
+    }
+    '/docs/templates/waiting-list': {
+      id: '/docs/templates/waiting-list'
+      path: '/docs/templates/waiting-list'
+      fullPath: '/docs/templates/waiting-list'
+      preLoaderRoute: typeof DocsTemplatesWaitingListRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/templates/newsletter': {
+      id: '/docs/templates/newsletter'
+      path: '/docs/templates/newsletter'
+      fullPath: '/docs/templates/newsletter'
+      preLoaderRoute: typeof DocsTemplatesNewsletterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/templates/feedback': {
+      id: '/docs/templates/feedback'
+      path: '/docs/templates/feedback'
+      fullPath: '/docs/templates/feedback'
+      preLoaderRoute: typeof DocsTemplatesFeedbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/templates/contact': {
+      id: '/docs/templates/contact'
+      path: '/docs/templates/contact'
+      fullPath: '/docs/templates/contact'
+      preLoaderRoute: typeof DocsTemplatesContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/templates/bug-report': {
+      id: '/docs/templates/bug-report'
+      path: '/docs/templates/bug-report'
+      fullPath: '/docs/templates/bug-report'
+      preLoaderRoute: typeof DocsTemplatesBugReportRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/f/$slug': {
       id: '/api/f/$slug'
@@ -465,8 +606,15 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   SuccessRoute: SuccessRoute,
   TermsRoute: TermsRoute,
+  DocsIndexRoute: DocsIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiFSlugRoute: ApiFSlugRoute,
+  DocsTemplatesBugReportRoute: DocsTemplatesBugReportRoute,
+  DocsTemplatesContactRoute: DocsTemplatesContactRoute,
+  DocsTemplatesFeedbackRoute: DocsTemplatesFeedbackRoute,
+  DocsTemplatesNewsletterRoute: DocsTemplatesNewsletterRoute,
+  DocsTemplatesWaitingListRoute: DocsTemplatesWaitingListRoute,
+  DocsTemplatesIndexRoute: DocsTemplatesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
