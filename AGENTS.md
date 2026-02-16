@@ -49,8 +49,8 @@ pnpm build:worker           # Build worker
 pnpm start:worker           # Run worker production build
 
 # Filtered commands (run in specific app)
-pnpm --filter web <cmd>     # Run command in web app
-pnpm --filter worker <cmd>  # Run command in worker app
+pnpm --filter @repo/web <cmd>     # Run command in web app
+pnpm --filter @repo/worker <cmd>  # Run command in worker app
 ```
 
 ### Testing
@@ -79,13 +79,13 @@ pnpm vitest run -t "test name pattern"    # Run by test name
 
 ### Naming Conventions
 
-| Element          | Convention | Example                   |
-| ---------------- | ---------- | ------------------------- |
-| Components       | PascalCase | `SignInButton`            |
-| Files            | kebab-case | `sign-in-button.tsx`      |
-| Server functions | $-prefixed | `$getUser`, `$createPost` |
-| Database columns | snake_case | `created_at`, `user_id`   |
-| Package names    | kebab-case | `@form-app/web`, `worker` |
+| Element          | Convention | Example                     |
+| ---------------- | ---------- | --------------------------- |
+| Components       | PascalCase | `SignInButton`              |
+| Files            | kebab-case | `sign-in-button.tsx`        |
+| Server functions | $-prefixed | `$getUser`, `$createPost`   |
+| Database columns | snake_case | `created_at`, `user_id`     |
+| Package names    | kebab-case | `@repo/web`, `@repo/worker` |
 
 ### React Patterns
 
