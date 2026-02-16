@@ -5,8 +5,7 @@ import { betterAuth } from "better-auth/minimal";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { eq } from "drizzle-orm";
 import { env } from "@repo/env/server";
-import { db } from "~/lib/db";
-import { user } from "../db/schema";
+import { db, user } from "@repo/db";
 
 const getAuthConfig = createServerOnlyFn(() =>
   betterAuth({

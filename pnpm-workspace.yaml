@@ -4,8 +4,12 @@ packages:
 
 catalog:
   "@t3-oss/env-core": ^0.13.10
+  "@tanstack/react-start": ^1.145.10
   "@types/node": ^24.10.4
   dotenv: ^16.4.7
+  drizzle-orm: ^0.45.1
+  drizzle-kit: ^0.31.8
+  postgres: ^3.4.8
   tsx: ^4.19.0
   typescript: ^5.9.3
   zod: ^4.3.5

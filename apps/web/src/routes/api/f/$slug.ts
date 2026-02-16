@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getRequestIP } from "@tanstack/react-start/server";
 import { and, eq, sql, sum } from "drizzle-orm";
-import { db } from "~/lib/db";
-import { form, notificationChannel, submission, usage, user } from "~/lib/db/schema";
+import { db, form, notificationChannel, submission, usage, user } from "@repo/db";
 import { validateSubmission } from "~/lib/forms/validation";
 import { generateId } from "~/lib/id";
 import { getPlanLimits } from "~/lib/pricing/plans";

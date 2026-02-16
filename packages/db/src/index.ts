@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { env } from "@repo/env/server";
 
-import * as schema from "~/lib/db/schema";
+import * as schema from "./schema";
 
 const driver = postgres(env.DATABASE_URL);
 
@@ -12,3 +12,6 @@ const getDatabase = createServerOnlyFn(() =>
 );
 
 export const db = getDatabase();
+
+// Re-export schema members for convenience
+export * from "./schema";

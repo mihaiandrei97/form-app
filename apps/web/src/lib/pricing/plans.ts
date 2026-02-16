@@ -1,4 +1,4 @@
-import type { NotificationChannelType } from "~/lib/db/schema";
+import type { NotificationChannelType } from "@repo/db/schema";
 
 export type PlanLimits = {
   submissions: number;

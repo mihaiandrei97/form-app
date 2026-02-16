@@ -27,7 +27,7 @@ import {
 } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
-import type { NotificationChannelConfig, NotificationChannelType } from "~/lib/db/schema";
+import type { NotificationChannelConfig, NotificationChannelType } from "@repo/db/schema";
 import {
   $createNotificationChannel,
   $deleteNotificationChannel,
