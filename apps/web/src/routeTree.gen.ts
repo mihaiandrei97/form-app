@@ -183,7 +183,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof authenticatedDashboardRouteRouteWithChildren
   '/login': typeof authPagesLoginRoute
   '/signup': typeof authPagesSignupRoute
-  '/docs': typeof DocsIndexRoute
+  '/docs/': typeof DocsIndexRoute
   '/dashboard/settings': typeof authenticatedDashboardSettingsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/f/$slug': typeof ApiFSlugRoute
@@ -193,12 +193,12 @@ export interface FileRoutesByFullPath {
   '/docs/templates/newsletter': typeof DocsTemplatesNewsletterRoute
   '/docs/templates/waiting-list': typeof DocsTemplatesWaitingListRoute
   '/dashboard/': typeof authenticatedDashboardIndexRoute
-  '/docs/templates': typeof DocsTemplatesIndexRoute
+  '/docs/templates/': typeof DocsTemplatesIndexRoute
   '/dashboard/forms/new': typeof authenticatedDashboardFormsNewRoute
-  '/dashboard/forms': typeof authenticatedDashboardFormsIndexRoute
+  '/dashboard/forms/': typeof authenticatedDashboardFormsIndexRoute
   '/dashboard/forms/$formId/edit': typeof authenticatedDashboardFormsFormIdEditRoute
   '/dashboard/forms/$formId/notifications': typeof authenticatedDashboardFormsFormIdNotificationsRoute
-  '/dashboard/forms/$formId': typeof authenticatedDashboardFormsFormIdIndexRoute
+  '/dashboard/forms/$formId/': typeof authenticatedDashboardFormsFormIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -265,7 +265,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/signup'
-    | '/docs'
+    | '/docs/'
     | '/dashboard/settings'
     | '/api/auth/$'
     | '/api/f/$slug'
@@ -275,12 +275,12 @@ export interface FileRouteTypes {
     | '/docs/templates/newsletter'
     | '/docs/templates/waiting-list'
     | '/dashboard/'
-    | '/docs/templates'
+    | '/docs/templates/'
     | '/dashboard/forms/new'
-    | '/dashboard/forms'
+    | '/dashboard/forms/'
     | '/dashboard/forms/$formId/edit'
     | '/dashboard/forms/$formId/notifications'
-    | '/dashboard/forms/$formId'
+    | '/dashboard/forms/$formId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -409,7 +409,7 @@ declare module '@tanstack/react-router' {
     '/docs/': {
       id: '/docs/'
       path: '/docs'
-      fullPath: '/docs'
+      fullPath: '/docs/'
       preLoaderRoute: typeof DocsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -437,7 +437,7 @@ declare module '@tanstack/react-router' {
     '/docs/templates/': {
       id: '/docs/templates/'
       path: '/docs/templates'
-      fullPath: '/docs/templates'
+      fullPath: '/docs/templates/'
       preLoaderRoute: typeof DocsTemplatesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -507,7 +507,7 @@ declare module '@tanstack/react-router' {
     '/(authenticated)/dashboard/forms/': {
       id: '/(authenticated)/dashboard/forms/'
       path: '/forms'
-      fullPath: '/dashboard/forms'
+      fullPath: '/dashboard/forms/'
       preLoaderRoute: typeof authenticatedDashboardFormsIndexRouteImport
       parentRoute: typeof authenticatedDashboardRouteRoute
     }
@@ -521,7 +521,7 @@ declare module '@tanstack/react-router' {
     '/(authenticated)/dashboard/forms/$formId/': {
       id: '/(authenticated)/dashboard/forms/$formId/'
       path: '/forms/$formId'
-      fullPath: '/dashboard/forms/$formId'
+      fullPath: '/dashboard/forms/$formId/'
       preLoaderRoute: typeof authenticatedDashboardFormsFormIdIndexRouteImport
       parentRoute: typeof authenticatedDashboardRouteRoute
     }
