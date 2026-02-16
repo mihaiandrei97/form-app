@@ -1,0 +1,25 @@
+# Replace yourdomain.com with your actual domain.
+# The service name "web" must match the container on the caddy-net network.
+
+yourdomain.com {
+	reverse_proxy web:3000
+
+	encode gzip
+
+	handle_errors {
+		respond "{err.status_code} {err.status_text}"
+	}
+
+	log {
+		output file /data/logs/access.log {
+			roll_size 10mb
+			roll_keep 10
+			roll_keep_for 720h
+		}
+		format json
+	}
+}
+
+www.yourdomain.com {
+	redir https://yourdomain.com{uri}
+}

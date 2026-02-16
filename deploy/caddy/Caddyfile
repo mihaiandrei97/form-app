@@ -1,0 +1,4 @@
+# Global Caddy configuration.
+# Each app adds its own .caddy file to the sites/ directory.
+
+import /etc/caddy/sites/*.caddy

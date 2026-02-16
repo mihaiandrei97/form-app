@@ -1,0 +1,33 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    expose:
+      - "3000"
+    env_file:
+      - ./apps/web/.env
+    depends_on:
+      - worker
+    networks:
+      - caddy-net
+      - postgres-net
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/worker/Dockerfile
+    env_file:
+      - ./apps/worker/.env
+    networks:
+      - postgres-net
+    restart: unless-stopped
+
+networks:
+  # Shared network for Caddy <-> app containers.
+  caddy-net:
+    external: true
+  # Shared network for app containers <-> Postgres.
+  postgres-net:
+    external: true
