@@ -1,5 +1,6 @@
 "use client";
 
+import type { NotificationChannelConfig, NotificationChannelType } from "@repo/db/schema";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -27,7 +28,6 @@ import {
 } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
-import type { NotificationChannelConfig, NotificationChannelType } from "@repo/db/schema";
 import {
   $createNotificationChannel,
   $deleteNotificationChannel,

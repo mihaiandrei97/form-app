@@ -3,8 +3,8 @@
  * Uses pg-boss for reliable job queueing with the same PostgreSQL database.
  */
 
-import { PgBoss } from "pg-boss";
 import { env } from "@repo/env/server";
+import { PgBoss } from "pg-boss";
 
 // Queue names
 export const SEND_EMAIL_QUEUE = "send-email";

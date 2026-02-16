@@ -1,12 +1,40 @@
 import { relations } from "drizzle-orm";
 import { boolean, index, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
-import type { FormField } from "~/lib/forms/field-types";
 import { user } from "./auth.schema";
 
 /**
  * Form endpoints created by users.
  * Each form has a unique slug that external sites use to submit data.
  */
+
+export const FIELD_TYPES = ["text", "email", "textarea", "select", "checkbox"] as const;
+export type FieldType = (typeof FIELD_TYPES)[number];
+
+export type SelectOption = {
+  label: string;
+  value: string;
+};
+
+export type FieldValidation = {
+  minLength?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+  pattern?: string;
+};
+
+export type FormField = {
+  id: string;
+  name: string;
+  label: string;
+  type: FieldType;
+  required: boolean;
+  placeholder?: string;
+  validation?: FieldValidation;
+  options?: SelectOption[];
+  order: number;
+};
+
 export const form = pgTable(
   "form",
   {

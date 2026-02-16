@@ -16,7 +16,6 @@
     "db:check": "drizzle-kit check"
   },
   "dependencies": {
-    "@tanstack/react-start": "catalog:",
     "drizzle-orm": "catalog:",
     "postgres": "catalog:"
   },

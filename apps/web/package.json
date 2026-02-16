@@ -15,14 +15,14 @@
     "deps:major": "pnpm dlx taze@latest major -Ilw",
     "ui": "pnpm dlx shadcn@latest",
     "auth:secret": "pnpm dlx @better-auth/cli@latest secret",
-    "auth:generate": "pnpm dlx @better-auth/cli@latest generate --config ./src/lib/auth/auth.ts --y --output ../../packages/db/src/schema/auth.schema.ts && prettier --write ../../packages/db/src/schema/auth.schema.ts"
+    "auth:generate": "pnpm dlx @better-auth/cli@latest generate --config ../../packages/auth/src/server.ts --y --output ../../packages/db/src/schema/auth.schema.ts && prettier --write ../../packages/db/src/schema/auth.schema.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",
-    "@creem_io/better-auth": "^0.0.13",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@repo/auth": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/env": "workspace:*",
     "@tanstack/react-form": "^1.27.7",
