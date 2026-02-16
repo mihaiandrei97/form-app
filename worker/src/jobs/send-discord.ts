@@ -4,9 +4,9 @@
  */
 
 import type { Job } from "pg-boss";
-import { sql } from "../db.ts";
-import { generateId } from "../id.ts";
-import type { SendDiscordJob } from "../types.ts";
+import { sql } from "../db.js";
+import { generateId } from "../id.js";
+import type { SendDiscordJob } from "../types.js";
 
 // Mauve color from Catppuccin palette (primary) - 0x8839ef in decimal
 const EMBED_COLOR = 8996079;

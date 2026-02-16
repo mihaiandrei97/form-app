@@ -3,6 +3,8 @@
  * Validates required vars and provides defaults for optional ones.
  */
 
+import "dotenv/config";
+
 function requireEnv(name: string): string {
   const value = process.env[name];
   if (!value) {

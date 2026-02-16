@@ -3,12 +3,12 @@
  * Receives full payload, sends email via Resend, logs result.
  */
 
-import type { Job } from "pg-boss/dist/types.js";
+import type { Job } from "pg-boss";
 import { Resend } from "resend";
-import { sql } from "../db.ts";
-import { env } from "../env.ts";
-import { generateId } from "../id.ts";
-import type { SendEmailJob } from "../types.ts";
+import { sql } from "../db.js";
+import { env } from "../env.js";
+import { generateId } from "../id.js";
+import type { SendEmailJob } from "../types.js";
 
 const resend = new Resend(env.RESEND_API_KEY);
 

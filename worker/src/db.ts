@@ -1,10 +1,10 @@
 /**
  * Postgres connection for the worker.
- * Uses Bun's native SQL support - no external package needed.
+ * Uses postgres package for Node.js compatibility.
  * Used only for INSERT operations to notification_log.
  */
 
-import { SQL } from "bun";
-import { env } from "./env.ts";
+import postgres from "postgres";
+import { env } from "./env.js";
 
-export const sql = new SQL(env.DATABASE_URL);
+export const sql = postgres(env.DATABASE_URL);

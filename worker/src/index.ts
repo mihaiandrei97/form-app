@@ -10,9 +10,9 @@
  */
 
 import { PgBoss } from "pg-boss";
-import { env } from "./env.ts";
-import { sendDiscordHandler } from "./jobs/send-discord.ts";
-import { sendEmailHandler } from "./jobs/send-email.ts";
+import { env } from "./env.js";
+import { sendDiscordHandler } from "./jobs/send-discord.js";
+import { sendEmailHandler } from "./jobs/send-email.js";
 
 const SEND_EMAIL_QUEUE = "send-email";
 const SEND_DISCORD_QUEUE = "send-discord";
