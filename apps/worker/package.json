@@ -9,15 +9,15 @@
     "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
-    "dotenv": "^16.4.7",
+    "@repo/env": "workspace:*",
     "nanoid": "^5.1.6",
     "pg-boss": "^12.5.4",
     "postgres": "^3.4.8",
     "resend": "^6.8.0"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "tsx": "^4.19.0",
-    "typescript": "^5.9.3"
+    "@types/node": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
   }
 }

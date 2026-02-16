@@ -4,7 +4,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { betterAuth } from "better-auth/minimal";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { eq } from "drizzle-orm";
-import { env } from "~/env/server";
+import { env } from "@repo/env/server";
 import { db } from "~/lib/db";
 import { user } from "../db/schema";
 

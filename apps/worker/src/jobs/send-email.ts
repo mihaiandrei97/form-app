@@ -6,7 +6,7 @@
 import type { Job } from "pg-boss";
 import { Resend } from "resend";
 import { sql } from "../db.js";
-import { env } from "../env.js";
+import { env } from "@repo/env/worker";
 import { generateId } from "../id.js";
 import type { SendEmailJob } from "../types.js";
 

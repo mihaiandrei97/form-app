@@ -5,6 +5,6 @@
  */
 
 import postgres from "postgres";
-import { env } from "./env.js";
+import { env } from "@repo/env/worker";
 
 export const sql = postgres(env.DATABASE_URL);

@@ -17,8 +17,5 @@
     "deps": "pnpm dlx taze@latest -Ilw",
     "deps:major": "pnpm dlx taze@latest major -Ilw"
   },
-  "devDependencies": {
-    "@types/node": "^24.10.4",
-    "typescript": "^5.9.3"
-  }
+  "devDependencies": {}
 }

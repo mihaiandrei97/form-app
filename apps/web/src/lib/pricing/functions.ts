@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { env } from "~/env/server";
+import { env } from "@repo/env/server";
 
 export type Plan = {
   name: string;

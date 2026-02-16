@@ -1,6 +1,10 @@
 import { createEnv } from "@t3-oss/env-core";
-import * as z from "zod";
+import { z } from "zod";
 
+/**
+ * Client-side environment variables for the web app.
+ * These use the VITE_ prefix and are available in the browser via import.meta.env.
+ */
 export const env = createEnv({
   clientPrefix: "VITE_",
   client: {

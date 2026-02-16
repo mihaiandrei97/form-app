@@ -4,7 +4,7 @@
  */
 
 import { PgBoss } from "pg-boss";
-import { env } from "~/env/server";
+import { env } from "@repo/env/server";
 
 // Queue names
 export const SEND_EMAIL_QUEUE = "send-email";
