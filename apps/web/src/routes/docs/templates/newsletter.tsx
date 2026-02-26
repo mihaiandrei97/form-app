@@ -12,6 +12,7 @@ import { ThemeToggle } from "~/components/theme-toggle";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
+import { CodeBlock } from "~/components/docs/code-block";
 
 export const Route = createFileRoute("/docs/templates/newsletter")({
   head: () => ({
@@ -401,22 +402,6 @@ function StepHeading({ number, title }: { number: number; title: string }) {
         {number}
       </span>
       <h2 className="text-xl font-semibold">{title}</h2>
-    </div>
-  );
-}
-
-function CodeBlock({ filename, code }: { filename: string; code: string }) {
-  return (
-    <div className="bg-card rounded-2xl border p-1">
-      <div className="bg-muted/60 flex items-center gap-2 rounded-t-xl px-4 py-3">
-        <div className="bg-destructive/40 h-3 w-3 rounded-full" />
-        <div className="bg-chart-4/40 h-3 w-3 rounded-full" />
-        <div className="bg-chart-5/40 h-3 w-3 rounded-full" />
-        <span className="text-muted-foreground ml-2 text-xs">{filename}</span>
-      </div>
-      <pre className="overflow-x-auto p-5 text-sm leading-relaxed">
-        <code>{code}</code>
-      </pre>
     </div>
   );
 }

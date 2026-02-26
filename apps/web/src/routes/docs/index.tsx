@@ -15,6 +15,7 @@ import { ThemeToggle } from "~/components/theme-toggle";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
+import { CodeBlock } from "~/components/docs/code-block";
 
 export const Route = createFileRoute("/docs/")({
   head: () => ({
@@ -99,21 +100,14 @@ function DocsPage() {
             </div>
           </div>
 
-          <div className="bg-card rounded-2xl border p-1">
-            <div className="bg-muted/60 flex items-center gap-2 rounded-t-xl px-4 py-3">
-              <div className="bg-destructive/40 h-3 w-3 rounded-full" />
-              <div className="bg-chart-4/40 h-3 w-3 rounded-full" />
-              <div className="bg-chart-5/40 h-3 w-3 rounded-full" />
-              <span className="text-muted-foreground ml-2 text-xs">contact.html</span>
-            </div>
-            <pre className="overflow-x-auto p-5 text-sm leading-relaxed">
-              <code>{`<form action="https://bforms.dev/api/f/your-slug" method="POST">
+          <CodeBlock
+            filename="contact.html"
+            code={`<form action="https://bforms.dev/api/f/your-slug" method="POST">
   <input type="email" name="email" placeholder="you@example.com" required />
   <textarea name="message" placeholder="Your message..." required></textarea>
   <button type="submit">Send Message</button>
-</form>`}</code>
-            </pre>
-          </div>
+</form>`}
+          />
         </section>
 
         <Separator className="my-12" />
