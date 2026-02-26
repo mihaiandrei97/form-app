@@ -173,14 +173,6 @@ function PricingPage() {
             <Button size="lg" nativeButton={false} render={<Link to="/login" />}>
               Start free
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              nativeButton={false}
-              render={<Link to="/login" />}
-            >
-              Compare plans
-            </Button>
           </div>
         </div>
       </section>

@@ -23,6 +23,7 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { authQueryOptions } from "~/lib/auth/queries";
+import { highlightedCodeQueryOptions } from "~/lib/code-highlight";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -198,29 +199,15 @@ function LandingPage() {
                 <div className="bg-chart-5/40 h-3 w-3 rounded-full" />
                 <span className="text-muted-foreground ml-2 text-xs">contact.html</span>
               </div>
-              <pre className="overflow-x-auto p-5 text-sm leading-relaxed">
-                <code>{`<form
-  action="https://bforms.dev/api/f/abc123"
-  method="POST"
->
-  <input
-    type="email"
-    name="email"
-    placeholder="you@example.com"
-    required
-  />
-
-  <textarea
-    name="message"
-    placeholder="Your message..."
-    required
-  ></textarea>
-
-  <button type="submit">
-    Send Message
-  </button>
-</form>`}</code>
-              </pre>
+              <Suspense
+                fallback={
+                  <pre className="overflow-x-auto p-5 text-sm leading-relaxed">
+                    <code>{"Loading..."}</code>
+                  </pre>
+                }
+              >
+                <HighlightedCode />
+              </Suspense>
             </div>
           </div>
         </div>
@@ -511,5 +498,16 @@ function CheckItem({ text }: { text: string }) {
       <Check className="text-primary h-4 w-4 shrink-0" />
       <span className="text-muted-foreground">{text}</span>
     </li>
+  );
+}
+
+function HighlightedCode() {
+  const { data: html } = useSuspenseQuery(highlightedCodeQueryOptions());
+
+  return (
+    <div
+      className="overflow-hidden rounded-b-xl text-sm leading-relaxed [&_pre]:overflow-x-auto [&_pre]:p-5"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
   );
 }
