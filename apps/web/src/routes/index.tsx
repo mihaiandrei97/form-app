@@ -12,7 +12,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Suspense } from "react";
-import { ThemeToggle } from "~/components/theme-toggle";
+import { SiteHeader } from "~/components/site-header";
 import {
   Accordion,
   AccordionContent,
@@ -22,7 +22,6 @@ import {
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { authQueryOptions } from "~/lib/auth/queries";
 import { highlightedCodeQueryOptions } from "~/lib/code-highlight";
 
 export const Route = createFileRoute("/")({
@@ -35,36 +34,7 @@ export const Route = createFileRoute("/")({
 function LandingPage() {
   return (
     <div className="min-h-svh">
-      {/* Header */}
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <Link to="/" className="text-xl font-bold">
-            BForms
-          </Link>
-          <div className="flex items-center gap-3">
-            <Button
-              size="sm"
-              variant="ghost"
-              nativeButton={false}
-              render={<Link to="/pricing" />}
-            >
-              Pricing
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              nativeButton={false}
-              render={<Link to="/docs" />}
-            >
-              Docs
-            </Button>
-            <Suspense fallback={null}>
-              <HeaderActions />
-            </Suspense>
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">
@@ -407,39 +377,6 @@ function LandingPage() {
         </div>
       </footer>
     </div>
-  );
-}
-
-function HeaderActions() {
-  const { data: user } = useSuspenseQuery(authQueryOptions());
-
-  if (user) {
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        nativeButton={false}
-        render={<Link to="/dashboard" />}
-      >
-        Dashboard
-      </Button>
-    );
-  }
-
-  return (
-    <>
-      <Button
-        variant="ghost"
-        size="sm"
-        nativeButton={false}
-        render={<Link to="/login" />}
-      >
-        Login
-      </Button>
-      <Button size="sm" nativeButton={false} render={<Link to="/login" />}>
-        Get Started
-      </Button>
-    </>
   );
 }
 

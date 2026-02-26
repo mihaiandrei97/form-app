@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
-import { ChevronUp, FileText, Home, LogOut, Settings } from "lucide-react";
+import { ChevronUp, BookOpen, FileText, Home, LogOut, Settings } from "lucide-react";
 import { UserAvatar } from "~/components/ui/avatar";
 import {
   DropdownMenu,
@@ -40,6 +40,11 @@ const navItems = [
     title: "Settings",
     url: "/dashboard/settings",
     icon: Settings,
+  },
+  {
+    title: "Docs",
+    url: "/docs",
+    icon: BookOpen,
   },
 ];
 

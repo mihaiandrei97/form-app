@@ -8,7 +8,7 @@ import {
   Shield,
   Sparkles,
 } from "lucide-react";
-import { ThemeToggle } from "~/components/theme-toggle";
+import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
@@ -33,34 +33,9 @@ export const Route = createFileRoute("/docs/templates/feedback")({
 function FeedbackTemplatePage() {
   return (
     <div className="min-h-svh">
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <a href="/" className="text-xl font-bold">
-            BForms
-          </a>
-          <div className="flex items-center gap-3">
-            <Button
-              size="sm"
-              variant="ghost"
-              nativeButton={false}
-              render={<Link to="/pricing" />}
-            >
-              Pricing
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              nativeButton={false}
-              render={<Link to="/docs" />}
-            >
-              Docs
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
 
-      <main className="mx-auto max-w-4xl px-4 py-12">
+      <main className="mx-auto max-w-5xl px-4 py-12">
         <Button
           variant="ghost"
           size="sm"

@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Check, Sparkles } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { ThemeToggle } from "~/components/theme-toggle";
+import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import authClient from "~/lib/auth/auth-client";
 import { productsQueryOptions } from "~/lib/pricing/queries";
@@ -67,32 +67,7 @@ function PricingPage() {
 
   return (
     <div className="min-h-svh">
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <Link to="/" className="text-xl font-bold">
-            BForms
-          </Link>
-          <div className="flex items-center gap-3">
-            <Button
-              size="sm"
-              variant="ghost"
-              nativeButton={false}
-              render={<Link to="/pricing" />}
-            >
-              Pricing
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              nativeButton={false}
-              render={<Link to="/" />}
-            >
-              Home
-            </Button>
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
 
       <section className="relative overflow-hidden">
         <div className="bg-muted/40 absolute inset-0" />
