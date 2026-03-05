@@ -85,9 +85,10 @@ export const auth = betterAuth({
       clientSecret: env.GOOGLE_CLIENT_SECRET!,
     },
   },
-  emailAndPassword: {
-    enabled: true,
-  },
+  // Email/password auth disabled - using OAuth only
+  // emailAndPassword: {
+  //   enabled: true,
+  // },
   experimental: {
     joins: true,
   },

@@ -7,6 +7,7 @@ export default defineConfig({
   outDir: "dist",
   clean: true,
   sourcemap: true,
-  // Bundle everything, including workspace packages like @repo/env
+  // Bundle workspace packages but keep native CJS modules external
   noExternal: [/@repo\/.*/],
+  external: ["dotenv"],
 });

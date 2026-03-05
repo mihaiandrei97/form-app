@@ -1,33 +1,77 @@
 services:
-  web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
-    expose:
-      - "3000"
-    env_file:
-      - ./apps/web/.env
-    depends_on:
-      - worker
+  # ---- Database ----
+  postgres:
+    image: postgres:17-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     networks:
-      - caddy-net
       - postgres-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
+  # ---- Migrate (one-shot, run manually) ----
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/db/Dockerfile
+    env_file:
+      - .env.production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - postgres-net
+    profiles:
+      - tools
+    restart: "no"
+
+  # ---- Worker ----
   worker:
     build:
       context: .
       dockerfile: apps/worker/Dockerfile
     env_file:
-      - ./apps/worker/.env
+      - .env.production
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - postgres-net
     restart: unless-stopped
 
+  # ---- Web ----
+  form-app:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    expose:
+      - "4321"
+    env_file:
+      - .env.production
+    container_name: bforms-web
+    depends_on:
+      postgres:
+        condition: service_healthy
+      worker:
+        condition: service_started
+    networks:
+      - caddy-net
+      - postgres-net
+    restart: unless-stopped
+
 networks:
-  # Shared network for Caddy <-> app containers.
   caddy-net:
     external: true
-  # Shared network for app containers <-> Postgres.
   postgres-net:
-    external: true
+    name: form-app-postgres-net
+
+volumes:
+  postgres_data:

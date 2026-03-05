@@ -1,5 +1,0 @@
--- Optional: add any initial database setup here.
--- This runs once when the postgres volume is first created.
---
--- Example:
--- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

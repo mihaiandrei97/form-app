@@ -30,7 +30,7 @@ Thumbs.db
 **/logs
 
 # Drizzle studio
-**/drizzle/meta
+#**/drizzle/meta
 
 # Misc
 **/coverage

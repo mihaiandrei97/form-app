@@ -19,7 +19,7 @@ catalogs:
       specifier: ^1.4.10
       version: 1.4.18
     dotenv:
-      specifier: ^16.4.7
+      specifier: 16.6.1
       version: 16.6.1
     drizzle-kit:
       specifier: ^0.31.8
@@ -105,7 +105,7 @@ importers:
         version: 5.1.6
       nitro:
         specifier: npm:nitro-nightly@latest
-        version: nitro-nightly@3.0.1-20260225-084212-c0b46421(chokidar@4.0.3)(dotenv@17.3.1)(drizzle-orm@0.45.1(kysely@0.28.11)(pg@8.18.0)(postgres@3.4.8))(jiti@2.6.1)(vite@8.0.0-beta.14(@types/node@24.10.13)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0))
+        version: nitro-nightly@3.0.1-20260227-181935-bfbb207c(chokidar@4.0.3)(dotenv@17.3.1)(drizzle-orm@0.45.1(kysely@0.28.11)(pg@8.18.0)(postgres@3.4.8))(jiti@2.6.1)(vite@8.0.0-beta.14(@types/node@24.10.13)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0))
       pg-boss:
         specifier: ^12.5.4
         version: 12.11.2
@@ -206,6 +206,9 @@ importers:
       '@repo/env':
         specifier: workspace:*
         version: link:../../packages/env
+      dotenv:
+        specifier: 'catalog:'
+        version: 16.6.1
       nanoid:
         specifier: ^5.1.6
         version: 5.1.6
@@ -3610,8 +3613,8 @@ packages:
   nf3@0.3.10:
     resolution: {integrity: sha512-UlqmHkZiHGgSkRj17yrOXEsSu5ECvtlJ3Xm1W5WsWrTKgu9m7OjrMZh9H/ME2LcWrTlMD0/vmmNVpyBG4yRdGg==}
 
-  nitro-nightly@3.0.1-20260225-084212-c0b46421:
-    resolution: {integrity: sha512-RYU+ROHGycdBo6x9fdL7LcizXPRCqxwoSeySaTYP7kOLbv9COdFc9tpIY0ZygczaWpHVlzuEluhxbYseE+eJwg==}
+  nitro-nightly@3.0.1-20260227-181935-bfbb207c:
+    resolution: {integrity: sha512-J9dNAHHuZqzDra4Zr9N6+4hkRPgfrUVw++9I32BHDmwo6MkyRdvmqucWTB5T+J8G3xAMc4+XskExmUEEqxpbZw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
@@ -7884,7 +7887,7 @@ snapshots:
 
   nf3@0.3.10: {}
 
-  nitro-nightly@3.0.1-20260225-084212-c0b46421(chokidar@4.0.3)(dotenv@17.3.1)(drizzle-orm@0.45.1(kysely@0.28.11)(pg@8.18.0)(postgres@3.4.8))(jiti@2.6.1)(vite@8.0.0-beta.14(@types/node@24.10.13)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)):
+  nitro-nightly@3.0.1-20260227-181935-bfbb207c(chokidar@4.0.3)(dotenv@17.3.1)(drizzle-orm@0.45.1(kysely@0.28.11)(pg@8.18.0)(postgres@3.4.8))(jiti@2.6.1)(vite@8.0.0-beta.14(@types/node@24.10.13)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)):
     dependencies:
       consola: 3.4.2
       crossws: 0.4.4(srvx@0.11.8)

@@ -24,6 +24,8 @@ FROM deps AS build
 
 # Copy full source
 COPY . .
+ENV NODE_ENV=production
+ENV VITE_BASE_URL=https://bforms.dev
 
 # Build the web app (Nitro bundles everything into .output/)
 RUN pnpm --filter @repo/web build
@@ -41,6 +43,8 @@ COPY --from=build --chown=app:app /app/apps/web/.output ./.output
 
 USER app
 
-EXPOSE 3000
+EXPOSE 4321
+
+ENV PORT=4321
 
 CMD ["node", ".output/server/index.mjs"]

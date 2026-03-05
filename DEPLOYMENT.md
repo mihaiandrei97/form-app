@@ -2,19 +2,20 @@
 
 ## Architecture
 
-Two separate `docker-compose` files work together via shared Docker networks:
+A single `docker-compose.yml` at the root manages all services.
 
-| File | Services | Purpose |
-|------|----------|---------|
-| `deploy/docker-compose.yml` | Caddy, Postgres | Shared infrastructure (runs once per VM) |
-| `docker-compose.yml` | Web, Worker | Application services |
+| Service | Purpose |
+|---------|---------|
+| `postgres` | Database (internal to this compose file) |
+| `worker` | Background job worker (pg-boss) |
+| `web` | TanStack Start web application |
 
-Two external Docker networks connect them:
+Networks:
 
 | Network | Who joins | Purpose |
 |---------|-----------|---------|
-| `caddy-net` | Caddy, Web | Reverse proxy to app |
-| `postgres-net` | Postgres, Web, Worker | Database access |
+| `caddy-net` | Caddy (external), Web | Reverse proxy to app — **external, created once per VM** |
+| `form-app-postgres-net` | Postgres, Web, Worker | Database access — **internal, managed by compose** |
 
 ## First-Time Deployment
 
@@ -23,7 +24,6 @@ Two external Docker networks connect them:
 SSH into your VM and install Docker:
 
 ```bash
-# Install Docker (if not already installed)
 curl -fsSL https://get.docker.com | sh
 sudo usermod -aG docker $USER
 # Log out and back in for group changes to take effect
@@ -36,96 +36,105 @@ git clone <your-repo-url> /opt/form-app
 cd /opt/form-app
 ```
 
-### 3. Create shared Docker networks
+### 3. Create the shared Caddy network
+
+This only needs to be done once per VM. Caddy (running separately) and the web container communicate through this network.
 
 ```bash
 docker network create caddy-net
-docker network create postgres-net
 ```
 
-### 4. Configure and start infrastructure
+### 4. Configure environment variables
 
 ```bash
-cd deploy
-
-# Set up Postgres credentials
-cp .env.example .env
-nano .env
-
-# Set your domain
-nano caddy/sites/form-app.caddy  # Replace yourdomain.com
-
-# Start Caddy + Postgres
-docker compose up -d
+# Web app
+cp apps/web/.env.example apps/web/.env
+nano apps/web/.env
 ```
 
-Wait for Postgres to be healthy:
+Key values to set in `apps/web/.env`:
+
+```bash
+VITE_BASE_URL=https://yourdomain.com
+DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+BETTER_AUTH_SECRET=<generate-a-long-random-string>
+# ... fill in the rest
+```
+
+```bash
+# Worker
+cp apps/worker/.env.example apps/worker/.env
+nano apps/worker/.env
+```
+
+Key values to set in `apps/worker/.env`:
+
+```bash
+DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+RESEND_API_KEY=re_xxxxx
+RESEND_FROM_EMAIL=noreply@yourdomain.com
+```
+
+> **Note:** The database host in `DATABASE_URL` is `postgres` (the Docker service name), not `localhost`.
+
+### 5. Configure Postgres credentials
+
+Create a `.env` file at the repo root for Postgres credentials:
+
+```bash
+cat > .env <<'EOF'
+POSTGRES_USER=formapp
+POSTGRES_PASSWORD=change-me-to-a-strong-password
+POSTGRES_DB=formapp
+EOF
+```
+
+### 6. Build and start
+
+```bash
+docker compose up -d --build
+```
+
+Wait for Postgres to be healthy (web and worker depend on it):
 
 ```bash
 docker compose ps  # postgres should show "healthy"
 ```
 
-### 5. Configure and start the app
+### 7. Run database migrations
 
 ```bash
-cd /opt/form-app
-
-# Set up web env vars
-cp apps/web/.env.example apps/web/.env
-nano apps/web/.env
+# From your local machine (or CI) with the production DATABASE_URL:
+DATABASE_URL=postgresql://... pnpm db:migrate
 ```
 
-For production, set these values in `apps/web/.env`:
+### 8. Point Caddy at the web container
 
-```bash
-VITE_BASE_URL=https://yourdomain.com
-DATABASE_URL=postgresql://POSTGRES_USER:POSTGRES_PASSWORD@postgres:5432/POSTGRES_DB
-BETTER_AUTH_SECRET=<generate-a-long-random-string>
-# ... fill in the rest
+In your Caddy config, reverse proxy to `web:3000` on `caddy-net`:
+
+```caddy
+yourdomain.com {
+    reverse_proxy web:4321
+    encode gzip
+}
+
+www.yourdomain.com {
+    redir https://yourdomain.com{uri}
+}
 ```
 
-> **Note:** The database host is `postgres` (the Docker service name), not `localhost`.
+Reload Caddy after updating the config:
 
 ```bash
-# Set up worker env vars
-cp apps/worker/.env.example apps/worker/.env
-nano apps/worker/.env
+docker exec <caddy-container> caddy reload --config /etc/caddy/Caddyfile
 ```
 
-For production, set these values in `apps/worker/.env`:
+### 9. Verify
 
 ```bash
-DATABASE_URL=postgresql://POSTGRES_USER:POSTGRES_PASSWORD@postgres:5432/POSTGRES_DB
-RESEND_API_KEY=re_xxxxx
-RESEND_FROM_EMAIL=noreply@yourdomain.com
-```
-
-```bash
-# Build and start the app
-docker compose up -d --build
-```
-
-### 6. Run database migrations
-
-```bash
-# TODO: Replace with your actual migration command.
-# Example using drizzle-kit from your local machine:
-#   DATABASE_URL=postgresql://... pnpm db:migrate
-```
-
-### 7. Verify
-
-```bash
-# All containers should be running
-docker ps
-
-# Check logs for errors
+docker compose ps
 docker compose logs web
 docker compose logs worker
-docker compose -f deploy/docker-compose.yml logs caddy
-docker compose -f deploy/docker-compose.yml logs postgres
-
-# Test HTTPS
 curl https://yourdomain.com
 ```
 
@@ -135,18 +144,12 @@ After pushing new code changes:
 
 ```bash
 cd /opt/form-app
-
-# Pull latest code
 git pull
-
-# Rebuild and restart app containers (zero-downtime isn't built in)
 docker compose up -d --build
 
 # If you have new database migrations:
 # DATABASE_URL=postgresql://... pnpm db:migrate
 ```
-
-Only the app containers (`web`, `worker`) are rebuilt. Caddy and Postgres remain untouched.
 
 ### Redeploying only one service
 
@@ -157,7 +160,7 @@ docker compose up -d --build worker  # Rebuild and restart worker only
 
 ## Environment Variables
 
-### `deploy/.env` (infrastructure)
+### Root `.env` (Postgres credentials)
 
 | Variable | Description |
 |----------|-------------|
@@ -192,113 +195,53 @@ docker compose up -d --build worker  # Rebuild and restart worker only
 | `JOB_RETRY_DELAY_SECONDS` | Retry delay (default: 60) |
 | `JOB_RETRY_BACKOFF` | Exponential backoff (default: true) |
 
-## Adding Another App
-
-1. Add a `.caddy` file in `deploy/caddy/sites/`:
-
-```caddy
-# deploy/caddy/sites/other-app.caddy
-other.example.com {
-    reverse_proxy other-app:4000
-    encode gzip
-    handle_errors {
-        respond "{err.status_code} {err.status_text}"
-    }
-    log {
-        output file /data/logs/other-app-access.log {
-            roll_size 10mb
-            roll_keep 10
-            roll_keep_for 720h
-        }
-        format json
-    }
-}
-
-www.other.example.com {
-    redir https://other.example.com{uri}
-}
-```
-
-2. Reload Caddy (no restart needed):
-
-```bash
-docker compose -f deploy/docker-compose.yml exec caddy caddy reload --config /etc/caddy/Caddyfile
-```
-
-3. The other app's `docker-compose.yml` must join the shared networks:
-
-```yaml
-services:
-  other-app:
-    image: other-app:latest
-    expose:
-      - "4000"
-    networks:
-      - caddy-net
-      - postgres-net  # Only if it needs database access
-
-networks:
-  caddy-net:
-    external: true
-  postgres-net:
-    external: true
-```
-
 ## Common Commands
 
 ```bash
 # ---- Logs ----
-docker compose logs -f web             # Follow web logs
-docker compose logs -f worker          # Follow worker logs
-docker compose -f deploy/docker-compose.yml logs -f caddy    # Caddy logs
-docker compose -f deploy/docker-compose.yml logs -f postgres # Postgres logs
+docker compose logs -f web
+docker compose logs -f worker
+docker compose logs -f postgres
 
 # ---- Restart ----
-docker compose restart web             # Restart web
-docker compose restart worker          # Restart worker
+docker compose restart web
+docker compose restart worker
+docker compose restart postgres
 
 # ---- Stop ----
-docker compose down                                          # Stop app
-docker compose -f deploy/docker-compose.yml down             # Stop infrastructure
+docker compose down          # Stop all, keep volumes
+docker compose down -v       # Stop all and delete volumes (destructive!)
 
 # ---- Shell ----
-docker compose exec web sh             # Shell into web container
-docker compose -f deploy/docker-compose.yml exec postgres psql -U formapp  # Postgres CLI
-
-# ---- Caddy ----
-docker compose -f deploy/docker-compose.yml exec caddy caddy reload --config /etc/caddy/Caddyfile
-docker compose -f deploy/docker-compose.yml exec caddy tail -f /data/logs/access.log
+docker compose exec web sh
+docker compose exec postgres psql -U formapp
 
 # ---- Rebuild ----
-docker compose up -d --build            # Rebuild all app containers
-docker compose up -d --build web        # Rebuild web only
+docker compose up -d --build
+docker compose up -d --build web
+docker compose up -d --build worker
 ```
 
 ## Troubleshooting
 
-**"caddy-net/postgres-net network not found"**
-
-Create the shared networks (only needed once per VM):
+**"caddy-net network not found"**
 
 ```bash
 docker network create caddy-net
-docker network create postgres-net
 ```
 
 **Web/Worker can't connect to Postgres**
 
 - Verify `DATABASE_URL` uses `postgres` as the host (not `localhost`)
-- Check both containers are on `postgres-net`: `docker network inspect postgres-net`
-- Check Postgres is healthy: `docker compose -f deploy/docker-compose.yml ps`
+- Check Postgres is healthy: `docker compose ps`
+- Check logs: `docker compose logs postgres`
 
 **Caddy not issuing TLS certificates**
 
 - DNS must point to the VM's public IP
-- Ports 80 and 443 must be open (firewall/security group)
-- Check logs: `docker compose -f deploy/docker-compose.yml logs caddy`
+- Ports 80 and 443 must be open in your firewall/security group
 
 **Worker not processing jobs**
 
 - Check worker logs: `docker compose logs worker`
 - Verify `DATABASE_URL` in `apps/worker/.env`
-- Check pg-boss schema exists: `docker compose -f deploy/docker-compose.yml exec postgres psql -U formapp -c '\dn'`
