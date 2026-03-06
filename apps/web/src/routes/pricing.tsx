@@ -53,13 +53,13 @@ function PricingPage() {
       return;
     }
 
-    const { error } = await authClient.creem.createCheckout({
+    const result = await authClient.creem.createCheckout({
       productId: prodId,
       successUrl: "/success",
       metadata: { referenceId: session.data.user.id },
     });
-    if (error) {
-      console.error("Error creating checkout", error);
+    if (result.data?.error || result.error) {
+      console.error("Error creating checkout", result.data?.error || result.error);
       toast.error("Failed to create checkout session. Please try again.");
       return;
     }
