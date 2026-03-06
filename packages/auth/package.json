@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@creem_io/better-auth": "catalog:",
-    "@repo/db": "workspace:*",
     "@repo/config": "workspace:*",
+    "@repo/db": "workspace:*",
     "@repo/env": "workspace:*",
     "better-auth": "catalog:",
     "drizzle-orm": "catalog:"
