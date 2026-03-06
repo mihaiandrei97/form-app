@@ -55,8 +55,8 @@ function PricingPage() {
 
     const result = await authClient.creem.createCheckout({
       productId: prodId,
-      // successUrl: "/success",
-      // metadata: { referenceId: session.data.user.id },
+      successUrl: "/success",
+      metadata: { referenceId: session.data.user.id },
     });
     // @ts-expect-error - wrong types
     if (result.data?.error || result.error) {
