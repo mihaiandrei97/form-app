@@ -98,7 +98,7 @@ function DocsPage() {
 
       <section className="grid gap-8 lg:grid-cols-2">
         <div className="space-y-4">
-          <div className="border-foreground inline-flex items-center gap-2 border-2 bg-accent px-2 py-1 text-sm font-bold text-accent-foreground">
+          <div className="docs-accent-surface inline-flex items-center gap-2 border-2 px-2 py-1 text-sm font-bold">
             <Shield className="h-4 w-4" />
             Spam protection
           </div>
@@ -127,7 +127,7 @@ function DocsPage() {
       <Separator className="my-12" />
 
       <section className="space-y-6">
-          <div className="border-foreground inline-flex items-center gap-2 border-2 bg-accent px-2 py-1 text-sm font-bold text-accent-foreground">
+          <div className="docs-accent-surface inline-flex items-center gap-2 border-2 px-2 py-1 text-sm font-bold">
             <CheckCircle2 className="h-4 w-4" />
             Templates
           </div>

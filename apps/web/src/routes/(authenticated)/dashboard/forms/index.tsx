@@ -138,7 +138,7 @@ function FormsListPage() {
                   <div
                     className={`flex shrink-0 items-center gap-1.5 border-2 px-2 py-0.5 text-xs font-bold ${
                       form.isActive
-                        ? "border-foreground bg-accent text-accent-foreground"
+                        ? "border-foreground bg-primary text-primary-foreground"
                         : "border-border bg-muted text-muted-foreground"
                     }`}
                   >
