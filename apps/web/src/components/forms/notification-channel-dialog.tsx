@@ -186,13 +186,13 @@ export function NotificationChannelDialog({
                     disabled={inactive}
                     className={cn(
                       "flex items-center gap-4 rounded-lg border p-4 text-left transition-colors",
-                      inactive ? "cursor-not-allowed opacity-60" : "hover:bg-accent",
+                      inactive ? "cursor-not-allowed opacity-60" : "hover:bg-primary/10",
                     )}
                   >
                     <div
                       className={cn(
                         "flex h-10 w-10 items-center justify-center rounded-full",
-                        inactive ? "bg-muted" : "bg-primary/10",
+                        inactive ? "bg-muted" : "bg-primary/30",
                       )}
                     >
                       {locked ? (

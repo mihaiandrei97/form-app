@@ -116,8 +116,10 @@ export const Route = createFileRoute("/api/f/$slug")({
           // 3. Parse form data
           const data = await parseFormData(request);
 
-          // 4. Check honeypot field (spam detection) - silently discard spam
-          if (formRecord.honeypotField && data[formRecord.honeypotField]) {
+          // 4. Check honeypot field (spam detection) - silently discard spam.
+          // Use the configured field name, or fall back to "_honeypot" as default.
+          const honeypotFieldName = formRecord.honeypotField || "_honeypot";
+          if (data[honeypotFieldName]) {
             // Return success to not tip off bots, but don't save or notify
             return jsonResponse(
               { success: true, message: "Form submitted successfully" },
@@ -126,10 +128,8 @@ export const Route = createFileRoute("/api/f/$slug")({
             );
           }
 
-          // Remove honeypot field from stored data
-          if (formRecord.honeypotField) {
-            delete data[formRecord.honeypotField];
-          }
+          // Remove honeypot field from data before validation/storage
+          delete data[honeypotFieldName];
 
           // 5. Validate submission data against form fields (if defined)
           let submissionData = data;
