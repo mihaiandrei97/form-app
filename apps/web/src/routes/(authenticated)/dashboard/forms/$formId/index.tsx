@@ -218,28 +218,20 @@ function FormDetailPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">{form.name}</h1>
-            <Badge variant={form.isActive ? "default" : "secondary"}>
-              {form.isActive ? (
-                <>
-                  <CheckCircle className="mr-1 h-3 w-3" />
-                  Active
-                </>
-              ) : (
-                <>
-                  <PauseCircle className="mr-1 h-3 w-3" />
-                  Inactive
-                </>
-              )}
-            </Badge>
-          </div>
-          <p className="text-muted-foreground text-sm">
-            Created {new Date(form.createdAt).toLocaleDateString()}
-          </p>
-        </div>
+      <div className="flex items-center justify-between gap-4">
+        <Badge variant={form.isActive ? "default" : "secondary"}>
+          {form.isActive ? (
+            <>
+              <CheckCircle className="mr-1 h-3 w-3" />
+              Active
+            </>
+          ) : (
+            <>
+              <PauseCircle className="mr-1 h-3 w-3" />
+              Inactive
+            </>
+          )}
+        </Badge>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"

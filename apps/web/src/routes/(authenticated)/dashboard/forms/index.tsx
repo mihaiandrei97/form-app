@@ -95,11 +95,7 @@ function FormsListPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">My Forms</h1>
-          <p className="text-muted-foreground">Create and manage your form endpoints.</p>
-        </div>
+      <div className="flex items-center justify-end">
         <Button
           nativeButton={false}
           render={<Link to="/dashboard/forms/new" />}

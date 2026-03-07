@@ -197,14 +197,11 @@ function DashboardIndex() {
 
   return (
     <div className="space-y-6">
-      {/* Welcome Header */}
+      {/* Plan badge + upgrade CTA */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold">Welcome back!</h1>
-          <Badge variant={planBadgeVariant(plan)} className="capitalize">
-            {plan === "free" ? "Free" : plan} plan
-          </Badge>
-        </div>
+        <Badge variant={planBadgeVariant(plan)} className="w-fit capitalize">
+          {plan === "free" ? "Free" : plan} plan
+        </Badge>
         {!isPro && (
           <Button
             nativeButton={false}
@@ -217,10 +214,6 @@ function DashboardIndex() {
           </Button>
         )}
       </div>
-
-      <p className="text-muted-foreground -mt-4">
-        Manage your form endpoints and view submissions.
-      </p>
 
       {/* Stat Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -98,13 +98,7 @@ function NotificationsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Notifications</h1>
-          <p className="text-muted-foreground text-sm">
-            Manage notification channels for {form.name}
-          </p>
-        </div>
+      <div className="flex items-center justify-end">
         <NotificationChannelDialog
           formId={formId}
           existingChannelTypes={existingChannelTypes}

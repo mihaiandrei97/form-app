@@ -62,13 +62,6 @@ function NewFormPage() {
   if (atLimit) {
     return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Create New Form</h1>
-          <p className="text-muted-foreground">
-            Set up a new form endpoint to receive submissions.
-          </p>
-        </div>
-
         <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-6 dark:border-yellow-900 dark:bg-yellow-950">
           <h2 className="text-lg font-semibold text-yellow-800 dark:text-yellow-200">
             Form limit reached
@@ -95,17 +88,11 @@ function NewFormPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Create New Form</h1>
-        <p className="text-muted-foreground">
-          Set up a new form endpoint to receive submissions.
+      {limits.forms !== Infinity && (
+        <p className="text-muted-foreground text-xs">
+          {formCount} / {limits.forms} forms used
         </p>
-        {limits.forms !== Infinity && (
-          <p className="text-muted-foreground mt-1 text-xs">
-            {formCount} / {limits.forms} forms used
-          </p>
-        )}
-      </div>
+      )}
 
       <FormForm
         mode="create"

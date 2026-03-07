@@ -225,14 +225,6 @@ function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your account, plan, and connected services.
-        </p>
-      </div>
-
       {/* Profile Banner */}
       <Card>
         <CardContent className="flex flex-col gap-4 py-6 sm:flex-row sm:items-center">
