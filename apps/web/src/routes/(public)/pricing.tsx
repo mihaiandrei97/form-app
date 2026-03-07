@@ -3,12 +3,11 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Check, Sparkles } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { SiteHeader } from "~/components/site-header";
 import { Button } from "~/components/ui/button";
 import authClient from "~/lib/auth/auth-client";
 import { productsQueryOptions } from "~/lib/pricing/queries";
 
-export const Route = createFileRoute("/pricing")({
+export const Route = createFileRoute("/(public)/pricing")({
   loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions()),
   head: () => ({
     meta: [{ title: "Pricing | BForms" }],
@@ -44,7 +43,6 @@ function PricingPage() {
     if (!session?.data?.user) {
       toast.error("You must be logged in to subscribe. Redirecting to login...");
       setTimeout(() => {
-        // Navigate to login with redirect back to pricing
         navigate({
           to: "/login",
           search: { redirect: "/pricing" },
@@ -66,15 +64,10 @@ function PricingPage() {
   };
 
   return (
-    <div className="min-h-svh">
-      <SiteHeader />
-
-      <section className="relative overflow-hidden">
-        <div className="bg-muted/40 absolute inset-0" />
-        <div className="bg-primary/10 absolute top-12 -left-20 h-64 w-64 rounded-full blur-3xl" />
-        <div className="bg-secondary/50 absolute -right-24 bottom-0 h-72 w-72 rounded-full blur-3xl" />
+    <>
+      <section className="bg-muted/40 border-b-2 border-foreground">
         <div className="relative mx-auto max-w-6xl px-4 py-16 text-center md:py-24">
-          <div className="bg-card/70 text-muted-foreground mx-auto mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm">
+          <div className="bg-card text-muted-foreground mx-auto mb-6 inline-flex items-center gap-2 border-2 border-foreground px-4 py-2 text-sm font-bold shadow-[var(--shadow-brutal)]">
             <Sparkles className="h-4 w-4" />
             Transparent pricing that scales with you
           </div>
@@ -96,16 +89,16 @@ function PricingPage() {
                 key={plan.name}
                 className={
                   plan.highlight
-                    ? "bg-card border-primary/40 relative rounded-2xl border p-6 shadow-lg"
-                    : "bg-card rounded-2xl border p-6"
+                    ? "bg-card relative border-2 border-foreground p-6 shadow-[var(--shadow-brutal)]"
+                    : "bg-card border-2 border-foreground p-6"
                 }
               >
                 {plan.highlight ? (
-                  <span className="bg-primary text-primary-foreground absolute top-6 right-6 rounded-full px-3 py-1 text-xs font-semibold">
+                  <span className="bg-primary text-primary-foreground absolute top-6 right-6 border-2 border-foreground px-3 py-1 text-xs font-bold">
                     Most popular
                   </span>
                 ) : null}
-                <h2 className="text-xl font-semibold">{plan.name}</h2>
+                <h2 className="text-xl font-bold">{plan.name}</h2>
                 <p className="text-muted-foreground mt-2 text-sm">{plan.description}</p>
                 <div className="mt-6 flex items-end gap-2">
                   <span className="text-4xl font-bold">{plan.price}</span>
@@ -135,9 +128,9 @@ function PricingPage() {
         </div>
       </section>
 
-      <section className="bg-muted/40 py-14">
+      <section className="bg-muted/40 border-y-2 border-foreground py-14">
         <div className="mx-auto max-w-4xl px-4 text-center">
-          <h2 className="text-2xl font-semibold md:text-3xl">
+          <h2 className="text-2xl font-bold md:text-3xl">
             What happens when you hit limits?
           </h2>
           <p className="text-muted-foreground mt-4 text-base md:text-lg">
@@ -151,28 +144,6 @@ function PricingPage() {
           </div>
         </div>
       </section>
-
-      <footer className="border-t py-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 sm:flex-row">
-          <p className="text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} BForms. All rights reserved.
-          </p>
-          <div className="flex items-center gap-6">
-            <a
-              href="/privacy"
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Privacy Policy
-            </a>
-            <a
-              href="/terms"
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Terms of Service
-            </a>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 }

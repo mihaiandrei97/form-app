@@ -8,12 +8,11 @@ import {
   Star,
   Users,
 } from "lucide-react";
-import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 
-export const Route = createFileRoute("/docs/templates/")({
+export const Route = createFileRoute("/(public)/docs/templates/")({
   head: () => ({
     meta: [
       {
@@ -74,72 +73,40 @@ const templates = [
 
 function TemplatesDocPage() {
   return (
-    <div className="min-h-svh">
-      <SiteHeader />
+    <main className="mx-auto max-w-5xl px-4 py-12">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="mb-6"
+        nativeButton={false}
+        render={<Link to="/docs" />}
+      >
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back to Docs
+      </Button>
 
-      <main className="mx-auto max-w-5xl px-4 py-12">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mb-6"
-          nativeButton={false}
-          render={<Link to="/docs" />}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Docs
-        </Button>
+      <div className="space-y-4">
+        <Badge variant="secondary">Templates</Badge>
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+          Form templates
+        </h1>
+        <p className="text-muted-foreground max-w-2xl text-lg leading-relaxed">
+          Each template is a step-by-step tutorial that walks you through creating a
+          specific type of form in BForms &mdash; from setting up fields in the
+          dashboard to embedding the final HTML on your site.
+        </p>
+      </div>
 
-        <div className="space-y-4">
-          <Badge variant="secondary">Templates</Badge>
-          <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Form templates
-          </h1>
-          <p className="text-muted-foreground max-w-2xl text-lg leading-relaxed">
-            Each template is a step-by-step tutorial that walks you through creating a
-            specific type of form in BForms &mdash; from setting up fields in the
-            dashboard to embedding the final HTML on your site.
-          </p>
-        </div>
+      <Separator className="my-10" />
 
-        <Separator className="my-10" />
+      <section className="space-y-6">
+        {templates.map((template) => (
+          <TemplateCard key={template.title} template={template} />
+        ))}
+      </section>
 
-        <section className="space-y-6">
-          {templates.map((template) => (
-            <TemplateCard key={template.title} template={template} />
-          ))}
-        </section>
-
-        <Separator className="my-12" />
-      </main>
-
-      <footer className="border-t py-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 sm:flex-row">
-          <p className="text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} BForms. All rights reserved.
-          </p>
-          <div className="flex items-center gap-6">
-            <a
-              href="/pricing"
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Pricing
-            </a>
-            <a
-              href="/privacy"
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Privacy Policy
-            </a>
-            <a
-              href="/terms"
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Terms of Service
-            </a>
-          </div>
-        </div>
-      </footer>
-    </div>
+      <Separator className="my-12" />
+    </main>
   );
 }
 
@@ -148,13 +115,13 @@ function TemplateCard({ template }: { template: (typeof templates)[number] }) {
 
   return (
     <Link to={template.slug} className="block">
-      <div className="bg-card hover:border-foreground/20 flex items-start gap-5 rounded-2xl border p-6 transition">
-        <div className="bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+      <div className="bg-card flex items-start gap-5 border-2 border-foreground p-6 shadow-[var(--shadow-brutal)] transition-transform hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
+        <div className="bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center">
           <Icon className="text-primary h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold">{template.title}</h2>
+            <h2 className="text-lg font-bold">{template.title}</h2>
             <Badge variant="secondary" className="text-xs">
               Tutorial available
             </Badge>
@@ -166,7 +133,7 @@ function TemplateCard({ template }: { template: (typeof templates)[number] }) {
             {template.fields.map((field) => (
               <span
                 key={field}
-                className="bg-secondary text-muted-foreground rounded-full px-2.5 py-0.5 text-xs font-medium"
+                className="bg-secondary text-muted-foreground border border-foreground/20 px-2.5 py-0.5 text-xs font-medium"
               >
                 {field}
               </span>

@@ -12,7 +12,6 @@ import {
   Zap,
 } from "lucide-react";
 import { Suspense } from "react";
-import { SiteHeader } from "~/components/site-header";
 import {
   Accordion,
   AccordionContent,
@@ -24,7 +23,7 @@ import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { highlightedCodeQueryOptions } from "~/lib/code-highlight";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/(public)/")({
   head: () => ({
     meta: [{ title: "BForms - Form endpoints for your websites" }],
   }),
@@ -33,12 +32,9 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   return (
-    <div className="min-h-svh">
-      <SiteHeader />
-
+    <>
       {/* Hero Section */}
       <section className="bg-muted/40 relative overflow-hidden">
-
         <div className="relative mx-auto max-w-4xl px-4 py-24 text-center md:py-36">
           <div className="bg-card text-muted-foreground mx-auto mb-8 inline-flex items-center gap-2 border-2 border-foreground px-4 py-2 text-sm font-bold shadow-[var(--shadow-brutal)]">
             <Sparkles className="h-4 w-4" />
@@ -339,36 +335,7 @@ function LandingPage() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 sm:flex-row">
-          <p className="text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} BForms. All rights reserved.
-          </p>
-          <div className="flex items-center gap-6">
-            <Link
-              to="/pricing"
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Pricing
-            </Link>
-            <a
-              href="/privacy"
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Privacy Policy
-            </a>
-            <a
-              href="/terms"
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Terms of Service
-            </a>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 }
 
@@ -392,9 +359,7 @@ function FeatureCard({
 }) {
   return (
     <div className="bg-card border-2 border-foreground p-6 shadow-[var(--shadow-brutal)] transition-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
-      <div className="bg-primary/10 text-primary mb-4 inline-flex p-3">
-        {icon}
-      </div>
+      <div className="bg-primary/10 text-primary mb-4 inline-flex p-3">{icon}</div>
       <h3 className="text-lg font-bold">{title}</h3>
       <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{description}</p>
     </div>
