@@ -224,8 +224,8 @@ function DashboardIndex() {
 
       {/* Stat Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Link to="/dashboard/forms" className="group">
-          <Card size="sm" className="group-hover:border-foreground/20 transition-colors">
+        <Link to="/dashboard/forms" className="group h-full">
+          <Card size="sm" className="h-full group-hover:border-foreground/20 transition-colors">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-muted-foreground text-sm font-medium">
                 Total Forms
@@ -234,17 +234,15 @@ function DashboardIndex() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalForms}</div>
-              {isFinite(limits.forms) && (
-                <p className="text-muted-foreground mt-1 text-xs">
-                  of {limits.forms} allowed
-                </p>
-              )}
+              <p className="text-muted-foreground mt-1 text-xs">
+                {isFinite(limits.forms) ? `of ${limits.forms} allowed` : <>&nbsp;</>}
+              </p>
             </CardContent>
           </Card>
         </Link>
 
-        <Link to="/dashboard/forms" className="group">
-          <Card size="sm" className="group-hover:border-foreground/20 transition-colors">
+        <Link to="/dashboard/forms" className="group h-full">
+          <Card size="sm" className="h-full group-hover:border-foreground/20 transition-colors">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-muted-foreground text-sm font-medium">
                 Active Forms
@@ -253,16 +251,14 @@ function DashboardIndex() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.activeForms}</div>
-              {stats.totalForms > 0 && (
-                <p className="text-muted-foreground mt-1 text-xs">
-                  of {stats.totalForms} total
-                </p>
-              )}
+              <p className="text-muted-foreground mt-1 text-xs">
+                {stats.totalForms > 0 ? `of ${stats.totalForms} total` : <>&nbsp;</>}
+              </p>
             </CardContent>
           </Card>
         </Link>
 
-        <Card size="sm">
+        <Card size="sm" className="h-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-muted-foreground text-sm font-medium">
               Total Submissions
@@ -275,7 +271,7 @@ function DashboardIndex() {
           </CardContent>
         </Card>
 
-        <Card size="sm">
+        <Card size="sm" className="h-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-muted-foreground text-sm font-medium">
               This Month
@@ -333,11 +329,13 @@ function DashboardIndex() {
                 </Progress>
               </div>
             ) : (
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground font-medium">Forms</span>
-                <span className="text-muted-foreground">
-                  {stats.totalForms} / Unlimited
-                </span>
+              <div>
+                <Progress value={null}>
+                  <ProgressLabel>Forms</ProgressLabel>
+                  <span className="text-muted-foreground ml-auto text-sm tabular-nums">
+                    {stats.totalForms} / Unlimited
+                  </span>
+                </Progress>
               </div>
             )}
 

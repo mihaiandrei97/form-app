@@ -109,10 +109,10 @@ function DocsPage() {
             </p>
           </div>
 
-          <div className="bg-muted/40 rounded-2xl border p-6">
+          <div className="bg-muted/40 border-2 border-foreground p-6 shadow-[var(--shadow-brutal)]">
             <div className="flex items-center gap-3">
               <Sparkles className="text-primary h-5 w-5" />
-              <h3 className="text-lg font-semibold">Best practices</h3>
+              <h3 className="text-lg font-bold">Best practices</h3>
             </div>
             <ul className="text-muted-foreground mt-4 space-y-3 text-sm">
               <li>Use the generated honeypot field name from the dashboard.</li>
@@ -217,7 +217,7 @@ function DocsPage() {
 function StepItem({ number, text }: { number: number; text: string }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="bg-primary/10 text-primary mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold">
+      <span className="bg-primary/10 text-primary mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center border border-foreground text-sm font-bold">
         {number}
       </span>
       <p className="text-muted-foreground text-sm leading-relaxed">{text}</p>
@@ -239,13 +239,13 @@ function TemplateCard({
   return (
     <Link
       to={href}
-      className="bg-card hover:border-foreground/20 focus-visible:border-foreground/30 focus-visible:ring-ring block rounded-2xl border p-5 transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+      className="bg-card block border-2 border-foreground p-5 shadow-[var(--shadow-brutal)] transition-transform hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       <div className="flex items-center gap-3">
-        <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
+        <div className="bg-primary/10 flex h-8 w-8 items-center justify-center">
           <Icon className="text-primary h-4 w-4" />
         </div>
-        <p className="text-sm font-semibold">{title}</p>
+        <p className="text-sm font-bold">{title}</p>
       </div>
       <p className="text-muted-foreground mt-2 text-sm">{description}</p>
     </Link>

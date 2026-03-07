@@ -16,7 +16,7 @@ async function highlight(code: string, lang = "html"): Promise<string> {
     lang,
     themes: {
       light: "catppuccin-latte",
-      dark: "catppuccin-macchiato",
+      dark: "one-dark-pro",
     },
   });
 
