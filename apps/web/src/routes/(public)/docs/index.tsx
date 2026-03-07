@@ -45,7 +45,12 @@ function DocsPage() {
       </Button>
 
       <div className="space-y-4">
-        <Badge variant="secondary">Getting Started</Badge>
+        <Badge
+          variant="secondary"
+          className="docs-accent-surface"
+        >
+          Getting Started
+        </Badge>
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
           BForms Documentation
         </h1>
@@ -93,8 +98,8 @@ function DocsPage() {
 
       <section className="grid gap-8 lg:grid-cols-2">
         <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 text-sm font-medium">
-            <Shield className="text-primary h-4 w-4" />
+          <div className="border-foreground inline-flex items-center gap-2 border-2 bg-accent px-2 py-1 text-sm font-bold text-accent-foreground">
+            <Shield className="h-4 w-4" />
             Spam protection
           </div>
           <h2 className="text-2xl font-semibold">What is spam protection?</h2>
@@ -122,10 +127,10 @@ function DocsPage() {
       <Separator className="my-12" />
 
       <section className="space-y-6">
-        <div className="inline-flex items-center gap-2 text-sm font-medium">
-          <CheckCircle2 className="text-primary h-4 w-4" />
-          Templates
-        </div>
+          <div className="border-foreground inline-flex items-center gap-2 border-2 bg-accent px-2 py-1 text-sm font-bold text-accent-foreground">
+            <CheckCircle2 className="h-4 w-4" />
+            Templates
+          </div>
         <h2 className="text-2xl font-semibold">Form templates</h2>
         <p className="text-muted-foreground max-w-3xl">
           Templates are step-by-step tutorials that walk you through creating specific
@@ -167,7 +172,7 @@ function DocsPage() {
         <div className="flex items-center gap-2">
           <Link
             to="/docs/templates"
-            className="text-primary inline-flex items-center gap-1 text-sm font-medium hover:underline"
+            className="docs-link inline-flex items-center gap-1 text-sm font-medium hover:underline"
           >
             View all templates
             <ArrowRight className="h-3.5 w-3.5" />
@@ -184,10 +189,10 @@ function DocsPage() {
 function StepItem({ number, text }: { number: number; text: string }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="bg-primary/10 text-primary mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center border border-foreground text-sm font-bold">
+      <span className="docs-step-number mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center border-2 text-sm font-bold [box-shadow:var(--shadow-brutal)]">
         {number}
       </span>
-      <p className="text-muted-foreground text-sm leading-relaxed">{text}</p>
+      <p className="docs-soft-text text-sm leading-relaxed">{text}</p>
     </div>
   );
 }
@@ -209,8 +214,8 @@ function TemplateCard({
       className="bg-card block border-2 border-foreground p-5 shadow-[var(--shadow-brutal)] transition-transform hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       <div className="flex items-center gap-3">
-        <div className="bg-primary/10 flex h-8 w-8 items-center justify-center">
-          <Icon className="text-primary h-4 w-4" />
+        <div className="docs-accent-surface flex h-8 w-8 items-center justify-center border-2">
+          <Icon className="h-4 w-4" />
         </div>
         <p className="text-sm font-bold">{title}</p>
       </div>

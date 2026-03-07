@@ -144,7 +144,7 @@ function FormsListPage() {
                   >
                     <span
                       className={`inline-block h-1.5 w-1.5 shrink-0 ${
-                        form.isActive ? "animate-pulse bg-green-600" : "bg-muted-foreground"
+                        form.isActive ? "animate-pulse bg-white" : "bg-muted-foreground"
                       }`}
                     />
                     {form.isActive ? "Active" : "Inactive"}

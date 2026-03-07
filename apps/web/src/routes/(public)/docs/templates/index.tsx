@@ -86,7 +86,12 @@ function TemplatesDocPage() {
       </Button>
 
       <div className="space-y-4">
-        <Badge variant="secondary">Templates</Badge>
+        <Badge
+          variant="secondary"
+          className="docs-accent-surface"
+        >
+          Templates
+        </Badge>
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
           Form templates
         </h1>
@@ -116,13 +121,16 @@ function TemplateCard({ template }: { template: (typeof templates)[number] }) {
   return (
     <Link to={template.slug} className="block">
       <div className="bg-card flex items-start gap-5 border-2 border-foreground p-6 shadow-[var(--shadow-brutal)] transition-transform hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
-        <div className="bg-primary/10 flex h-10 w-10 shrink-0 items-center justify-center">
-          <Icon className="text-primary h-5 w-5" />
+        <div className="docs-accent-surface flex h-10 w-10 shrink-0 items-center justify-center border-2">
+          <Icon className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-3">
             <h2 className="text-lg font-bold">{template.title}</h2>
-            <Badge variant="secondary" className="text-xs">
+            <Badge
+              variant="secondary"
+              className="docs-accent-surface text-xs"
+            >
               Tutorial available
             </Badge>
           </div>
@@ -133,13 +141,13 @@ function TemplateCard({ template }: { template: (typeof templates)[number] }) {
             {template.fields.map((field) => (
               <span
                 key={field}
-                className="bg-secondary text-muted-foreground border border-foreground/20 px-2.5 py-0.5 text-xs font-medium"
+                className="docs-secondary-chip border px-2.5 py-0.5 text-xs font-medium"
               >
                 {field}
               </span>
             ))}
           </div>
-          <div className="text-primary mt-3 flex items-center gap-1 text-sm font-medium">
+          <div className="docs-link mt-3 flex items-center gap-1 text-sm font-medium">
             Read tutorial
             <ArrowRight className="h-3.5 w-3.5" />
           </div>

@@ -45,7 +45,12 @@ function FeedbackTemplatePage() {
 
       {/* Hero */}
       <div className="space-y-4">
-        <Badge variant="secondary">Template Tutorial</Badge>
+        <Badge
+          variant="secondary"
+          className="docs-accent-surface"
+        >
+          Template Tutorial
+        </Badge>
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
           Build a product feedback form
         </h1>
@@ -162,7 +167,7 @@ function FeedbackTemplatePage() {
           <p className="text-sm font-medium">
             Why two separate text fields instead of one?
           </p>
-          <p className="text-muted-foreground mt-1 text-sm">
+          <p className="docs-soft-text mt-1 text-sm">
             Asking &quot;what went well&quot; and &quot;what to improve&quot; separately
             prompts more thoughtful responses than a single &quot;any feedback?&quot;
             box. It also makes it easier to categorize responses in your dashboard
@@ -251,7 +256,7 @@ function FeedbackTemplatePage() {
 
         <div className="bg-muted/40 border-2 border-foreground p-5">
           <p className="text-sm font-medium">In-app feedback with JavaScript</p>
-          <p className="text-muted-foreground mt-1 text-sm">
+          <p className="docs-soft-text mt-1 text-sm">
             If the feedback form lives inside your app, you probably want to submit it
             via the fetch API to avoid a full page reload. Use the JavaScript snippet
             from your dashboard. After a successful submission, show a toast or success
@@ -367,7 +372,7 @@ function FeedbackTemplatePage() {
 function StepHeading({ number, title }: { number: number; title: string }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="bg-primary/10 text-primary inline-flex h-8 w-8 items-center justify-center border border-foreground text-sm font-bold">
+      <span className="docs-step-number inline-flex h-8 w-8 items-center justify-center border-2 text-sm font-bold [box-shadow:var(--shadow-brutal)]">
         {number}
       </span>
       <h2 className="text-xl font-semibold">{title}</h2>
@@ -395,17 +400,20 @@ function FieldCard({
   return (
     <div className="bg-muted/40 border-2 border-foreground p-4">
       <div className="flex items-center gap-3">
-        <code className="bg-primary/10 text-primary border border-foreground px-2 py-0.5 text-xs font-semibold">
+        <code className="docs-accent-surface border px-2 py-0.5 text-xs font-semibold">
           {type}
         </code>
         <span className="text-sm font-semibold">{label}</span>
         {required && (
-          <Badge variant="secondary" className="text-xs">
+          <Badge
+              variant="secondary"
+              className="docs-accent-surface text-xs"
+            >
             Required
           </Badge>
         )}
       </div>
-      <p className="text-muted-foreground mt-2 text-sm">{description}</p>
+      <p className="docs-soft-text mt-2 text-sm">{description}</p>
       <div className="text-muted-foreground mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">
         <span>
           name: <code className="bg-muted rounded px-1 py-0.5">{name}</code>
@@ -419,7 +427,7 @@ function FieldCard({
           {options.map((opt) => (
             <span
               key={opt}
-              className="bg-muted text-muted-foreground border border-foreground/20 px-2.5 py-0.5 text-xs"
+              className="docs-secondary-chip border px-2.5 py-0.5 text-xs"
             >
               {opt}
             </span>
@@ -434,7 +442,7 @@ function TipCard({ title, description }: { title: string; description: string })
   return (
     <div className="bg-muted/40 border-2 border-foreground p-5">
       <h3 className="text-sm font-semibold">{title}</h3>
-      <p className="text-muted-foreground mt-1 text-sm">{description}</p>
+      <p className="docs-soft-text mt-1 text-sm">{description}</p>
     </div>
   );
 }
