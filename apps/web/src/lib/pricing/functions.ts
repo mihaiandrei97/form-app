@@ -42,7 +42,6 @@ export const $getProducts = createServerFn({ method: "GET" }).handler(async () =
         "Unlimited forms",
         "Email notifications (50/day, 500/month)",
         "Discord notifications",
-        "Branding removal",
         "30-day submission history",
         "CSV/JSON exports",
       ],
@@ -61,7 +60,6 @@ export const $getProducts = createServerFn({ method: "GET" }).handler(async () =
         "Webhooks + file uploads",
         "Priority support",
         "90-day submission history",
-        "Branding removal",
       ],
     },
   ];

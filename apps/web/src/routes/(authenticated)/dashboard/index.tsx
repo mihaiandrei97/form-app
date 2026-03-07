@@ -350,14 +350,6 @@ function DashboardIndex() {
                 <span className="text-muted-foreground">History</span>
               </div>
               <span className="text-right font-medium">{limits.historyDays} days</span>
-
-              <div className="flex items-center gap-2">
-                <Zap className="text-muted-foreground h-3.5 w-3.5" />
-                <span className="text-muted-foreground">Branding removal</span>
-              </div>
-              <span className="text-right font-medium">
-                {limits.brandingRemoval ? "Yes" : "No"}
-              </span>
             </div>
           </CardContent>
           {!isPro && (

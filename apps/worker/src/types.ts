@@ -22,9 +22,6 @@ export type SendEmailJob = {
   formSlug: string;
   submissionData: Record<string, unknown>;
   submittedAt: string; // ISO string
-
-  // Form owner's plan (for branding removal)
-  userPlan: string;
 };
 
 /**
@@ -45,9 +42,6 @@ export type SendDiscordJob = {
   formSlug: string;
   submissionData: Record<string, unknown>;
   submittedAt: string; // ISO string
-
-  // Form owner's plan (for branding removal)
-  userPlan: string;
 };
 
 /**

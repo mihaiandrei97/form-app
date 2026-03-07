@@ -7,7 +7,6 @@ export type PlanLimits = {
   emailsPerDay: number;
   emailsPerMonth: number;
   historyDays: number;
-  brandingRemoval: boolean;
 };
 
 export const PLAN_LIMITS: Record<string, PlanLimits> = {
@@ -18,7 +17,6 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     emailsPerDay: 0,
     emailsPerMonth: 0,
     historyDays: 7,
-    brandingRemoval: false,
   },
   starter: {
     submissions: 1_000,
@@ -27,7 +25,6 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     emailsPerDay: 50,
     emailsPerMonth: 500,
     historyDays: 30,
-    brandingRemoval: true,
   },
   pro: {
     submissions: 10_000,
@@ -36,7 +33,6 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
     emailsPerDay: Infinity,
     emailsPerMonth: Infinity,
     historyDays: 90,
-    brandingRemoval: true,
   },
 };
 

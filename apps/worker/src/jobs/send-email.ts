@@ -83,10 +83,7 @@ async function insertNotificationLog(
  * Process a single email job.
  */
 async function processEmailJob(job: Job<SendEmailJob>): Promise<void> {
-  const { channelId, submissionId, to, formName, submissionData, submittedAt, userPlan } =
-    job.data;
-
-  const showBranding = !userPlan || userPlan === "free";
+  const { channelId, submissionId, to, formName, submissionData, submittedAt } = job.data;
 
   console.log(`[send-email] Processing job ${job.id} for submission ${submissionId}`);
 
@@ -108,7 +105,6 @@ async function processEmailJob(job: Job<SendEmailJob>): Promise<void> {
           ${formatSubmissionHtml(submissionData)}
           
           <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 24px 0;" />
-          ${showBranding ? '<p style="color: #999; font-size: 12px;">This email was sent by BForms. You\'re receiving this because you have email notifications enabled for this form.</p>' : ""}
         </div>
       `,
       text: `New Form Submission
@@ -119,7 +115,7 @@ Submission Data:
 ${formatSubmissionText(submissionData)}
 
 ---
-${showBranding ? "This email was sent by BForms.\n" : ""}`,
+`,
     });
 
     if (error) {

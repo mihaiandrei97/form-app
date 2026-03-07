@@ -248,7 +248,6 @@ export const Route = createFileRoute("/api/f/$slug")({
                 formSlug: formRecord.slug,
                 submissionData,
                 submittedAt,
-                userPlan: plan,
               });
               emailsSentThisSubmission++;
             } else if (channel.type === "discord") {
@@ -262,7 +261,6 @@ export const Route = createFileRoute("/api/f/$slug")({
                 formSlug: formRecord.slug,
                 submissionData,
                 submittedAt,
-                userPlan: plan,
               });
             }
           }

@@ -76,10 +76,7 @@ async function processDiscordJob(job: Job<SendDiscordJob>): Promise<void> {
     formName,
     submissionData,
     submittedAt,
-    userPlan,
   } = job.data;
-
-  const showBranding = !userPlan || userPlan === "free";
 
   console.log(`[send-discord] Processing job ${job.id} for submission ${submissionId}`);
 
@@ -91,7 +88,6 @@ async function processDiscordJob(job: Job<SendDiscordJob>): Promise<void> {
           color: EMBED_COLOR,
           fields: formatEmbedFields(submissionData),
           timestamp: submittedAt,
-          ...(showBranding ? { footer: { text: "BForms" } } : {}),
         },
       ],
     };
