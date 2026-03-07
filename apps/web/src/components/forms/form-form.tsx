@@ -80,21 +80,27 @@ export function FormForm({
         </CardHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <div className="border-b px-6">
-            <TabsList className="h-auto w-full justify-start gap-4 rounded-none border-0 bg-transparent p-0">
+          <div className="border-b dark:border-foreground/40 px-6 pt-4 pb-0">
+            <TabsList className="h-auto w-fit gap-2 rounded-none border-0 bg-transparent p-0">
               <TabsTrigger
                 value="settings"
-                className="data-[state=active]:border-primary rounded-none border-b-2 border-transparent px-0 pt-3 pb-3 font-medium data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                className="rounded-none border-2 px-4 py-1.5 text-sm font-bold transition-colors data-active:border-foreground data-active:bg-accent data-active:text-accent-foreground data-active:[box-shadow:var(--shadow-brutal)] data-inactive:border-border data-inactive:bg-background data-inactive:text-foreground hover:data-inactive:border-foreground hover:data-inactive:bg-muted"
               >
                 Settings
               </TabsTrigger>
               <TabsTrigger
                 value="fields"
-                className="data-[state=active]:border-primary rounded-none border-b-2 border-transparent px-0 pt-3 pb-3 font-medium data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                className="rounded-none border-2 px-4 py-1.5 text-sm font-bold transition-colors data-active:border-foreground data-active:bg-accent data-active:text-accent-foreground data-active:[box-shadow:var(--shadow-brutal)] data-inactive:border-border data-inactive:bg-background data-inactive:text-foreground hover:data-inactive:border-foreground hover:data-inactive:bg-muted"
               >
                 Fields
                 {fields.length > 0 && (
-                  <span className="bg-muted ml-2 rounded-full px-2 py-0.5 text-xs">
+                  <span
+                    className={`ml-2 inline-flex h-4 min-w-4 items-center justify-center border px-1 text-[10px] leading-none font-bold ${
+                      activeTab === "fields"
+                        ? "border-background bg-background text-foreground"
+                        : "border-foreground bg-accent text-accent-foreground"
+                    }`}
+                  >
                     {fields.length}
                   </span>
                 )}

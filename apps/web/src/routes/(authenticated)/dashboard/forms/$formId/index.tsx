@@ -1,13 +1,11 @@
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  CheckCircle,
   Copy,
   Download,
   ExternalLink,
   Info,
   Loader2,
-  PauseCircle,
   Pencil,
 } from "lucide-react";
 import { useState } from "react";
@@ -15,7 +13,6 @@ import { toast } from "sonner";
 import { CodeSnippets } from "~/components/forms/code-snippets";
 import { DeleteFormDialog } from "~/components/forms/delete-form-dialog";
 import { SubmissionsTable } from "~/components/forms/submissions-table";
-import { Badge } from "~/components/ui/badge";
 import { Button, buttonVariants } from "~/components/ui/button";
 import {
   Card,
@@ -219,19 +216,20 @@ function FormDetailPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
-        <Badge variant={form.isActive ? "default" : "secondary"}>
-          {form.isActive ? (
-            <>
-              <CheckCircle className="mr-1 h-3 w-3" />
-              Active
-            </>
-          ) : (
-            <>
-              <PauseCircle className="mr-1 h-3 w-3" />
-              Inactive
-            </>
-          )}
-        </Badge>
+        <div
+          className={`flex shrink-0 items-center gap-1.5 border-2 px-2 py-0.5 text-xs font-bold ${
+            form.isActive
+              ? "border-foreground bg-accent text-accent-foreground"
+              : "border-border bg-muted text-muted-foreground"
+          }`}
+        >
+          <span
+            className={`inline-block h-1.5 w-1.5 shrink-0 ${
+              form.isActive ? "animate-pulse bg-green-600" : "bg-muted-foreground"
+            }`}
+          />
+          {form.isActive ? "Active" : "Inactive"}
+        </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
@@ -257,8 +255,8 @@ function FormDetailPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="bg-muted flex items-center justify-between rounded-lg px-4 py-3">
-            <code className="text-sm">{endpointUrl}</code>
+          <div className="border-foreground flex items-center justify-between border-2 bg-foreground/5 px-4 py-3 font-mono text-sm [box-shadow:var(--shadow-brutal)]">
+            <code>{endpointUrl}</code>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon-sm" onClick={copyEndpoint}>
                 <Copy className="h-4 w-4" />
@@ -354,14 +352,24 @@ function FormDetailPage() {
             <div className="flex flex-wrap gap-2">
               {form.notificationChannels.map((channel) => {
                 const config = channel.config as { to?: string; webhookUrl?: string };
+                const label =
+                  channel.type === "email" ? config.to : "Discord";
                 return (
-                  <Badge
+                  <div
                     key={channel.id}
-                    variant={channel.enabled ? "default" : "secondary"}
+                    className={`flex items-center gap-1.5 border-2 px-2 py-0.5 text-xs font-bold ${
+                      channel.enabled
+                        ? "border-foreground bg-accent text-accent-foreground"
+                        : "border-border bg-muted text-muted-foreground"
+                    }`}
                   >
-                    {channel.type === "email" && config.to}
-                    {channel.type === "discord" && "Discord"}
-                  </Badge>
+                    <span
+                      className={`inline-block h-1.5 w-1.5 shrink-0 ${
+                        channel.enabled ? "bg-green-600" : "bg-muted-foreground"
+                      }`}
+                    />
+                    {label}
+                  </div>
                 );
               })}
             </div>

@@ -62,11 +62,9 @@ function NewFormPage() {
   if (atLimit) {
     return (
       <div className="space-y-6">
-        <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-6 dark:border-yellow-900 dark:bg-yellow-950">
-          <h2 className="text-lg font-semibold text-yellow-800 dark:text-yellow-200">
-            Form limit reached
-          </h2>
-          <p className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
+        <div className="border-foreground bg-accent text-accent-foreground border-2 p-6 [box-shadow:var(--shadow-brutal)]">
+          <h2 className="text-lg font-bold">Form limit reached</h2>
+          <p className="mt-2 text-sm">
             Your {plan} plan allows up to {limits.forms} forms. You currently have{" "}
             {formCount}. Upgrade your plan to create more forms.
           </p>

@@ -1,19 +1,15 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  Bell,
-  CheckCircle,
   Clock,
   Copy,
   ExternalLink,
   FileText,
   Inbox,
-  PauseCircle,
   Pencil,
   Plus,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -23,7 +19,6 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
 import { formsWithCountsQueryOptions } from "~/lib/forms/queries";
 
@@ -140,22 +135,20 @@ function FormsListPage() {
               <CardHeader>
                 <div className="flex items-start justify-between gap-2">
                   <CardTitle className="line-clamp-1">{form.name}</CardTitle>
-                  <Badge
-                    variant={form.isActive ? "default" : "secondary"}
-                    className="shrink-0"
+                  <div
+                    className={`flex shrink-0 items-center gap-1.5 border-2 px-2 py-0.5 text-xs font-bold ${
+                      form.isActive
+                        ? "border-foreground bg-accent text-accent-foreground"
+                        : "border-border bg-muted text-muted-foreground"
+                    }`}
                   >
-                    {form.isActive ? (
-                      <>
-                        <CheckCircle className="mr-1 h-3 w-3" />
-                        Active
-                      </>
-                    ) : (
-                      <>
-                        <PauseCircle className="mr-1 h-3 w-3" />
-                        Inactive
-                      </>
-                    )}
-                  </Badge>
+                    <span
+                      className={`inline-block h-1.5 w-1.5 shrink-0 ${
+                        form.isActive ? "animate-pulse bg-green-600" : "bg-muted-foreground"
+                      }`}
+                    />
+                    {form.isActive ? "Active" : "Inactive"}
+                  </div>
                 </div>
                 <CardDescription className="flex items-center gap-1">
                   <Clock className="h-3 w-3" />
@@ -165,8 +158,8 @@ function FormsListPage() {
 
               <CardContent className="flex flex-1 flex-col gap-3">
                 {/* Endpoint URL */}
-                <div className="bg-muted flex items-center justify-between gap-2 rounded-md px-3 py-2 font-mono text-xs">
-                  <span className="truncate">/api/f/{form.slug}</span>
+                <div className="border-foreground flex items-center justify-between gap-2 border-2 bg-foreground/5 px-3 py-2 font-mono text-xs [box-shadow:var(--shadow-brutal)]">
+                  <span className="truncate text-foreground">/api/f/{form.slug}</span>
                   <div className="flex shrink-0 gap-0.5">
                     <Button
                       variant="ghost"
@@ -195,33 +188,12 @@ function FormsListPage() {
                 </div>
 
                 {/* Stats Row */}
-                <div className="text-muted-foreground flex items-center gap-3 text-xs">
+                <div className="text-muted-foreground flex items-center text-xs">
                   <span className="flex items-center gap-1">
                     <Inbox className="h-3 w-3" />
                     {form.submissionCount}{" "}
                     {form.submissionCount === 1 ? "submission" : "submissions"}
                   </span>
-                  {form.emailTo && (
-                    <>
-                      <Separator orientation="vertical" className="h-3" />
-                      <span
-                        className="flex items-center gap-1 truncate"
-                        title={`Notifying ${form.emailTo}`}
-                      >
-                        <Bell className="h-3 w-3 shrink-0" />
-                        <span className="truncate">{form.emailTo}</span>
-                      </span>
-                    </>
-                  )}
-                  {form.allowedDomains && form.allowedDomains.length > 0 && (
-                    <>
-                      <Separator orientation="vertical" className="h-3" />
-                      <span className="shrink-0" title={form.allowedDomains.join(", ")}>
-                        {form.allowedDomains.length}{" "}
-                        {form.allowedDomains.length === 1 ? "domain" : "domains"}
-                      </span>
-                    </>
-                  )}
                 </div>
               </CardContent>
 
