@@ -1,5 +1,5 @@
-import { Code2 } from "lucide-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { Code2 } from "lucide-react";
 import { Suspense } from "react";
 import { highlightCodeQueryOptions } from "~/lib/code-highlight";
 
@@ -11,10 +11,10 @@ interface CodeBlockProps {
 
 export function CodeBlock({ filename, code, lang = "html" }: CodeBlockProps) {
   return (
-    <div className="bg-card border-2 border-foreground shadow-[var(--shadow-brutal)]">
-      <div className="bg-muted/60 flex items-center gap-2 border-b-2 border-foreground px-4 py-3">
+    <div className="bg-secondary border-foreground border-2 shadow-[var(--shadow-brutal)]">
+      <div className="bg-muted/60 border-foreground flex items-center gap-2 border-b-2 px-4 py-3">
         <Code2 className="text-muted-foreground h-3.5 w-3.5" />
-        <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">
+        <span className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
           {filename}
         </span>
       </div>

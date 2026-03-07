@@ -11,10 +11,10 @@ import {
   Star,
   Users,
 } from "lucide-react";
+import { CodeBlock } from "~/components/docs/code-block";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
-import { CodeBlock } from "~/components/docs/code-block";
 
 export const Route = createFileRoute("/(public)/docs/")({
   head: () => ({
@@ -45,10 +45,7 @@ function DocsPage() {
       </Button>
 
       <div className="space-y-4">
-        <Badge
-          variant="secondary"
-          className="docs-accent-surface"
-        >
+        <Badge variant="secondary" className="docs-accent-surface">
           Getting Started
         </Badge>
         <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
@@ -62,13 +59,13 @@ function DocsPage() {
 
       <Separator className="my-10" />
 
-      <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+      <section className="grid items-start gap-10 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-6">
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold">1) Set up a form endpoint</h2>
             <p className="text-muted-foreground">
-              Every form starts with an endpoint. Create one in the dashboard, then
-              point your HTML form to that URL.
+              Every form starts with an endpoint. Create one in the dashboard, then point
+              your HTML form to that URL.
             </p>
           </div>
 
@@ -104,13 +101,13 @@ function DocsPage() {
           </div>
           <h2 className="text-2xl font-semibold">What is spam protection?</h2>
           <p className="text-muted-foreground">
-            BForms uses honeypot fields to catch automated bot submissions. A honeypot
-            is a hidden field that humans never fill out, but bots often do. When that
-            field has a value, the submission is silently discarded.
+            BForms uses honeypot fields to catch automated bot submissions. A honeypot is
+            a hidden field that humans never fill out, but bots often do. When that field
+            has a value, the submission is silently discarded.
           </p>
         </div>
 
-        <div className="bg-muted/40 border-2 border-foreground p-6 shadow-[var(--shadow-brutal)]">
+        <div className="bg-muted/40 border-foreground border-2 p-6 shadow-[var(--shadow-brutal)]">
           <div className="flex items-center gap-3">
             <Sparkles className="text-primary h-5 w-5" />
             <h3 className="text-lg font-bold">Best practices</h3>
@@ -127,15 +124,15 @@ function DocsPage() {
       <Separator className="my-12" />
 
       <section className="space-y-6">
-          <div className="docs-accent-surface inline-flex items-center gap-2 border-2 px-2 py-1 text-sm font-bold">
-            <CheckCircle2 className="h-4 w-4" />
-            Templates
-          </div>
+        <div className="docs-accent-surface inline-flex items-center gap-2 border-2 px-2 py-1 text-sm font-bold">
+          <CheckCircle2 className="h-4 w-4" />
+          Templates
+        </div>
         <h2 className="text-2xl font-semibold">Form templates</h2>
         <p className="text-muted-foreground max-w-3xl">
           Templates are step-by-step tutorials that walk you through creating specific
-          types of forms. Each tutorial covers creating the endpoint, configuring
-          fields, adding spam protection, and embedding the HTML on your site.
+          types of forms. Each tutorial covers creating the endpoint, configuring fields,
+          adding spam protection, and embedding the HTML on your site.
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
           <TemplateCard
@@ -211,7 +208,7 @@ function TemplateCard({
   return (
     <Link
       to={href}
-      className="bg-card block border-2 border-foreground p-5 shadow-[var(--shadow-brutal)] transition-transform hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="bg-card border-foreground focus-visible:ring-ring block border-2 p-5 shadow-[var(--shadow-brutal)] transition-transform hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
     >
       <div className="flex items-center gap-3">
         <div className="docs-accent-surface flex h-8 w-8 items-center justify-center border-2">

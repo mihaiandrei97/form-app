@@ -135,7 +135,7 @@ function PricingPage() {
           </h2>
           <p className="text-muted-foreground mt-4 text-base md:text-lg">
             Submissions stop once your monthly quota is reached. Email notifications pause
-            when you hit the Starter daily or monthly email cap.
+            when you hit your plan's daily or monthly email cap.
           </p>
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button size="lg" nativeButton={false} render={<Link to="/login" />}>
