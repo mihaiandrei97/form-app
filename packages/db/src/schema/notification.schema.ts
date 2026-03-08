@@ -5,14 +5,15 @@ import { form, submission } from "./form.schema";
 /**
  * Notification channel types
  */
-export type NotificationChannelType = "email" | "discord";
+export type NotificationChannelType = "email" | "discord" | "webhook";
 
 /**
  * Type-specific configuration for each notification channel
  */
 export type NotificationChannelConfig =
   | { to: string } // email
-  | { webhookUrl: string }; // discord
+  | { webhookUrl: string } // discord
+  | { url: string }; // webhook
 
 /**
  * Notification channels configured for each form.

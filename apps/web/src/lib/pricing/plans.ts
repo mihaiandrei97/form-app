@@ -13,7 +13,7 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
   free: {
     submissions: 100,
     forms: 5,
-    channels: { email: false, discord: false },
+    channels: { email: false, discord: false, webhook: false },
     emailsPerDay: 0,
     emailsPerMonth: 0,
     historyDays: 7,
@@ -21,7 +21,7 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
   starter: {
     submissions: 2_000,
     forms: Infinity,
-    channels: { email: true, discord: true },
+    channels: { email: true, discord: true, webhook: false },
     emailsPerDay: 20,
     emailsPerMonth: 500,
     historyDays: 30,
@@ -29,7 +29,7 @@ export const PLAN_LIMITS: Record<string, PlanLimits> = {
   pro: {
     submissions: 15_000,
     forms: Infinity,
-    channels: { email: true, discord: true },
+    channels: { email: true, discord: true, webhook: true },
     emailsPerDay: 100,
     emailsPerMonth: 3_000,
     historyDays: 90,
@@ -46,7 +46,7 @@ export function getPlanLimits(plan: string): PlanLimits {
  * Returns the minimum plan name required to use a given notification
  * channel type.
  */
-export function requiredPlanForChannel(_type: NotificationChannelType): PlanName {
-  void _type; // All current channel types require starter plan
+export function requiredPlanForChannel(type: NotificationChannelType): PlanName {
+  if (type === "webhook") return "pro";
   return "starter";
 }

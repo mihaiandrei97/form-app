@@ -9,6 +9,7 @@ import { PgBoss } from "pg-boss";
 // Queue names
 export const SEND_EMAIL_QUEUE = "send-email";
 export const SEND_DISCORD_QUEUE = "send-discord";
+export const SEND_WEBHOOK_QUEUE = "send-webhook";
 
 // Singleton pg-boss instance
 let boss: PgBoss | null = null;
@@ -92,4 +93,34 @@ export async function enqueueSendDiscord(
 ): Promise<string | null> {
   const queue = await getQueue();
   return queue.send(SEND_DISCORD_QUEUE, payload);
+}
+
+/**
+ * Payload for send-webhook job.
+ * Contains all data needed to POST to the user-configured webhook URL.
+ */
+export type SendWebhookJobPayload = {
+  // For notification_log FK references
+  channelId: string;
+  submissionId: string;
+
+  // Webhook config (from channel.config)
+  url: string;
+
+  // Submission context for request body
+  formId: string;
+  formName: string;
+  formSlug: string;
+  submissionData: Record<string, unknown>;
+  submittedAt: string; // ISO string
+};
+
+/**
+ * Enqueue a webhook notification job.
+ */
+export async function enqueueSendWebhook(
+  payload: SendWebhookJobPayload,
+): Promise<string | null> {
+  const queue = await getQueue();
+  return queue.send(SEND_WEBHOOK_QUEUE, payload);
 }

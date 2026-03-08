@@ -2,7 +2,7 @@
  * BForms Worker - Notification Job Processor
  *
  * This worker uses pg-boss to process notification jobs enqueued by the main app.
- * Currently supports: email (via Resend), discord (via webhook)
+ * Currently supports: email (via Resend), discord (via webhook), webhook (user-configured URL)
  *
  * Usage:
  *   bun run dev   # Development with watch mode
@@ -13,9 +13,11 @@ import { PgBoss } from "pg-boss";
 import { env } from "@repo/env/worker";
 import { sendDiscordHandler } from "./jobs/send-discord.js";
 import { sendEmailHandler } from "./jobs/send-email.js";
+import { sendWebhookHandler } from "./jobs/send-webhook.js";
 
 const SEND_EMAIL_QUEUE = "send-email";
 const SEND_DISCORD_QUEUE = "send-discord";
+const SEND_WEBHOOK_QUEUE = "send-webhook";
 
 async function main() {
   console.log("[worker] Starting BForms notification worker...");
@@ -51,12 +53,22 @@ async function main() {
   });
   console.log(`[worker] Queue "${SEND_DISCORD_QUEUE}" created/updated`);
 
+  await boss.createQueue(SEND_WEBHOOK_QUEUE, {
+    retryLimit: env.JOB_RETRY_LIMIT,
+    retryDelay: env.JOB_RETRY_DELAY_SECONDS,
+    retryBackoff: env.JOB_RETRY_BACKOFF,
+  });
+  console.log(`[worker] Queue "${SEND_WEBHOOK_QUEUE}" created/updated`);
+
   // Register job handlers (batchSize: 1 to process one job at a time)
   await boss.work(SEND_EMAIL_QUEUE, { batchSize: 1 }, sendEmailHandler);
   console.log(`[worker] Registered handler for "${SEND_EMAIL_QUEUE}" queue`);
 
   await boss.work(SEND_DISCORD_QUEUE, { batchSize: 1 }, sendDiscordHandler);
   console.log(`[worker] Registered handler for "${SEND_DISCORD_QUEUE}" queue`);
+
+  await boss.work(SEND_WEBHOOK_QUEUE, { batchSize: 1 }, sendWebhookHandler);
+  console.log(`[worker] Registered handler for "${SEND_WEBHOOK_QUEUE}" queue`);
 
   console.log("[worker] Worker is now processing jobs...");
 

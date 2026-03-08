@@ -5,6 +5,7 @@ import {
   $getForm,
   $getForms,
   $getFormsWithCounts,
+  $getNotificationLogs,
   $getRecentSubmissions,
   $getSubmissions,
 } from "./functions";
@@ -74,4 +75,13 @@ export const recentSubmissionsQueryOptions = () =>
   queryOptions({
     queryKey: ["dashboard", "recent-submissions"],
     queryFn: () => $getRecentSubmissions(),
+  });
+
+/**
+ * Query options for fetching notification logs for a specific channel
+ */
+export const notificationLogsQueryOptions = (channelId: string) =>
+  queryOptions({
+    queryKey: ["notification-logs", channelId],
+    queryFn: () => $getNotificationLogs({ data: { channelId } }),
   });

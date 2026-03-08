@@ -1,5 +1,6 @@
 import { db, form, notificationChannel, submission, usage } from "@repo/db";
 import type { NotificationChannelConfig } from "@repo/db/schema";
+import { notificationLog } from "@repo/db/schema";
 import { createServerFn } from "@tanstack/react-start";
 import { and, count, desc, eq, gte, inArray, sql, sum } from "drizzle-orm";
 import { z } from "zod";
@@ -7,6 +8,7 @@ import { authMiddleware } from "~/lib/auth/middleware";
 import { formFieldsSchema } from "~/lib/forms/field-types";
 import { generateId, generateSlug } from "~/lib/id";
 import { getPlanLimits, requiredPlanForChannel } from "~/lib/pricing/plans";
+import { enqueueSendWebhook } from "~/lib/queue";
 
 // Validation schemas
 const createFormSchema = z.object({
@@ -582,12 +584,17 @@ export const $getRecentSubmissions = createServerFn({ method: "GET" })
 // Notification channel config schemas
 const emailConfigSchema = z.object({ to: z.string().email() });
 const webhookUrlConfigSchema = z.object({ webhookUrl: z.string().url() });
+const webhookConfigSchema = z.object({ url: z.string().url() });
 
-const notificationConfigSchema = z.union([emailConfigSchema, webhookUrlConfigSchema]);
+const notificationConfigSchema = z.union([
+  emailConfigSchema,
+  webhookUrlConfigSchema,
+  webhookConfigSchema,
+]);
 
 const createNotificationChannelSchema = z.object({
   formId: z.string().min(1),
-  type: z.enum(["email", "discord"]),
+  type: z.enum(["email", "discord", "webhook"]),
   config: notificationConfigSchema,
   enabled: z.boolean().optional().default(true),
 });
@@ -793,4 +800,167 @@ export const $getEmailUsage = createServerFn({ method: "GET" })
         limit: limits.emailsPerMonth,
       },
     };
+  });
+
+/**
+ * Get notification logs for a specific channel (most recent 50).
+ * Verifies ownership via the form -> user relationship.
+ */
+export const $getNotificationLogs = createServerFn({ method: "GET" })
+  .inputValidator(z.object({ channelId: z.string().min(1) }))
+  .middleware([authMiddleware])
+  .handler(async ({ context, data }) => {
+    // Verify channel exists and is a webhook channel
+    const [channelRecord] = await db
+      .select({ formId: notificationChannel.formId, type: notificationChannel.type })
+      .from(notificationChannel)
+      .where(eq(notificationChannel.id, data.channelId))
+      .limit(1);
+
+    if (!channelRecord) {
+      throw new Error("Notification channel not found");
+    }
+
+    if (channelRecord.type !== "webhook") {
+      throw new Error("Delivery logs are only available for webhook channels");
+    }
+
+    const [formRecord] = await db
+      .select({ id: form.id })
+      .from(form)
+      .where(
+        and(eq(form.id, channelRecord.formId), eq(form.userId, context.user.id)),
+      )
+      .limit(1);
+
+    if (!formRecord) {
+      throw new Error("Form not found");
+    }
+
+    // Fetch logs with submission data for preview
+    const logs = await db
+      .select({
+        id: notificationLog.id,
+        submissionId: notificationLog.submissionId,
+        status: notificationLog.status,
+        error: notificationLog.error,
+        sentAt: notificationLog.sentAt,
+        createdAt: notificationLog.createdAt,
+        submissionData: submission.data,
+        submissionCreatedAt: submission.createdAt,
+      })
+      .from(notificationLog)
+      .leftJoin(submission, eq(notificationLog.submissionId, submission.id))
+      .where(eq(notificationLog.channelId, data.channelId))
+      .orderBy(desc(notificationLog.createdAt))
+      .limit(50);
+
+    return logs.map((log) => {
+      const dataObj = (log.submissionData ?? {}) as Record<string, unknown>;
+      const entries = Object.entries(dataObj).slice(0, 2);
+      const preview =
+        entries.length > 0
+          ? entries.map(([k, v]) => `${k}: ${String(v)}`).join(", ")
+          : "No data";
+      return {
+        id: log.id,
+        submissionId: log.submissionId,
+        status: log.status,
+        error: log.error,
+        sentAt: log.sentAt,
+        createdAt: log.createdAt,
+        submissionPreview: preview,
+        submissionCreatedAt: log.submissionCreatedAt,
+      };
+    });
+  });
+
+/**
+ * Replay a notification for a specific log entry.
+ * Re-enqueues the appropriate job for the submission associated with the log.
+ */
+export const $replayNotification = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      logId: z.string().min(1),
+      submissionId: z.string().min(1),
+    }),
+  )
+  .middleware([authMiddleware])
+  .handler(async ({ context, data }) => {
+    // Fetch the log entry with its channel
+    const [logRecord] = await db
+      .select({
+        channelId: notificationLog.channelId,
+      })
+      .from(notificationLog)
+      .where(eq(notificationLog.id, data.logId))
+      .limit(1);
+
+    if (!logRecord) {
+      throw new Error("Notification log not found");
+    }
+
+    // Fetch channel
+    const [channelRecord] = await db
+      .select()
+      .from(notificationChannel)
+      .where(eq(notificationChannel.id, logRecord.channelId))
+      .limit(1);
+
+    if (!channelRecord) {
+      throw new Error("Notification channel not found");
+    }
+
+    // Replay is only available for webhook channels
+    if (channelRecord.type !== "webhook") {
+      throw new Error("Replay is only available for webhook channels");
+    }
+
+    // Verify ownership
+    const [formRecord] = await db
+      .select({ id: form.id, name: form.name, slug: form.slug })
+      .from(form)
+      .where(
+        and(eq(form.id, channelRecord.formId), eq(form.userId, context.user.id)),
+      )
+      .limit(1);
+
+    if (!formRecord) {
+      throw new Error("Form not found");
+    }
+
+    // Fetch the submission
+    const [submissionRecord] = await db
+      .select()
+      .from(submission)
+      .where(
+        and(
+          eq(submission.id, data.submissionId),
+          eq(submission.formId, formRecord.id),
+        ),
+      )
+      .limit(1);
+
+    if (!submissionRecord) {
+      throw new Error("Submission not found");
+    }
+
+    const submittedAt = submissionRecord.createdAt.toISOString();
+    const submissionData = submissionRecord.data as Record<string, unknown>;
+
+    // Re-enqueue webhook
+    const config = channelRecord.config as { url: string };
+    await enqueueSendWebhook({
+      channelId: channelRecord.id,
+      submissionId: submissionRecord.id,
+      url: config.url,
+      formId: formRecord.id,
+      formName: formRecord.name,
+      formSlug: formRecord.slug,
+      submissionData,
+      submittedAt,
+    });
+
+    return { success: true };
   });

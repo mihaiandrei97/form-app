@@ -351,9 +351,13 @@ function FormDetailPage() {
           ) : (
             <div className="flex flex-wrap gap-2">
               {form.notificationChannels.map((channel) => {
-                const config = channel.config as { to?: string; webhookUrl?: string };
+                const config = channel.config as { to?: string; webhookUrl?: string; url?: string };
                 const label =
-                  channel.type === "email" ? config.to : "Discord";
+                  channel.type === "email"
+                    ? config.to
+                    : channel.type === "webhook"
+                      ? config.url
+                      : "Discord";
                 return (
                   <div
                     key={channel.id}

@@ -5,7 +5,7 @@ import { and, eq, sql, sum } from "drizzle-orm";
 import { validateSubmission } from "~/lib/forms/validation";
 import { generateId } from "~/lib/id";
 import { getPlanLimits } from "~/lib/pricing/plans";
-import { enqueueSendDiscord, enqueueSendEmail } from "~/lib/queue";
+import { enqueueSendDiscord, enqueueSendEmail, enqueueSendWebhook } from "~/lib/queue";
 
 /**
  * Form submission API endpoint.
@@ -256,6 +256,18 @@ export const Route = createFileRoute("/api/f/$slug")({
                 channelId: channel.id,
                 submissionId,
                 webhookUrl: config.webhookUrl,
+                formId: formRecord.id,
+                formName: formRecord.name,
+                formSlug: formRecord.slug,
+                submissionData,
+                submittedAt,
+              });
+            } else if (channel.type === "webhook") {
+              const config = channel.config as { url: string };
+              await enqueueSendWebhook({
+                channelId: channel.id,
+                submissionId,
+                url: config.url,
                 formId: formRecord.id,
                 formName: formRecord.name,
                 formSlug: formRecord.slug,
