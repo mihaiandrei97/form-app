@@ -1,14 +1,19 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Check, Sparkles } from "lucide-react";
-import { useEffect } from "react";
+import { Check, CreditCard, Sparkles } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import authClient from "~/lib/auth/auth-client";
+import { authQueryOptions } from "~/lib/auth/queries";
 import { productsQueryOptions } from "~/lib/pricing/queries";
 
 export const Route = createFileRoute("/(public)/pricing")({
-  loader: ({ context }) => context.queryClient.ensureQueryData(productsQueryOptions()),
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(productsQueryOptions()),
+      context.queryClient.ensureQueryData(authQueryOptions()),
+    ]),
   head: () => ({
     meta: [{ title: "Pricing | BForms" }],
   }),
@@ -18,23 +23,37 @@ export const Route = createFileRoute("/(public)/pricing")({
 function PricingPage() {
   const navigate = useNavigate();
   const { data: plans } = useSuspenseQuery(productsQueryOptions());
+  const { data: userData } = useSuspenseQuery(authQueryOptions());
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function checkSubcription() {
-      const { data } = await authClient.creem.hasAccessGranted();
-      console.log(data);
-      const session = await authClient.getSession();
-      console.log("Current user session", session);
+  const currentPlan = userData?.plan ?? "free";
+  const isPaid = currentPlan === "starter" || currentPlan === "pro";
+
+  const handleManageBilling = async () => {
+    setLoadingPlan("portal");
+    try {
+      const { data, error } = await authClient.creem.createPortal();
+      if (error) throw new Error(error.message);
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to open billing portal");
+    } finally {
+      setLoadingPlan(null);
     }
-    checkSubcription();
-  }, []);
+  };
 
   const handlePlanClick = async (prodId: string, planName: string) => {
-    console.log("Selected plan", prodId);
-
     // Free plan - navigate to dashboard
     if (planName === "Free") {
       navigate({ to: "/dashboard" });
+      return;
+    }
+
+    // If already on a paid plan, open billing portal to manage/switch
+    if (isPaid) {
+      await handleManageBilling();
       return;
     }
 
@@ -51,16 +70,28 @@ function PricingPage() {
       return;
     }
 
-    const result = await authClient.creem.createCheckout({
-      productId: prodId,
-      successUrl: "/success",
-      metadata: { referenceId: session.data.user.id },
-    });
-    if (result.data?.error || result.error) {
-      console.error("Error creating checkout", result.data?.error || result.error);
-      toast.error("Failed to create checkout session. Please try again.");
-      return;
+    setLoadingPlan(planName);
+    try {
+      const result = await authClient.creem.createCheckout({
+        productId: prodId,
+        successUrl: "/success",
+        metadata: { referenceId: session.data.user.id },
+      });
+      if (result.data?.error || result.error) {
+        throw new Error("Failed to create checkout session");
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to create checkout session. Please try again.");
+    } finally {
+      setLoadingPlan(null);
     }
+  };
+
+  const getPlanCta = (planName: string, originalCta: string) => {
+    if (planName === "Free") return originalCta;
+    if (isPaid && currentPlan === planName.toLowerCase()) return "Manage Billing";
+    if (isPaid) return "Change Plan";
+    return originalCta;
   };
 
   return (
@@ -105,11 +136,17 @@ function PricingPage() {
                   <span className="text-muted-foreground text-sm">/ month</span>
                 </div>
                 <Button
-                  className="mt-6 w-full"
+                  className="mt-6 w-full gap-2"
                   variant={plan.highlight ? "default" : "outline"}
                   onClick={() => handlePlanClick(plan.prodId, plan.name)}
+                  disabled={loadingPlan !== null}
                 >
-                  {plan.cta}
+                  {isPaid && plan.name !== "Free" ? (
+                    <CreditCard className="h-4 w-4" />
+                  ) : null}
+                  {loadingPlan === plan.name || (loadingPlan === "portal" && plan.name !== "Free")
+                    ? "Loading..."
+                    : getPlanCta(plan.name, plan.cta)}
                 </Button>
                 <ul className="mt-6 space-y-3 text-sm">
                   {plan.features.map((feature) => (

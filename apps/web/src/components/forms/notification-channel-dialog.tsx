@@ -3,12 +3,11 @@
 import type { NotificationChannelConfig, NotificationChannelType } from "@repo/db/schema";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
 import { Link2, LoaderCircle, LockKeyhole, Mail, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Button, buttonVariants } from "~/components/ui/button";
+import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -34,6 +33,7 @@ import {
   $updateNotificationChannel,
 } from "~/lib/forms/functions";
 import { getPlanLimits, requiredPlanForChannel } from "~/lib/pricing/plans";
+import { useBillingAction } from "~/lib/pricing/use-billing-action";
 import { cn } from "~/lib/utils";
 
 // Discord webhook URL validation
@@ -95,6 +95,7 @@ export function NotificationChannelDialog({
     !planLimits.channels.email &&
     !planLimits.channels.discord &&
     !planLimits.channels.webhook;
+  const { openPortal, isLoading: isBillingLoading } = useBillingAction();
 
   const createMutation = useMutation({
     mutationFn: $createNotificationChannel,
@@ -241,19 +242,21 @@ export function NotificationChannelDialog({
               })}
 
               {allLocked && (
-                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-900 dark:bg-yellow-950">
-                  <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-950">
+                  <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
                     Upgrade to unlock notifications
                   </p>
-                  <p className="mt-1 text-xs text-yellow-700 dark:text-yellow-300">
+                  <p className="mt-1 text-xs text-blue-700 dark:text-blue-300">
                     Get email and Discord notifications starting with the Starter plan.
                   </p>
-                  <Link
-                    to="/pricing"
-                    className={cn(buttonVariants({ size: "sm" }), "mt-3 w-full")}
+                  <Button
+                    onClick={openPortal}
+                    disabled={isBillingLoading}
+                    size="sm"
+                    className="mt-3 w-full"
                   >
-                    View Plans
-                  </Link>
+                    {isBillingLoading ? "Loading..." : "View Plans"}
+                  </Button>
                 </div>
               )}
             </div>

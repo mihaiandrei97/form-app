@@ -6,6 +6,7 @@ import {
   Clock,
   FileText,
   Inbox,
+  Loader2,
   Mail,
   Plus,
   Shield,
@@ -42,6 +43,7 @@ import {
   recentSubmissionsQueryOptions,
 } from "~/lib/forms/queries";
 import { getPlanLimits } from "~/lib/pricing/plans";
+import { useBillingAction } from "~/lib/pricing/use-billing-action";
 
 type RecentSubmission = {
   id: string;
@@ -180,6 +182,7 @@ function DashboardIndex() {
   const { data: recentSubmissions } = useSuspenseQuery(recentSubmissionsQueryOptions());
   const { data: emailUsage } = useSuspenseQuery(emailUsageQueryOptions());
   const { data: user } = useSuspenseQuery(authQueryOptions());
+  const { openPortal, isLoading: isBillingLoading } = useBillingAction();
 
   const plan = user?.plan ?? "free";
   const limits = getPlanLimits(plan);
@@ -204,12 +207,16 @@ function DashboardIndex() {
         </Badge>
         {!isPro && (
           <Button
-            nativeButton={false}
-            render={<Link to="/pricing" />}
+            onClick={openPortal}
+            disabled={isBillingLoading}
             variant="outline"
             className="w-fit gap-2"
           >
-            <Sparkles className="h-4 w-4" />
+            {isBillingLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Sparkles className="h-4 w-4" />
+            )}
             Upgrade plan
           </Button>
         )}
@@ -346,12 +353,16 @@ function DashboardIndex() {
           {!isPro && (
             <CardFooter>
               <Button
-                nativeButton={false}
-                render={<Link to="/pricing" />}
+                onClick={openPortal}
+                disabled={isBillingLoading}
                 variant="outline"
                 className="w-full gap-2"
               >
-                <Sparkles className="h-4 w-4" />
+                {isBillingLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Sparkles className="h-4 w-4" />
+                )}
                 Upgrade for more
               </Button>
             </CardFooter>
@@ -379,12 +390,16 @@ function DashboardIndex() {
                   Email notifications are not available on the Free plan.
                 </p>
                 <Button
-                  nativeButton={false}
-                  render={<Link to="/pricing" />}
+                  onClick={openPortal}
+                  disabled={isBillingLoading}
                   variant="outline"
                   className="mt-3 gap-2"
                 >
-                  <Sparkles className="h-4 w-4" />
+                  {isBillingLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-4 w-4" />
+                  )}
                   Upgrade to unlock
                 </Button>
               </div>

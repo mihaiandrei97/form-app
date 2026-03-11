@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
   Bell,
   CheckCircle2,
   Info,
   Link2,
+  Loader2,
   LoaderCircle,
   Mail,
   MessageSquare,
@@ -39,6 +40,7 @@ import {
 import { Skeleton } from "~/components/ui/skeleton";
 import { emailUsageQueryOptions, formQueryOptions, notificationLogsQueryOptions } from "~/lib/forms/queries";
 import { $replayNotification } from "~/lib/forms/functions";
+import { useBillingAction } from "~/lib/pricing/use-billing-action";
 import { cn } from "~/lib/utils";
 
 export const Route = createFileRoute(
@@ -216,6 +218,7 @@ function NotificationsPage() {
   const { data: form } = useSuspenseQuery(formQueryOptions(formId));
   const userPlan = user.plan;
   const { data: emailUsage } = useSuspenseQuery(emailUsageQueryOptions());
+  const { openPortal, isLoading: isBillingLoading } = useBillingAction();
 
   const [logSheetChannel, setLogSheetChannel] = useState<{
     id: string;
@@ -280,18 +283,19 @@ function NotificationsPage() {
 
       {/* Plan banner for free users */}
       {userPlan === "free" && (
-        <div className="rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 dark:border-yellow-900 dark:bg-yellow-950">
-          <p className="text-sm text-yellow-800 dark:text-yellow-200">
+        <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 dark:border-blue-900 dark:bg-blue-950">
+          <p className="text-sm text-blue-800 dark:text-blue-200">
             Notifications are available on the Starter plan and above.{" "}
-            <Link
-              to="/pricing"
+            <button
+              onClick={openPortal}
+              disabled={isBillingLoading}
               className={cn(
                 buttonVariants({ variant: "link", size: "xs" }),
-                "h-auto p-0 text-yellow-800 underline dark:text-yellow-200",
+                "h-auto p-0 text-blue-800 underline dark:text-blue-200",
               )}
             >
-              Upgrade your plan
-            </Link>
+              {isBillingLoading ? <Loader2 className="inline h-3 w-3 animate-spin" /> : "Upgrade your plan"}
+            </button>
           </p>
         </div>
       )}
@@ -301,15 +305,16 @@ function NotificationsPage() {
         <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 dark:border-blue-900 dark:bg-blue-950">
           <p className="text-sm text-blue-800 dark:text-blue-200">
             Webhook notifications (POST to any URL) are available on the Pro plan.{" "}
-            <Link
-              to="/pricing"
+            <button
+              onClick={openPortal}
+              disabled={isBillingLoading}
               className={cn(
                 buttonVariants({ variant: "link", size: "xs" }),
                 "h-auto p-0 text-blue-800 underline dark:text-blue-200",
               )}
             >
-              Upgrade to Pro
-            </Link>
+              {isBillingLoading ? <Loader2 className="inline h-3 w-3 animate-spin" /> : "Upgrade to Pro"}
+            </button>
           </p>
         </div>
       )}
@@ -329,15 +334,16 @@ function NotificationsPage() {
               <p className="mt-1 font-medium text-orange-700 dark:text-orange-400">
                 Email limit reached. Submissions are still accepted but email
                 notifications are paused.{" "}
-                <Link
-                  to="/pricing"
-                  className={cn(
-                    buttonVariants({ variant: "link", size: "xs" }),
-                    "h-auto p-0 text-orange-700 underline dark:text-orange-400",
-                  )}
-                >
-                  Upgrade for more
-                </Link>
+            <button
+                onClick={openPortal}
+                disabled={isBillingLoading}
+                className={cn(
+                  buttonVariants({ variant: "link", size: "xs" }),
+                  "h-auto p-0 text-orange-700 underline dark:text-orange-400",
+                )}
+              >
+                {isBillingLoading ? <Loader2 className="inline h-3 w-3 animate-spin" /> : "Upgrade for more"}
+              </button>
               </p>
             )}
           </div>

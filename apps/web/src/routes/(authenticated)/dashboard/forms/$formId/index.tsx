@@ -34,6 +34,7 @@ import {
   $getSubmissions,
 } from "~/lib/forms/functions";
 import { formQueryOptions, submissionsQueryOptions } from "~/lib/forms/queries";
+import { useBillingAction } from "~/lib/pricing/use-billing-action";
 import { cn } from "~/lib/utils";
 
 export const Route = createFileRoute("/(authenticated)/dashboard/forms/$formId/")({
@@ -128,6 +129,7 @@ function FormDetailPage() {
   const { formId } = Route.useParams();
   const { data: form } = useSuspenseQuery(formQueryOptions(formId));
   const queryClient = useQueryClient();
+  const { openPortal, isLoading: isBillingLoading } = useBillingAction();
 
   // Submissions state with pagination
   const [allSubmissions, setAllSubmissions] = useState<
@@ -443,16 +445,16 @@ function FormDetailPage() {
               <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600 dark:text-blue-400" />
               <p className="text-sm text-blue-800 dark:text-blue-200">
                 Showing submissions from the last {submissionsData.historyDays} days.{" "}
-                <Link
-                  to="/pricing"
+                <button
+                  onClick={openPortal}
+                  disabled={isBillingLoading}
                   className={cn(
                     buttonVariants({ variant: "link", size: "xs" }),
                     "h-auto p-0 text-blue-800 underline dark:text-blue-200",
                   )}
                 >
-                  Upgrade for longer history
-                </Link>
-              </p>
+                  {isBillingLoading ? <Loader2 className="inline h-3 w-3 animate-spin" /> : "Upgrade for longer history"}
+                </button>              </p>
             </div>
           )}
           <SubmissionsTable

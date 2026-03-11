@@ -2,10 +2,11 @@ import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-q
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { FormForm, type FormFormValues } from "~/components/forms/form-form";
-import { buttonVariants } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import { $createForm } from "~/lib/forms/functions";
 import { formsQueryOptions } from "~/lib/forms/queries";
 import { getPlanLimits } from "~/lib/pricing/plans";
+import { useBillingAction } from "~/lib/pricing/use-billing-action";
 import { cn } from "~/lib/utils";
 
 export const Route = createFileRoute("/(authenticated)/dashboard/forms/new")({
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/(authenticated)/dashboard/forms/new")({
 function NewFormPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { openPortal, isLoading: isBillingLoading } = useBillingAction();
 
   const { user } = Route.useRouteContext();
   const { data: forms } = useSuspenseQuery(formsQueryOptions());
@@ -69,9 +71,9 @@ function NewFormPage() {
             {formCount}. Upgrade your plan to create more forms.
           </p>
           <div className="mt-4 flex gap-3">
-            <Link to="/pricing" className={cn(buttonVariants())}>
-              View Plans
-            </Link>
+            <Button onClick={openPortal} disabled={isBillingLoading}>
+              {isBillingLoading ? "Loading..." : "View Plans"}
+            </Button>
             <Link
               to="/dashboard/forms"
               className={cn(buttonVariants({ variant: "outline" }))}
