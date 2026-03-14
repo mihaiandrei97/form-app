@@ -182,12 +182,12 @@ function DashboardIndex() {
   const { data: recentSubmissions } = useSuspenseQuery(recentSubmissionsQueryOptions());
   const { data: emailUsage } = useSuspenseQuery(emailUsageQueryOptions());
   const { data: user } = useSuspenseQuery(authQueryOptions());
-  const { openPortal, isLoading: isBillingLoading } = useBillingAction();
 
   const plan = user?.plan ?? "free";
   const limits = getPlanLimits(plan);
   const hasNoForms = stats.totalForms === 0;
   const isPro = plan === "pro";
+  const { openPortal, isLoading: isBillingLoading } = useBillingAction(plan);
 
   const submissionPercent =
     limits.submissions > 0

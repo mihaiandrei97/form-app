@@ -218,7 +218,7 @@ function NotificationsPage() {
   const { data: form } = useSuspenseQuery(formQueryOptions(formId));
   const userPlan = user.plan;
   const { data: emailUsage } = useSuspenseQuery(emailUsageQueryOptions());
-  const { openPortal, isLoading: isBillingLoading } = useBillingAction();
+  const { openPortal, isLoading: isBillingLoading } = useBillingAction(userPlan);
 
   const [logSheetChannel, setLogSheetChannel] = useState<{
     id: string;

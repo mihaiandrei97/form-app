@@ -127,9 +127,10 @@ function FormDetailSkeleton() {
 
 function FormDetailPage() {
   const { formId } = Route.useParams();
+  const { user } = Route.useRouteContext();
   const { data: form } = useSuspenseQuery(formQueryOptions(formId));
   const queryClient = useQueryClient();
-  const { openPortal, isLoading: isBillingLoading } = useBillingAction();
+  const { openPortal, isLoading: isBillingLoading } = useBillingAction(user.plan);
 
   // Submissions state with pagination
   const [allSubmissions, setAllSubmissions] = useState<

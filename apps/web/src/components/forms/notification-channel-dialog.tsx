@@ -95,7 +95,7 @@ export function NotificationChannelDialog({
     !planLimits.channels.email &&
     !planLimits.channels.discord &&
     !planLimits.channels.webhook;
-  const { openPortal, isLoading: isBillingLoading } = useBillingAction();
+  const { openPortal, isLoading: isBillingLoading } = useBillingAction(userPlan);
 
   const createMutation = useMutation({
     mutationFn: $createNotificationChannel,

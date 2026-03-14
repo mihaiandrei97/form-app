@@ -22,8 +22,6 @@ export const Route = createFileRoute("/(authenticated)/dashboard/forms/new")({
 function NewFormPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { openPortal, isLoading: isBillingLoading } = useBillingAction();
-
   const { user } = Route.useRouteContext();
   const { data: forms } = useSuspenseQuery(formsQueryOptions());
 
@@ -31,6 +29,7 @@ function NewFormPage() {
   const limits = getPlanLimits(plan);
   const formCount = forms.length;
   const atLimit = limits.forms !== Infinity && formCount >= limits.forms;
+  const { openPortal, isLoading: isBillingLoading } = useBillingAction(plan);
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (values: FormFormValues) =>
