@@ -30,11 +30,11 @@ function PrivacyPage() {
         <section>
           <h2 className="text-xl font-semibold">1. Data Controller</h2>
           <p className="text-muted-foreground mt-2">
-            <strong className="text-foreground">WatermelonTech SRL</strong> (&quot;we&quot;,
-            &quot;us&quot;, or &quot;our&quot;) is the Data Controller for the personal
-            information collected through the BForms platform. We are a company registered
-            in Romania (EU) and are committed to protecting your privacy in accordance with
-            the General Data Protection Regulation (GDPR).
+            <strong className="text-foreground">WatermelonTech SRL</strong>{" "}
+            (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) is the Data Controller
+            for the personal information collected through the BForms platform. We are a
+            company registered in Romania (EU) and are committed to protecting your
+            privacy in accordance with the General Data Protection Regulation (GDPR).
           </p>
           <div className="text-muted-foreground mt-3 space-y-1 text-sm">
             <p>
@@ -73,8 +73,8 @@ function PrivacyPage() {
                 <tr>
                   <td className="px-4 py-2">Account Info (Email, Name)</td>
                   <td className="px-4 py-2">
-                    <strong className="text-foreground">Contractual Necessity</strong>{" "}
-                    (to provide the Service)
+                    <strong className="text-foreground">Contractual Necessity</strong> (to
+                    provide the Service)
                   </td>
                 </tr>
                 <tr>
@@ -106,15 +106,16 @@ function PrivacyPage() {
           <h2 className="text-xl font-semibold">3. Payment Information</h2>
           <p className="text-muted-foreground mt-2">
             <strong className="text-foreground">Important:</strong> We do not collect,
-            store, or process your credit card numbers or financial details on our servers.
+            store, or process your credit card numbers or financial details on our
+            servers.
           </p>
           <p className="text-muted-foreground mt-2">
-            We partner with{" "}
-            <strong className="text-foreground">Creem.io</strong>, an authorized reseller
-            and Merchant of Record, to handle all billing and subscriptions. When you
-            subscribe to a paid plan, you interact directly with Creem.io. We share only
-            your email address and a unique user ID with them to link the payment to your
-            BForms account. Their handling of your financial data is governed by the{" "}
+            We partner with <strong className="text-foreground">Creem.io</strong>, an
+            authorized reseller and Merchant of Record, to handle all billing and
+            subscriptions. When you subscribe to a paid plan, you interact directly with
+            Creem.io. We share only your email address and a unique user ID with them to
+            link the payment to your BForms account. Their handling of your financial data
+            is governed by the{" "}
             <a
               href="https://www.creem.io/privacy"
               target="_blank"
@@ -186,8 +187,8 @@ function PrivacyPage() {
             </li>
           </ul>
           <p className="text-muted-foreground mt-2">
-            No method of transmission over the Internet is 100% secure. While we strive
-            to use commercially acceptable means to protect your data, we cannot guarantee
+            No method of transmission over the Internet is 100% secure. While we strive to
+            use commercially acceptable means to protect your data, we cannot guarantee
             its absolute security.
           </p>
         </section>
@@ -211,15 +212,16 @@ function PrivacyPage() {
             </li>
             <li>
               <strong className="text-foreground">Deleted Accounts:</strong> If you delete
-              your account, your personal data is removed from our live production database
-              within 30 days of your request, except where we are required to retain it
-              for legal purposes.
+              your account, your personal data is removed from our live production
+              database within 30 days of your request, except where we are required to
+              retain it for legal purposes.
             </li>
             <li>
               <strong className="text-foreground">Backups:</strong> To prevent accidental
               data loss, we maintain encrypted backups. Data from deleted accounts may
               persist in these secure archives for up to{" "}
-              <strong className="text-foreground">30 days</strong> before being overwritten.
+              <strong className="text-foreground">30 days</strong> before being
+              overwritten.
             </li>
           </ul>
         </section>
@@ -299,8 +301,7 @@ function PrivacyPage() {
             rights, please contact us at:
           </p>
           <p className="text-muted-foreground mt-2">
-            <strong className="text-foreground">Email:</strong>{" "}
-            watermelontech.dev@gmail.com
+            <strong className="text-foreground">Email:</strong> contact@bforms.dev
           </p>
         </section>
       </div>

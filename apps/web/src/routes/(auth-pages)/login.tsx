@@ -1,7 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { GalleryVerticalEnd } from "lucide-react";
 import { SignInSocialButton } from "~/components/sign-in-social-button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 
 export const Route = createFileRoute("/(auth-pages)/login")({
   head: () => ({
@@ -28,7 +34,8 @@ function LoginForm() {
         <CardDescription>Sign in with your GitHub or Google account</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4 sm:grid-cols-2">
+        {/*<div className="grid gap-4 sm:grid-cols-2">*/}
+        <div className="grid gap-4">
           <SignInSocialButton
             provider="github"
             callbackURL={redirectUrl}
@@ -41,7 +48,7 @@ function LoginForm() {
               </svg>
             }
           />
-          <SignInSocialButton
+          {/*<SignInSocialButton
             provider="google"
             callbackURL={redirectUrl}
             icon={
@@ -52,7 +59,7 @@ function LoginForm() {
                 />
               </svg>
             }
-          />
+          />*/}
         </div>
       </CardContent>
     </Card>

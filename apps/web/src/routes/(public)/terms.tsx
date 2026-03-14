@@ -69,8 +69,8 @@ function TermsPage() {
         <section>
           <h2 className="text-xl font-semibold">4. Account Registration</h2>
           <p className="text-muted-foreground mt-2">
-            To use our services, you must create an account. When creating an account,
-            you agree to:
+            To use our services, you must create an account. When creating an account, you
+            agree to:
           </p>
           <ul className="text-muted-foreground mt-2 list-inside list-disc space-y-1">
             <li>Provide accurate, current, and complete information</li>
@@ -82,22 +82,23 @@ function TermsPage() {
               Not register using bots or automated methods — accounts must be created by
               humans
             </li>
-            <li>
-              Not maintain more than one free account to circumvent usage limits
-            </li>
+            <li>Not maintain more than one free account to circumvent usage limits</li>
           </ul>
         </section>
 
         <section>
           <h2 className="text-xl font-semibold">5. User Conduct and Acceptable Use</h2>
           <p className="text-muted-foreground mt-2">
-            You agree to use our services only for lawful purposes and in accordance
-            with these terms. You agree not to:
+            You agree to use our services only for lawful purposes and in accordance with
+            these terms. You agree not to:
           </p>
           <ul className="text-muted-foreground mt-2 list-inside list-disc space-y-1">
             <li>Upload content that infringes on intellectual property rights</li>
             <li>Upload content that is unlawful, harmful, or offensive</li>
-            <li>Host phishing content, malware, or deceptive schemes intended to steal user data</li>
+            <li>
+              Host phishing content, malware, or deceptive schemes intended to steal user
+              data
+            </li>
             <li>Use the service to distribute spam</li>
             <li>Attempt to gain unauthorized access to our systems</li>
             <li>
@@ -109,10 +110,10 @@ function TermsPage() {
           </ul>
           <p className="text-muted-foreground mt-2">
             <strong className="text-foreground">API Throttling &amp; Limits:</strong> We
-            reserve the right to temporarily throttle or limit your access to the
-            Service if your usage exceeds reasonable limits or significantly impacts the
-            stability of the Service, even if such usage is technically within the
-            quotas of your subscription plan.
+            reserve the right to temporarily throttle or limit your access to the Service
+            if your usage exceeds reasonable limits or significantly impacts the stability
+            of the Service, even if such usage is technically within the quotas of your
+            subscription plan.
           </p>
         </section>
 
@@ -120,11 +121,10 @@ function TermsPage() {
           <h2 className="text-xl font-semibold">6. Subscriptions and Payments</h2>
           <h3 className="text-foreground mt-3 font-medium">6.1. Merchant of Record</h3>
           <p className="text-muted-foreground mt-2">
-            We use <strong className="text-foreground">Creem.io</strong> as our
-            authorized reseller and Merchant of Record. You acknowledge that while
-            WatermelonTech SRL provides the software service, the contractual
-            relationship regarding payment processing, tax collection, and invoicing is
-            solely between you and Creem.io.
+            We use <strong className="text-foreground">Creem.io</strong> as our authorized
+            reseller and Merchant of Record. You acknowledge that while WatermelonTech SRL
+            provides the software service, the contractual relationship regarding payment
+            processing, tax collection, and invoicing is solely between you and Creem.io.
           </p>
           <p className="text-muted-foreground mt-2">
             By subscribing, you agree to be bound by Creem.io&apos;s{" "}
@@ -151,18 +151,17 @@ function TermsPage() {
             6.2. Management and Refunds
           </h3>
           <p className="text-muted-foreground mt-2">
-            Subscription management (cancellations, upgrades, payment methods) is
-            handled exclusively via the Creem.io Customer Portal linked in your
-            settings.{" "}
+            Subscription management (cancellations, upgrades, payment methods) is handled
+            exclusively via the Creem.io Customer Portal linked in your settings.{" "}
             <strong className="text-foreground">Payments are non-refundable</strong>{" "}
             unless strictly required by law.
           </p>
           <h3 className="text-foreground mt-3 font-medium">6.3. Plan Limit Updates</h3>
           <p className="text-muted-foreground mt-2">
-            We reserve the right to modify the usage limits, quotas, and features
-            included in both Free and Paid plans at any time. While we will attempt to
-            notify users of significant changes, we are not required to provide prior
-            notice for such adjustments.
+            We reserve the right to modify the usage limits, quotas, and features included
+            in both Free and Paid plans at any time. While we will attempt to notify users
+            of significant changes, we are not required to provide prior notice for such
+            adjustments.
           </p>
         </section>
 
@@ -170,17 +169,17 @@ function TermsPage() {
           <h2 className="text-xl font-semibold">7. Privacy and Data Collection</h2>
           <p className="text-muted-foreground mt-2">
             Your use of our services is also governed by our Privacy Policy. We collect,
-            use, and protect your personal information as described in our Privacy
-            Policy. By using our services, you consent to our collection and use of
-            personal data as outlined in the Privacy Policy.
+            use, and protect your personal information as described in our Privacy Policy.
+            By using our services, you consent to our collection and use of personal data
+            as outlined in the Privacy Policy.
           </p>
         </section>
 
         <section>
           <h2 className="text-xl font-semibold">8. Electronic Communications</h2>
           <p className="text-muted-foreground mt-2">
-            By creating an account, you consent to receive electronic communications
-            from us. These communications may include:
+            By creating an account, you consent to receive electronic communications from
+            us. These communications may include:
           </p>
           <ul className="text-muted-foreground mt-2 list-inside list-disc space-y-1">
             <li>
@@ -209,9 +208,8 @@ function TermsPage() {
             <li>Make backups of your content</li>
           </ul>
           <p className="text-muted-foreground mt-2">
-            All rights in the Service, including software, design, and trademarks, are
-            and will remain the exclusive property of WatermelonTech SRL and its
-            licensors.
+            All rights in the Service, including software, design, and trademarks, are and
+            will remain the exclusive property of WatermelonTech SRL and its licensors.
           </p>
         </section>
 
@@ -231,15 +229,15 @@ function TermsPage() {
             11. Disclaimers and Limitation of Liability
           </h2>
           <p className="text-muted-foreground mt-2">
-            The service is provided &quot;as is&quot; and &quot;as available&quot;
-            without warranties of any kind, either express or implied. We do not warrant
-            that the service will be uninterrupted, secure, or error-free.
+            The service is provided &quot;as is&quot; and &quot;as available&quot; without
+            warranties of any kind, either express or implied. We do not warrant that the
+            service will be uninterrupted, secure, or error-free.
           </p>
           <p className="text-muted-foreground mt-2">
-            To the maximum extent permitted by law, WatermelonTech SRL shall not be
-            liable for any indirect, incidental, special, consequential, or punitive
-            damages, or any loss of profits or revenues, whether incurred directly or
-            indirectly, or any loss of data, use, goodwill, or other intangible losses.
+            To the maximum extent permitted by law, WatermelonTech SRL shall not be liable
+            for any indirect, incidental, special, consequential, or punitive damages, or
+            any loss of profits or revenues, whether incurred directly or indirectly, or
+            any loss of data, use, goodwill, or other intangible losses.
           </p>
         </section>
 
@@ -248,20 +246,19 @@ function TermsPage() {
           <p className="text-muted-foreground mt-2">
             WatermelonTech SRL shall not be liable for any failure to perform its
             obligations where such failure results from any cause beyond our reasonable
-            control, including without limitation mechanical, electronic or
-            communications failure or degradation, natural disasters, or third-party
-            service provider failures (e.g., infrastructure or payment processor
-            outages).
+            control, including without limitation mechanical, electronic or communications
+            failure or degradation, natural disasters, or third-party service provider
+            failures (e.g., infrastructure or payment processor outages).
           </p>
         </section>
 
         <section>
           <h2 className="text-xl font-semibold">13. Governing Law</h2>
           <p className="text-muted-foreground mt-2">
-            These Terms shall be governed by and construed in accordance with the laws
-            of <strong className="text-foreground">Romania</strong>. Any legal suit,
-            action, or proceeding arising out of or related to these Terms shall be
-            instituted exclusively in the courts of{" "}
+            These Terms shall be governed by and construed in accordance with the laws of{" "}
+            <strong className="text-foreground">Romania</strong>. Any legal suit, action,
+            or proceeding arising out of or related to these Terms shall be instituted
+            exclusively in the courts of{" "}
             <strong className="text-foreground">Bucharest, Romania</strong>.
           </p>
         </section>
@@ -269,12 +266,11 @@ function TermsPage() {
         <section>
           <h2 className="text-xl font-semibold">14. Contact Us</h2>
           <p className="text-muted-foreground mt-2">
-            If you have any questions about these Terms and Conditions, please contact
-            us at:
+            If you have any questions about these Terms and Conditions, please contact us
+            at:
           </p>
           <p className="text-muted-foreground mt-2">
-            <strong className="text-foreground">Email:</strong>{" "}
-            watermelontech.dev@gmail.com
+            <strong className="text-foreground">Email:</strong> contact@bforms.dev
           </p>
         </section>
       </div>
