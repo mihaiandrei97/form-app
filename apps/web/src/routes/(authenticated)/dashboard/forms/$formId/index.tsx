@@ -1,13 +1,11 @@
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  CheckCircle,
   Copy,
   Download,
   ExternalLink,
   Info,
   Loader2,
-  PauseCircle,
   Pencil,
 } from "lucide-react";
 import { useState } from "react";
@@ -15,7 +13,6 @@ import { toast } from "sonner";
 import { CodeSnippets } from "~/components/forms/code-snippets";
 import { DeleteFormDialog } from "~/components/forms/delete-form-dialog";
 import { SubmissionsTable } from "~/components/forms/submissions-table";
-import { Badge } from "~/components/ui/badge";
 import { Button, buttonVariants } from "~/components/ui/button";
 import {
   Card,
@@ -37,6 +34,7 @@ import {
   $getSubmissions,
 } from "~/lib/forms/functions";
 import { formQueryOptions, submissionsQueryOptions } from "~/lib/forms/queries";
+import { useBillingAction } from "~/lib/pricing/use-billing-action";
 import { cn } from "~/lib/utils";
 
 export const Route = createFileRoute("/(authenticated)/dashboard/forms/$formId/")({
@@ -129,8 +127,10 @@ function FormDetailSkeleton() {
 
 function FormDetailPage() {
   const { formId } = Route.useParams();
+  const { user } = Route.useRouteContext();
   const { data: form } = useSuspenseQuery(formQueryOptions(formId));
   const queryClient = useQueryClient();
+  const { openPortal, isLoading: isBillingLoading } = useBillingAction(user.plan);
 
   // Submissions state with pagination
   const [allSubmissions, setAllSubmissions] = useState<
@@ -218,27 +218,20 @@ function FormDetailPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">{form.name}</h1>
-            <Badge variant={form.isActive ? "default" : "secondary"}>
-              {form.isActive ? (
-                <>
-                  <CheckCircle className="mr-1 h-3 w-3" />
-                  Active
-                </>
-              ) : (
-                <>
-                  <PauseCircle className="mr-1 h-3 w-3" />
-                  Inactive
-                </>
-              )}
-            </Badge>
-          </div>
-          <p className="text-muted-foreground text-sm">
-            Created {new Date(form.createdAt).toLocaleDateString()}
-          </p>
+      <div className="flex items-center justify-between gap-4">
+        <div
+          className={`flex shrink-0 items-center gap-1.5 border-2 px-2 py-0.5 text-xs font-bold ${
+            form.isActive
+              ? "border-foreground bg-accent text-accent-foreground"
+              : "border-border bg-muted text-muted-foreground"
+          }`}
+        >
+          <span
+            className={`inline-block h-1.5 w-1.5 shrink-0 ${
+              form.isActive ? "animate-pulse bg-white" : "bg-muted-foreground"
+            }`}
+          />
+          {form.isActive ? "Active" : "Inactive"}
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -265,8 +258,8 @@ function FormDetailPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="bg-muted flex items-center justify-between rounded-lg px-4 py-3">
-            <code className="text-sm">{endpointUrl}</code>
+          <div className="border-foreground flex items-center justify-between border-2 bg-foreground/5 px-4 py-3 font-mono text-sm [box-shadow:var(--shadow-brutal)]">
+            <code>{endpointUrl}</code>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon-sm" onClick={copyEndpoint}>
                 <Copy className="h-4 w-4" />
@@ -361,15 +354,29 @@ function FormDetailPage() {
           ) : (
             <div className="flex flex-wrap gap-2">
               {form.notificationChannels.map((channel) => {
-                const config = channel.config as { to?: string; webhookUrl?: string };
+                const config = channel.config as { to?: string; webhookUrl?: string; url?: string };
+                const label =
+                  channel.type === "email"
+                    ? config.to
+                    : channel.type === "webhook"
+                      ? config.url
+                      : "Discord";
                 return (
-                  <Badge
+                  <div
                     key={channel.id}
-                    variant={channel.enabled ? "default" : "secondary"}
+                    className={`flex items-center gap-1.5 border-2 px-2 py-0.5 text-xs font-bold ${
+                      channel.enabled
+                        ? "border-foreground bg-accent text-accent-foreground"
+                        : "border-border bg-muted text-muted-foreground"
+                    }`}
                   >
-                    {channel.type === "email" && config.to}
-                    {channel.type === "discord" && "Discord"}
-                  </Badge>
+                    <span
+                      className={`inline-block h-1.5 w-1.5 shrink-0 ${
+                        channel.enabled ? "bg-white" : "bg-muted-foreground"
+                      }`}
+                    />
+                    {label}
+                  </div>
                 );
               })}
             </div>
@@ -439,16 +446,16 @@ function FormDetailPage() {
               <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-600 dark:text-blue-400" />
               <p className="text-sm text-blue-800 dark:text-blue-200">
                 Showing submissions from the last {submissionsData.historyDays} days.{" "}
-                <Link
-                  to="/pricing"
+                <button
+                  onClick={openPortal}
+                  disabled={isBillingLoading}
                   className={cn(
                     buttonVariants({ variant: "link", size: "xs" }),
                     "h-auto p-0 text-blue-800 underline dark:text-blue-200",
                   )}
                 >
-                  Upgrade for longer history
-                </Link>
-              </p>
+                  {isBillingLoading ? <Loader2 className="inline h-3 w-3 animate-spin" /> : "Upgrade for longer history"}
+                </button>              </p>
             </div>
           )}
           <SubmissionsTable

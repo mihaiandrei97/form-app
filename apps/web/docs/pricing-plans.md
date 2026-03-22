@@ -25,7 +25,6 @@ BForms uses a **subscription-based pricing model** with an aggressive market pos
 | Discord notifications         | No       |
 | Webhooks                      | No       |
 | File uploads                  | No       |
-| Branding removal              | No       |
 
 ---
 
@@ -35,39 +34,37 @@ BForms uses a **subscription-based pricing model** with an aggressive market pos
 
 | Feature                       | Included                    |
 | ----------------------------- | --------------------------- |
-| Submissions/month             | 1,000                       |
+| Submissions/month             | 2,000                       |
 | Forms                         | Unlimited                   |
 | Spam protection (honeypot)    | Yes                         |
 | Domain restrictions           | Yes                         |
 | Dashboard & submission viewer | Yes                         |
 | Export (CSV/JSON)             | Yes                         |
 | Submission history            | 30 days                     |
-| Email notifications           | Limited (50/day, 500/month) |
+| Email notifications           | Limited (20/day, 500/month) |
 | Discord notifications         | Yes                         |
 | Webhooks                      | No                          |
 | File uploads                  | No                          |
-| Branding removal              | Yes                         |
 
 ---
 
-### Pro - $12/month
+### Pro - $15/month
 
 **Target:** Agencies, businesses, high-traffic websites
 
 | Feature                       | Included       |
 | ----------------------------- | -------------- |
-| Submissions/month             | 10,000         |
+| Submissions/month             | 15,000         |
 | Forms                         | Unlimited      |
 | Spam protection (honeypot)    | Yes            |
 | Domain restrictions           | Yes            |
 | Dashboard & submission viewer | Yes            |
 | Export (CSV/JSON)             | Yes            |
 | Submission history            | 90 days        |
-| Email notifications           | Unlimited      |
+| Email notifications           | 100/day, 3000/month |
 | Discord notifications         | Yes            |
 | Webhooks                      | Yes            |
-| File uploads                  | Yes (5MB/file) |
-| Branding removal              | Yes            |
+| File uploads                  | No             |
 | Priority support              | Yes            |
 
 ---
@@ -77,8 +74,8 @@ BForms uses a **subscription-based pricing model** with an aggressive market pos
 | Plan       | BForms       | Formspree   | Formspark  | Basin      |
 | ---------- | ------------ | ----------- | ---------- | ---------- |
 | Free       | 100 subs     | 50 subs     | 250 subs   | 100 subs   |
-| ~$5-10/mo  | 1,000 @ $5   | 100 @ $10   | 1,000 @ $9 | 2,500 @ $8 |
-| ~$12-15/mo | 10,000 @ $12 | 1,000 @ $25 | N/A        | N/A        |
+| ~$5-10/mo  | 2,000 @ $5   | 100 @ $10   | 1,000 @ $9 | 2,500 @ $8 |
+| ~$12-15/mo | 15,000 @ $15 | 1,000 @ $25 | N/A        | N/A        |
 
 **Positioning:** BForms offers significantly more submissions at lower price points, particularly at the Pro tier.
 
@@ -88,11 +85,10 @@ BForms uses a **subscription-based pricing model** with an aggressive market pos
 
 | Feature               | Free | Starter | Pro       |
 | --------------------- | ---- | ------- | --------- |
-| Email notifications   | No   | Limited | Unlimited |
+| Email notifications   | No   | Limited (20/day, 500/month) | Limited (100/day, 3000/month) |
 | Discord notifications | No   | Yes     | Yes       |
 | Webhooks              | No   | No      | Yes       |
-| File uploads          | No   | No      | Yes       |
-| Remove branding       | No   | Yes     | Yes       |
+| File uploads          | No   | No      | No        |
 
 ---
 
@@ -106,14 +102,13 @@ BForms uses a **subscription-based pricing model** with an aggressive market pos
 
 ### Feature Flags to Implement
 
-1. `canUseEmailNotifications` - Starter+ (Starter: 50/day, 500/month; Pro: unlimited)
-2. `emailDailyLimit` - 50 for Starter, null for Pro
-3. `emailMonthlyLimit` - 500 for Starter, null for Pro
+1. `canUseEmailNotifications` - Starter+ (Starter: 20/day, 500/month; Pro: 100/day, 3000/month)
+2. `emailDailyLimit` - 20 for Starter, 100 for Pro
+3. `emailMonthlyLimit` - 500 for Starter, 3000 for Pro
 4. `canUseDiscordNotifications` - Starter+
 5. `canUseWebhooks` - Pro+
-6. `canUploadFiles` - Pro+ (5MB/file)
-7. `showBranding` - Free only
-8. `submissionHistoryDays` - Free: 7, Starter: 30, Pro: 90
+6. `canUploadFiles` - Disabled for all plans (for now)
+7. `submissionHistoryDays` - Free: 7, Starter: 30, Pro: 90
 
 ### Third-Party Integrations
 

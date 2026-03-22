@@ -2,9 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest, setResponseHeader } from "@tanstack/react-start/server";
 import { auth } from "~/lib/auth/auth";
 
-export const $getUser = createServerFn({ method: "GET" }).handler(async () => {
+async function getUserFromSession(disableCookieCache: boolean = false) {
   const session = await auth.api.getSession({
     headers: getRequest().headers,
+    query: disableCookieCache ? { disableCookieCache: true } : undefined,
     returnHeaders: true,
   });
 
@@ -15,4 +16,12 @@ export const $getUser = createServerFn({ method: "GET" }).handler(async () => {
   }
 
   return session.response?.user || null;
+}
+
+export const $getUser = createServerFn({ method: "GET" }).handler(async () => {
+  return getUserFromSession();
+});
+
+export const $getFreshUser = createServerFn({ method: "GET" }).handler(async () => {
+  return getUserFromSession(true);
 });

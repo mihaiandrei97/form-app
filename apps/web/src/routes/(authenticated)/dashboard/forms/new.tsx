@@ -2,10 +2,11 @@ import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-q
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { FormForm, type FormFormValues } from "~/components/forms/form-form";
-import { buttonVariants } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import { $createForm } from "~/lib/forms/functions";
 import { formsQueryOptions } from "~/lib/forms/queries";
 import { getPlanLimits } from "~/lib/pricing/plans";
+import { useBillingAction } from "~/lib/pricing/use-billing-action";
 import { cn } from "~/lib/utils";
 
 export const Route = createFileRoute("/(authenticated)/dashboard/forms/new")({
@@ -21,7 +22,6 @@ export const Route = createFileRoute("/(authenticated)/dashboard/forms/new")({
 function NewFormPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
   const { user } = Route.useRouteContext();
   const { data: forms } = useSuspenseQuery(formsQueryOptions());
 
@@ -29,6 +29,7 @@ function NewFormPage() {
   const limits = getPlanLimits(plan);
   const formCount = forms.length;
   const atLimit = limits.forms !== Infinity && formCount >= limits.forms;
+  const { openPortal, isLoading: isBillingLoading } = useBillingAction(plan);
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (values: FormFormValues) =>
@@ -62,25 +63,16 @@ function NewFormPage() {
   if (atLimit) {
     return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Create New Form</h1>
-          <p className="text-muted-foreground">
-            Set up a new form endpoint to receive submissions.
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-6 dark:border-yellow-900 dark:bg-yellow-950">
-          <h2 className="text-lg font-semibold text-yellow-800 dark:text-yellow-200">
-            Form limit reached
-          </h2>
-          <p className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
+        <div className="border-foreground bg-accent text-accent-foreground border-2 p-6 [box-shadow:var(--shadow-brutal)]">
+          <h2 className="text-lg font-bold">Form limit reached</h2>
+          <p className="mt-2 text-sm">
             Your {plan} plan allows up to {limits.forms} forms. You currently have{" "}
             {formCount}. Upgrade your plan to create more forms.
           </p>
           <div className="mt-4 flex gap-3">
-            <Link to="/pricing" className={cn(buttonVariants())}>
-              View Plans
-            </Link>
+            <Button onClick={openPortal} disabled={isBillingLoading}>
+              {isBillingLoading ? "Loading..." : "View Plans"}
+            </Button>
             <Link
               to="/dashboard/forms"
               className={cn(buttonVariants({ variant: "outline" }))}
@@ -95,17 +87,11 @@ function NewFormPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Create New Form</h1>
-        <p className="text-muted-foreground">
-          Set up a new form endpoint to receive submissions.
+      {limits.forms !== Infinity && (
+        <p className="text-muted-foreground text-xs">
+          {formCount} / {limits.forms} forms used
         </p>
-        {limits.forms !== Infinity && (
-          <p className="text-muted-foreground mt-1 text-xs">
-            {formCount} / {limits.forms} forms used
-          </p>
-        )}
-      </div>
+      )}
 
       <FormForm
         mode="create"

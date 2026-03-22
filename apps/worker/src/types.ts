@@ -45,6 +45,26 @@ export type SendDiscordJob = {
 };
 
 /**
+ * Payload for send-webhook job.
+ * Contains all data needed to POST to the user-configured webhook URL.
+ */
+export type SendWebhookJob = {
+  // For notification_log FK references
+  channelId: string;
+  submissionId: string;
+
+  // Webhook config (from channel.config)
+  url: string;
+
+  // Submission context for request body
+  formId: string;
+  formName: string;
+  formSlug: string;
+  submissionData: Record<string, unknown>;
+  submittedAt: string; // ISO string
+};
+
+/**
  * Notification log entry for tracking job results.
  */
 export type NotificationLogInsert = {

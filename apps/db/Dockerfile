@@ -22,3 +22,5 @@ FROM deps AS migrate
 COPY packages/db ./packages/db
 
 CMD ["pnpm", "--filter", "@repo/db", "db:migrate"]
+
+# docker compose run --rm migrate

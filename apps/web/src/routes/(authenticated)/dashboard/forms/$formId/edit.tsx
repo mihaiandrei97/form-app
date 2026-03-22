@@ -54,11 +54,6 @@ function EditFormPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Edit Form</h1>
-        <p className="text-muted-foreground">Update the settings for {form.name}.</p>
-      </div>
-
       <FormForm
         mode="edit"
         defaultValues={{

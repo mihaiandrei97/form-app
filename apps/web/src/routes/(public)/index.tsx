@@ -12,7 +12,6 @@ import {
   Zap,
 } from "lucide-react";
 import { Suspense } from "react";
-import { SiteHeader } from "~/components/site-header";
 import {
   Accordion,
   AccordionContent,
@@ -24,7 +23,7 @@ import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import { highlightedCodeQueryOptions } from "~/lib/code-highlight";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/(public)/")({
   head: () => ({
     meta: [{ title: "BForms - Form endpoints for your websites" }],
   }),
@@ -33,18 +32,11 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   return (
-    <div className="min-h-svh">
-      <SiteHeader />
-
+    <>
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="bg-muted/40 absolute inset-0" />
-        <div className="bg-primary/10 absolute top-12 -left-20 h-72 w-72 rounded-full blur-3xl" />
-        <div className="bg-secondary/50 absolute -right-24 bottom-0 h-80 w-80 rounded-full blur-3xl" />
-        <div className="bg-primary/5 absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" />
-
+      <section className="bg-muted/40 relative overflow-hidden">
         <div className="relative mx-auto max-w-4xl px-4 py-24 text-center md:py-36">
-          <div className="bg-card/70 text-muted-foreground mx-auto mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm">
+          <div className="bg-card text-muted-foreground mx-auto mb-8 inline-flex items-center gap-2 border-2 border-foreground px-4 py-2 text-sm font-bold shadow-[var(--shadow-brutal)]">
             <Sparkles className="h-4 w-4" />
             No backend required. Free to start.
           </div>
@@ -135,8 +127,7 @@ function LandingPage() {
       </section>
 
       {/* Code Example Section */}
-      <section className="bg-muted/40 relative overflow-hidden py-20 md:py-28">
-        <div className="bg-primary/5 absolute -right-32 -bottom-32 h-96 w-96 rounded-full blur-3xl" />
+      <section className="bg-muted/40 py-20 md:py-28">
         <div className="relative mx-auto max-w-5xl px-4">
           <div className="grid items-center gap-12 md:grid-cols-2">
             <div>
@@ -162,12 +153,12 @@ function LandingPage() {
               </Button>
             </div>
 
-            <div className="bg-card rounded-2xl border p-1">
-              <div className="bg-muted/60 flex items-center gap-2 rounded-t-xl px-4 py-3">
-                <div className="bg-destructive/40 h-3 w-3 rounded-full" />
-                <div className="bg-chart-4/40 h-3 w-3 rounded-full" />
-                <div className="bg-chart-5/40 h-3 w-3 rounded-full" />
-                <span className="text-muted-foreground ml-2 text-xs">contact.html</span>
+            <div className="bg-card border-2 border-foreground shadow-[var(--shadow-brutal)]">
+              <div className="bg-muted/60 flex items-center gap-2 border-b-2 border-foreground px-4 py-3">
+                <Code2 className="text-muted-foreground h-3.5 w-3.5" />
+                <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">
+                  contact.html
+                </span>
               </div>
               <Suspense
                 fallback={
@@ -234,8 +225,7 @@ function LandingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="bg-muted/40 relative overflow-hidden py-20 md:py-28">
-        <div className="bg-primary/5 absolute top-0 -left-32 h-72 w-72 rounded-full blur-3xl" />
+      <section className="bg-muted/40 py-20 md:py-28">
         <div className="relative mx-auto max-w-3xl px-4">
           <div className="text-center">
             <Badge variant="secondary" className="mb-4">
@@ -307,10 +297,8 @@ function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative overflow-hidden py-20 md:py-28">
-        <div className="bg-primary/10 absolute top-0 right-0 h-64 w-64 rounded-full blur-3xl" />
-        <div className="bg-secondary/30 absolute bottom-0 left-0 h-72 w-72 rounded-full blur-3xl" />
-        <div className="relative mx-auto max-w-3xl px-4 text-center">
+      <section className="py-20 md:py-28">
+        <div className="mx-auto max-w-3xl px-4 text-center">
           <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
             Start collecting submissions today
           </h2>
@@ -347,36 +335,7 @@ function LandingPage() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 sm:flex-row">
-          <p className="text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} BForms. All rights reserved.
-          </p>
-          <div className="flex items-center gap-6">
-            <Link
-              to="/pricing"
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Pricing
-            </Link>
-            <a
-              href="/privacy"
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Privacy Policy
-            </a>
-            <a
-              href="/terms"
-              className="text-muted-foreground hover:text-foreground text-sm"
-            >
-              Terms of Service
-            </a>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 }
 
@@ -399,11 +358,9 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="bg-card rounded-2xl border p-6 transition-shadow hover:shadow-md">
-      <div className="bg-primary/10 text-primary mb-4 inline-flex rounded-xl p-3">
-        {icon}
-      </div>
-      <h3 className="text-lg font-semibold">{title}</h3>
+    <div className="bg-card border-2 border-foreground p-6 shadow-[var(--shadow-brutal)] transition-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
+      <div className="bg-primary/10 text-primary mb-4 inline-flex p-3">{icon}</div>
+      <h3 className="text-lg font-bold">{title}</h3>
       <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{description}</p>
     </div>
   );
@@ -419,11 +376,11 @@ function StepCard({
   description: string;
 }) {
   return (
-    <div className="bg-card rounded-2xl border p-6 text-center">
-      <div className="bg-primary text-primary-foreground mx-auto flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold">
+    <div className="bg-card border-2 border-foreground p-6 text-center shadow-[var(--shadow-brutal)]">
+      <div className="bg-primary text-primary-foreground mx-auto flex h-10 w-10 items-center justify-center border-2 border-foreground text-sm font-bold">
         {number}
       </div>
-      <h3 className="mt-4 text-lg font-semibold">{title}</h3>
+      <h3 className="mt-4 text-lg font-bold">{title}</h3>
       <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{description}</p>
     </div>
   );
@@ -443,7 +400,7 @@ function HighlightedCode() {
 
   return (
     <div
-      className="overflow-hidden rounded-b-xl text-sm leading-relaxed [&_pre]:overflow-x-auto [&_pre]:p-5"
+      className="overflow-hidden text-sm leading-relaxed [&_pre]:overflow-x-auto [&_pre]:p-5"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

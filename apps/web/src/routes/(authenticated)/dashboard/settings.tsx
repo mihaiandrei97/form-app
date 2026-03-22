@@ -1,6 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import {
   AlertTriangle,
   Calendar,
@@ -51,10 +51,14 @@ import { Skeleton } from "~/components/ui/skeleton";
 import authClient from "~/lib/auth/auth-client";
 import { authQueryOptions } from "~/lib/auth/queries";
 import { getPlanLimits } from "~/lib/pricing/plans";
+import { productsQueryOptions } from "~/lib/pricing/queries";
 
 export const Route = createFileRoute("/(authenticated)/dashboard/settings")({
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(authQueryOptions());
+    await Promise.all([
+      context.queryClient.ensureQueryData(authQueryOptions()),
+      context.queryClient.ensureQueryData(productsQueryOptions()),
+    ]);
   },
   head: () => ({
     meta: [{ title: "Settings | BForms" }],
@@ -159,6 +163,7 @@ const nameSchema = z.object({
 function SettingsPage() {
   const { user } = Route.useRouteContext();
   const { data: userData } = useSuspenseQuery(authQueryOptions());
+  const { data: plans } = useSuspenseQuery(productsQueryOptions());
   const queryClient = useQueryClient();
   const router = useRouter();
   const navigate = useNavigate();
@@ -166,11 +171,13 @@ function SettingsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isBillingLoading, setIsBillingLoading] = useState(false);
 
   const currentUser = userData ?? user;
   const plan = currentUser?.plan ?? "free";
   const limits = getPlanLimits(plan);
   const isPro = plan === "pro";
+  const isPaid = plan === "starter" || plan === "pro";
 
   const form = useForm({
     defaultValues: {
@@ -223,16 +230,49 @@ function SettingsPage() {
     }
   };
 
+  const handleManageBilling = async () => {
+    setIsBillingLoading(true);
+    try {
+      const { data, error } = await authClient.creem.createPortal();
+      if (error) throw new Error(error.message);
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to open billing portal");
+    } finally {
+      setIsBillingLoading(false);
+    }
+  };
+
+  const handleUpgrade = async () => {
+    setIsBillingLoading(true);
+    try {
+      // Use the Starter plan for free users upgrading; Pro users use the portal
+      const targetPlan = plans?.find((p) => p.name === "Starter");
+      if (!targetPlan) {
+        navigate({ to: "/pricing" });
+        return;
+      }
+      const { data, error } = await authClient.creem.createCheckout({
+        productId: targetPlan.prodId,
+        successUrl: "/success",
+        metadata: { referenceId: currentUser?.id ?? "" },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to start checkout");
+      navigate({ to: "/pricing" });
+    } finally {
+      setIsBillingLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your account, plan, and connected services.
-        </p>
-      </div>
-
       {/* Profile Banner */}
       <Card>
         <CardContent className="flex flex-col gap-4 py-6 sm:flex-row sm:items-center">
@@ -420,24 +460,34 @@ function SettingsPage() {
           </div>
         </CardContent>
         <CardFooter className="border-t pt-6">
-          <Button
-            nativeButton={false}
-            render={<Link to="/pricing" />}
-            variant={isPro ? "outline" : "default"}
-            className="w-full gap-2"
-          >
-            {isPro ? (
-              <>
+          {isPaid ? (
+            <Button
+              onClick={handleManageBilling}
+              disabled={isBillingLoading}
+              variant="outline"
+              className="w-full gap-2"
+            >
+              {isBillingLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
                 <CreditCard className="h-4 w-4" />
-                View Plans
-              </>
-            ) : (
-              <>
+              )}
+              Manage Billing
+            </Button>
+          ) : (
+            <Button
+              onClick={handleUpgrade}
+              disabled={isBillingLoading}
+              className="w-full gap-2"
+            >
+              {isBillingLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
                 <Sparkles className="h-4 w-4" />
-                Upgrade Plan
-              </>
-            )}
-          </Button>
+              )}
+              Upgrade Plan
+            </Button>
+          )}
         </CardFooter>
       </Card>
 

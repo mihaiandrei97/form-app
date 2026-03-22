@@ -3,12 +3,11 @@
 import type { NotificationChannelConfig, NotificationChannelType } from "@repo/db/schema";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
-import { LoaderCircle, LockKeyhole, Mail, MessageSquare } from "lucide-react";
+import { Link2, LoaderCircle, LockKeyhole, Mail, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Button, buttonVariants } from "~/components/ui/button";
+import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -34,6 +33,7 @@ import {
   $updateNotificationChannel,
 } from "~/lib/forms/functions";
 import { getPlanLimits, requiredPlanForChannel } from "~/lib/pricing/plans";
+import { useBillingAction } from "~/lib/pricing/use-billing-action";
 import { cn } from "~/lib/utils";
 
 // Discord webhook URL validation
@@ -52,6 +52,10 @@ const discordConfigSchema = z.object({
     .refine((url) => discordWebhookRegex.test(url), {
       message: "Must be a valid Discord webhook URL",
     }),
+});
+
+const webhookConfigSchema = z.object({
+  url: z.string().url("Must be a valid URL"),
 });
 
 interface NotificationChannel {
@@ -87,7 +91,11 @@ export function NotificationChannelDialog({
 
   const isEditing = !!channel;
   const planLimits = getPlanLimits(userPlan);
-  const allLocked = !planLimits.channels.email && !planLimits.channels.discord;
+  const allLocked =
+    !planLimits.channels.email &&
+    !planLimits.channels.discord &&
+    !planLimits.channels.webhook;
+  const { openPortal, isLoading: isBillingLoading } = useBillingAction(userPlan);
 
   const createMutation = useMutation({
     mutationFn: $createNotificationChannel,
@@ -171,6 +179,12 @@ export function NotificationChannelDialog({
                     description: "Send to a Discord channel via webhook",
                     icon: MessageSquare,
                   },
+                  {
+                    type: "webhook" as const,
+                    label: "Webhook",
+                    description: "POST submission data to any URL",
+                    icon: Link2,
+                  },
                 ] as const
               ).map(({ type, label, description, icon: Icon }) => {
                 const disabled = isTypeDisabled(type);
@@ -228,19 +242,21 @@ export function NotificationChannelDialog({
               })}
 
               {allLocked && (
-                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-900 dark:bg-yellow-950">
-                  <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-950">
+                  <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
                     Upgrade to unlock notifications
                   </p>
-                  <p className="mt-1 text-xs text-yellow-700 dark:text-yellow-300">
+                  <p className="mt-1 text-xs text-blue-700 dark:text-blue-300">
                     Get email and Discord notifications starting with the Starter plan.
                   </p>
-                  <Link
-                    to="/pricing"
-                    className={cn(buttonVariants({ size: "sm" }), "mt-3 w-full")}
+                  <Button
+                    onClick={openPortal}
+                    disabled={isBillingLoading}
+                    size="sm"
+                    className="mt-3 w-full"
                   >
-                    View Plans
-                  </Link>
+                    {isBillingLoading ? "Loading..." : "View Plans"}
+                  </Button>
                 </div>
               )}
             </div>
@@ -278,6 +294,24 @@ export function NotificationChannelDialog({
               } else {
                 await createMutation.mutateAsync({
                   data: { formId, type: "discord", config, enabled },
+                });
+              }
+            }}
+            onBack={isEditing ? undefined : handleBack}
+            isPending={isPending}
+          />
+        ) : selectedType === "webhook" || (isEditing && channel?.type === "webhook") ? (
+          <WebhookChannelForm
+            formId={formId}
+            channel={channel}
+            onSubmit={async (config, enabled) => {
+              if (isEditing && channel) {
+                await updateMutation.mutateAsync({
+                  data: { id: channel.id, config, enabled },
+                });
+              } else {
+                await createMutation.mutateAsync({
+                  data: { formId, type: "webhook", config, enabled },
                 });
               }
             }}
@@ -503,6 +537,133 @@ function DiscordChannelForm({
                   <FieldLabel htmlFor={field.name}>Enabled</FieldLabel>
                   <FieldDescription>
                     When disabled, no messages will be sent for new submissions.
+                  </FieldDescription>
+                </div>
+                <Switch
+                  id={field.name}
+                  name={field.name}
+                  checked={field.state.value}
+                  onCheckedChange={field.handleChange}
+                />
+              </Field>
+            )}
+          />
+        )}
+      </FieldGroup>
+      <DialogFooter>
+        {onBack ? (
+          <Button type="button" variant="outline" onClick={onBack} disabled={isPending}>
+            Back
+          </Button>
+        ) : (
+          <DialogClose render={<Button variant="outline" disabled={isPending} />}>
+            Cancel
+          </DialogClose>
+        )}
+        <Button type="submit" disabled={isPending}>
+          {isPending ? (
+            <>
+              <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+              {isEditing ? "Saving..." : "Adding..."}
+            </>
+          ) : isEditing ? (
+            "Save Changes"
+          ) : (
+            "Add Channel"
+          )}
+        </Button>
+      </DialogFooter>
+    </form>
+  );
+}
+
+// Webhook channel form
+interface WebhookChannelFormProps {
+  formId: string;
+  channel?: NotificationChannel;
+  onSubmit: (config: { url: string }, enabled: boolean) => Promise<void>;
+  onBack?: () => void;
+  isPending: boolean;
+}
+
+function WebhookChannelForm({
+  channel,
+  onSubmit,
+  onBack,
+  isPending,
+}: WebhookChannelFormProps) {
+  const isEditing = !!channel;
+  const existingConfig = channel?.config as { url?: string } | undefined;
+
+  const form = useForm({
+    defaultValues: {
+      url: existingConfig?.url ?? "",
+      enabled: channel?.enabled ?? true,
+    },
+    validators: {
+      onSubmit: z.object({
+        url: webhookConfigSchema.shape.url,
+        enabled: z.boolean(),
+      }),
+    },
+    onSubmit: async ({ value }) => {
+      await onSubmit({ url: value.url }, value.enabled);
+    },
+  });
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        form.handleSubmit();
+      }}
+    >
+      <DialogHeader>
+        <DialogTitle>
+          {isEditing ? "Edit Webhook Channel" : "Add Webhook Channel"}
+        </DialogTitle>
+        <DialogDescription>
+          {isEditing
+            ? "Update your webhook endpoint URL."
+            : "Enter the URL that will receive a POST request for each new submission."}
+        </DialogDescription>
+      </DialogHeader>
+      <FieldGroup className="py-4">
+        <form.Field
+          name="url"
+          children={(field) => {
+            const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Endpoint URL</FieldLabel>
+                <Input
+                  id={field.name}
+                  name={field.name}
+                  type="url"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  aria-invalid={isInvalid}
+                  placeholder="https://your-server.com/webhook"
+                />
+                <FieldDescription>
+                  BForms will POST JSON to this URL whenever the form receives a
+                  submission.
+                </FieldDescription>
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            );
+          }}
+        />
+        {isEditing && (
+          <form.Field
+            name="enabled"
+            children={(field) => (
+              <Field orientation="horizontal">
+                <div className="flex flex-1 flex-col gap-1">
+                  <FieldLabel htmlFor={field.name}>Enabled</FieldLabel>
+                  <FieldDescription>
+                    When disabled, no webhook requests will be sent for new submissions.
                   </FieldDescription>
                 </div>
                 <Switch

@@ -5,75 +5,93 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Catppuccin Latte (Light Mode) */
+/* Light Neobrutalism */
 :root {
-  --background: #eff1f5; /* Base */
-  --foreground: #4c4f69; /* Text */
-  --card: #e6e9ef; /* Mantle */
-  --card-foreground: #4c4f69; /* Text */
-  --popover: #e6e9ef; /* Mantle */
-  --popover-foreground: #4c4f69; /* Text */
-  --primary: #8839ef; /* Mauve */
-  --primary-foreground: #eff1f5; /* Base */
-  --secondary: #dce0e8; /* Crust */
-  --secondary-foreground: #4c4f69; /* Text */
-  --muted: #e6e9ef; /* Mantle */
-  --muted-foreground: #6c6f85; /* Subtext0 */
-  --accent: #8839ef; /* Mauve */
-  --accent-foreground: #eff1f5; /* Base */
-  --destructive: #d20f39; /* Red */
-  --border: #ccd0da; /* Surface0 */
-  --input: #ccd0da; /* Surface0 */
-  --ring: #8839ef; /* Mauve */
-  --chart-1: #8839ef; /* Mauve */
-  --chart-2: #d20f39; /* Red */
-  --chart-3: #fe640b; /* Peach */
-  --chart-4: #df8e1d; /* Yellow */
-  --chart-5: #40a02b; /* Green */
-  --radius: 0.625rem;
-  --sidebar: #e6e9ef; /* Mantle */
-  --sidebar-foreground: #4c4f69; /* Text */
-  --sidebar-primary: #8839ef; /* Mauve */
-  --sidebar-primary-foreground: #eff1f5; /* Base */
-  --sidebar-accent: #ccd0da; /* Surface0 */
-  --sidebar-accent-foreground: #4c4f69; /* Text */
-  --sidebar-border: #ccd0da; /* Surface0 */
-  --sidebar-ring: #8839ef; /* Mauve */
+  --background: #fffef0; /* Warm off-white */
+  --foreground: #0f0f0f; /* Near-black — borders, text, brutal shadow */
+  --card: #ffffff; /* Pure white cards — maximum contrast with border */
+  --card-foreground: #0f0f0f;
+  --popover: #ffffff;
+  --popover-foreground: #0f0f0f;
+  --primary: #db2777; /* Vivid pink */
+  --primary-foreground: #ffffff;
+  --secondary: #f5f5f0; /* Slightly warm gray */
+  --secondary-foreground: #0f0f0f;
+  --muted: #f0f0e8;
+  --muted-foreground: #404040;
+  --accent: #db2777; /* Pink accent */
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626; /* Bold red */
+  --border: #d4d4d4; /* Subtle structural borders (non-brutal) */
+  --input: #e5e5e5;
+  --ring: #db2777;
+  --chart-1: #db2777; /* Pink */
+  --chart-2: #dc2626; /* Red */
+  --chart-3: #ea580c; /* Orange */
+  --chart-4: #ca8a04; /* Yellow */
+  --chart-5: #16a34a; /* Green */
+  --radius: 0px;
+  --shadow-brutal: 4px 4px 0px 0px var(--foreground);
+  --sidebar: #fafaf5;
+  --sidebar-foreground: #0f0f0f;
+  --sidebar-primary: #db2777;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f0f0e8;
+  --sidebar-accent-foreground: #0f0f0f;
+  --sidebar-border: #d4d4d4;
+  --sidebar-ring: #db2777;
+  --docs-accent-surface: var(--primary);
+  --docs-accent-surface-foreground: var(--primary-foreground);
+  --docs-step-surface: var(--primary);
+  --docs-step-surface-foreground: var(--primary-foreground);
+  --docs-secondary-chip: var(--secondary);
+  --docs-secondary-chip-foreground: #2f2f2f;
+  --docs-soft-text: #2f2f2f;
+  --docs-link: var(--primary);
 }
 
-/* Catppuccin Macchiato (Dark Mode) */
+/* Dark Neobrutalism — Deep Navy-Black + Pink */
 .dark {
-  --background: #24273a; /* Base */
-  --foreground: #cad3f5; /* Text */
-  --card: #1e2030; /* Mantle */
-  --card-foreground: #cad3f5; /* Text */
-  --popover: #1e2030; /* Mantle */
-  --popover-foreground: #cad3f5; /* Text */
-  --primary: #c6a0f6; /* Mauve */
-  --primary-foreground: #24273a; /* Base */
-  --secondary: #181926; /* Crust */
-  --secondary-foreground: #cad3f5; /* Text */
-  --muted: #1e2030; /* Mantle */
-  --muted-foreground: #a5adcb; /* Subtext0 */
-  --accent: #c6a0f6; /* Mauve */
-  --accent-foreground: #24273a; /* Base */
-  --destructive: #ed8796; /* Red */
-  --border: #363a4f; /* Surface0 */
-  --input: #363a4f; /* Surface0 */
-  --ring: #c6a0f6; /* Mauve */
-  --chart-1: #c6a0f6; /* Mauve */
-  --chart-2: #ed8796; /* Red */
-  --chart-3: #f5a97f; /* Peach */
-  --chart-4: #eed49f; /* Yellow */
-  --chart-5: #a6da95; /* Green */
-  --sidebar: #1e2030; /* Mantle */
-  --sidebar-foreground: #cad3f5; /* Text */
-  --sidebar-primary: #c6a0f6; /* Mauve */
-  --sidebar-primary-foreground: #24273a; /* Base */
-  --sidebar-accent: #363a4f; /* Surface0 */
-  --sidebar-accent-foreground: #cad3f5; /* Text */
-  --sidebar-border: #363a4f; /* Surface0 */
-  --sidebar-ring: #c6a0f6; /* Mauve */
+  --background: #282c35; /* Dark blue-gray */
+  --foreground: #ffffff;
+  --shadow-brutal: 4px 4px 0px 0px rgb(255 255 255 / 0.6);
+  --card: #31353f;
+  --card-foreground: #ffffff;
+  --popover: #31353f;
+  --popover-foreground: #ffffff;
+  --primary: #ec4899; /* Bright pink */
+  --primary-foreground: #ffffff;
+  --secondary: #3a3f4b;
+  --secondary-foreground: #e5e5e5;
+  --muted: #2e3240;
+  --muted-foreground: #b0b8c8;
+  --accent: #ec4899; /* Match primary for consistent pink identity */
+  --accent-foreground: #ffffff;
+  --destructive: #f43f5e;
+  --border: #3a3f4b;
+  --input: #3a3f4b;
+  --ring: #ec4899;
+  --chart-1: #ec4899; /* Pink */
+  --chart-2: #f43f5e; /* Rose */
+  --chart-3: #fb923c; /* Orange */
+  --chart-4: #facc15; /* Yellow */
+  --chart-5: #4ade80; /* Green */
+  --sidebar: #22262e;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ec4899;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #3a3f4b;
+  --sidebar-accent-foreground: #e5e5e5;
+  --sidebar-border: #3a3f4b;
+  --sidebar-ring: #ec4899;
+  --docs-accent-surface: #ec4899;
+  --docs-accent-surface-foreground: #ffffff;
+  --docs-step-surface: #db2777;
+  --docs-step-surface-foreground: #ffffff;
+  --docs-secondary-chip: #3a3f4b;
+  --docs-secondary-chip-foreground: #f3f4f6;
+  --docs-soft-text: #f3f4f6;
+  --docs-link: #f472b6;
 }
 
 @theme inline {
@@ -137,5 +155,34 @@
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
+  }
+}
+
+@layer components {
+  .docs-accent-surface {
+    border-color: var(--foreground);
+    background-color: var(--docs-accent-surface);
+    color: var(--docs-accent-surface-foreground);
+  }
+
+  .docs-step-number {
+    border-color: var(--foreground);
+    background-color: var(--docs-step-surface);
+    color: var(--docs-step-surface-foreground);
+    box-shadow: var(--shadow-brutal);
+  }
+
+  .docs-secondary-chip {
+    border-color: var(--foreground);
+    background-color: var(--docs-secondary-chip);
+    color: var(--docs-secondary-chip-foreground);
+  }
+
+  .docs-soft-text {
+    color: var(--docs-soft-text);
+  }
+
+  .docs-link {
+    color: var(--docs-link);
   }
 }

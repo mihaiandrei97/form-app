@@ -6,6 +6,7 @@ import {
   Clock,
   FileText,
   Inbox,
+  Loader2,
   Mail,
   Plus,
   Shield,
@@ -42,6 +43,7 @@ import {
   recentSubmissionsQueryOptions,
 } from "~/lib/forms/queries";
 import { getPlanLimits } from "~/lib/pricing/plans";
+import { useBillingAction } from "~/lib/pricing/use-billing-action";
 
 type RecentSubmission = {
   id: string;
@@ -185,6 +187,7 @@ function DashboardIndex() {
   const limits = getPlanLimits(plan);
   const hasNoForms = stats.totalForms === 0;
   const isPro = plan === "pro";
+  const { openPortal, isLoading: isBillingLoading } = useBillingAction(plan);
 
   const submissionPercent =
     limits.submissions > 0
@@ -197,35 +200,32 @@ function DashboardIndex() {
 
   return (
     <div className="space-y-6">
-      {/* Welcome Header */}
+      {/* Plan badge + upgrade CTA */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold">Welcome back!</h1>
-          <Badge variant={planBadgeVariant(plan)} className="capitalize">
-            {plan === "free" ? "Free" : plan} plan
-          </Badge>
-        </div>
+        <Badge variant={planBadgeVariant(plan)} className="w-fit capitalize">
+          {plan === "free" ? "Free" : plan} plan
+        </Badge>
         {!isPro && (
           <Button
-            nativeButton={false}
-            render={<Link to="/pricing" />}
+            onClick={openPortal}
+            disabled={isBillingLoading}
             variant="outline"
             className="w-fit gap-2"
           >
-            <Sparkles className="h-4 w-4" />
+            {isBillingLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Sparkles className="h-4 w-4" />
+            )}
             Upgrade plan
           </Button>
         )}
       </div>
 
-      <p className="text-muted-foreground -mt-4">
-        Manage your form endpoints and view submissions.
-      </p>
-
       {/* Stat Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Link to="/dashboard/forms" className="group">
-          <Card size="sm" className="group-hover:border-foreground/20 transition-colors">
+        <Link to="/dashboard/forms" className="group h-full">
+          <Card size="sm" className="h-full group-hover:border-foreground/20 transition-colors">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-muted-foreground text-sm font-medium">
                 Total Forms
@@ -234,17 +234,15 @@ function DashboardIndex() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalForms}</div>
-              {isFinite(limits.forms) && (
-                <p className="text-muted-foreground mt-1 text-xs">
-                  of {limits.forms} allowed
-                </p>
-              )}
+              <p className="text-muted-foreground mt-1 text-xs">
+                {isFinite(limits.forms) ? `of ${limits.forms} allowed` : <>&nbsp;</>}
+              </p>
             </CardContent>
           </Card>
         </Link>
 
-        <Link to="/dashboard/forms" className="group">
-          <Card size="sm" className="group-hover:border-foreground/20 transition-colors">
+        <Link to="/dashboard/forms" className="group h-full">
+          <Card size="sm" className="h-full group-hover:border-foreground/20 transition-colors">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-muted-foreground text-sm font-medium">
                 Active Forms
@@ -253,16 +251,14 @@ function DashboardIndex() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.activeForms}</div>
-              {stats.totalForms > 0 && (
-                <p className="text-muted-foreground mt-1 text-xs">
-                  of {stats.totalForms} total
-                </p>
-              )}
+              <p className="text-muted-foreground mt-1 text-xs">
+                {stats.totalForms > 0 ? `of ${stats.totalForms} total` : <>&nbsp;</>}
+              </p>
             </CardContent>
           </Card>
         </Link>
 
-        <Card size="sm">
+        <Card size="sm" className="h-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-muted-foreground text-sm font-medium">
               Total Submissions
@@ -275,7 +271,7 @@ function DashboardIndex() {
           </CardContent>
         </Card>
 
-        <Card size="sm">
+        <Card size="sm" className="h-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-muted-foreground text-sm font-medium">
               This Month
@@ -333,11 +329,13 @@ function DashboardIndex() {
                 </Progress>
               </div>
             ) : (
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground font-medium">Forms</span>
-                <span className="text-muted-foreground">
-                  {stats.totalForms} / Unlimited
-                </span>
+              <div>
+                <Progress value={null}>
+                  <ProgressLabel>Forms</ProgressLabel>
+                  <span className="text-muted-foreground ml-auto text-sm tabular-nums">
+                    {stats.totalForms} / Unlimited
+                  </span>
+                </Progress>
               </div>
             )}
 
@@ -355,12 +353,16 @@ function DashboardIndex() {
           {!isPro && (
             <CardFooter>
               <Button
-                nativeButton={false}
-                render={<Link to="/pricing" />}
+                onClick={openPortal}
+                disabled={isBillingLoading}
                 variant="outline"
                 className="w-full gap-2"
               >
-                <Sparkles className="h-4 w-4" />
+                {isBillingLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Sparkles className="h-4 w-4" />
+                )}
                 Upgrade for more
               </Button>
             </CardFooter>
@@ -388,12 +390,16 @@ function DashboardIndex() {
                   Email notifications are not available on the Free plan.
                 </p>
                 <Button
-                  nativeButton={false}
-                  render={<Link to="/pricing" />}
+                  onClick={openPortal}
+                  disabled={isBillingLoading}
                   variant="outline"
                   className="mt-3 gap-2"
                 >
-                  <Sparkles className="h-4 w-4" />
+                  {isBillingLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-4 w-4" />
+                  )}
                   Upgrade to unlock
                 </Button>
               </div>
