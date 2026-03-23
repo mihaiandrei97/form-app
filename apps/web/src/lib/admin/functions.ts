@@ -30,4 +30,3 @@ export const $getAdminUserStats = createServerFn({ method: "GET" })
   });
 
 export type AdminUserStat = Awaited<ReturnType<typeof $getAdminUserStats>>[number];
-
