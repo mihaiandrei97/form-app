@@ -130,7 +130,7 @@ function LandingPage() {
       <section className="bg-muted/40 py-20 md:py-28">
         <div className="relative mx-auto max-w-5xl px-4">
           <div className="grid items-center gap-12 md:grid-cols-2">
-            <div>
+            <div className="min-w-0">
               <Badge variant="secondary" className="mb-4">
                 Integration
               </Badge>
@@ -153,7 +153,7 @@ function LandingPage() {
               </Button>
             </div>
 
-            <div className="bg-card border-2 border-foreground shadow-[var(--shadow-brutal)]">
+            <div className="bg-card min-w-0 overflow-hidden border-2 border-foreground shadow-[var(--shadow-brutal)]">
               <div className="bg-muted/60 flex items-center gap-2 border-b-2 border-foreground px-4 py-3">
                 <Code2 className="text-muted-foreground h-3.5 w-3.5" />
                 <span className="text-muted-foreground text-xs font-bold uppercase tracking-wider">
@@ -400,7 +400,7 @@ function HighlightedCode() {
 
   return (
     <div
-      className="overflow-hidden text-sm leading-relaxed [&_pre]:overflow-x-auto [&_pre]:p-5"
+      className="w-full min-w-0 overflow-hidden text-sm leading-relaxed [&_.shiki]:max-w-full [&_.shiki]:overflow-x-auto [&_.shiki]:p-5 [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_pre]:p-5"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
