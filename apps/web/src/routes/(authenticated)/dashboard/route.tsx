@@ -29,6 +29,7 @@ const SEGMENT_LABELS: Record<string, string> = {
   edit: "Edit",
   notifications: "Notifications",
   admin: "Admin",
+  statistics: "Statistics",
 };
 
 type Crumb = { label: string; to?: string };
