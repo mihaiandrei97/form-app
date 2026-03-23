@@ -179,7 +179,7 @@ function HighlightedSnippet({
 
   return (
     <div
-      className="snippet-highlight overflow-hidden border-2 border-card text-xs leading-6 [&_.shiki]:!bg-[#15171c] [&_.shiki]:px-5 [&_.shiki]:py-5 [&_.shiki]:font-mono [&_.shiki]:text-xs [&_.shiki]:leading-6 [&_.shiki_pre]:overflow-x-auto"
+      className="w-full min-w-0 overflow-hidden border-2 border-card text-xs leading-6 [&_.shiki]:max-w-full [&_.shiki]:overflow-x-auto [&_.shiki]:p-5 [&_.shiki]:text-xs [&_.shiki]:leading-6 [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_pre]:p-5"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

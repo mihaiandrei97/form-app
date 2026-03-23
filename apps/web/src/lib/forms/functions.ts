@@ -340,7 +340,6 @@ export const $exportSubmissions = createServerFn({ method: "GET" })
         submissions: submissions.map((s) => ({
           id: s.id,
           data: s.data as Record<string, string>,
-          ipAddress: s.ipAddress,
           referrer: s.referrer,
           createdAt: s.createdAt,
         })),
@@ -370,7 +369,7 @@ export const $exportSubmissions = createServerFn({ method: "GET" })
     }
 
     const dataKeys = Array.from(allDataKeys).sort();
-    const headers = ["id", "created_at", "ip_address", "referrer", ...dataKeys];
+    const headers = ["id", "created_at", "referrer", ...dataKeys];
 
     const escapeCSV = (value: unknown): string => {
       if (value === null || value === undefined) return "";
@@ -386,7 +385,6 @@ export const $exportSubmissions = createServerFn({ method: "GET" })
       return [
         s.id,
         s.createdAt.toISOString(),
-        s.ipAddress || "",
         s.referrer || "",
         ...dataKeys.map((k) => escapeCSV(dataObj[k])),
       ].join(",");

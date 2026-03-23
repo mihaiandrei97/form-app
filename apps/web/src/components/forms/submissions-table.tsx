@@ -22,7 +22,6 @@ type Submission = {
   id: string;
   formId: string;
   data: Record<string, object>;
-  ipAddress: string | null;
   userAgent: string | null;
   referrer: string | null;
   createdAt: Date;
@@ -109,7 +108,6 @@ export function SubmissionsTable({
               <TableRow>
                 <TableHead className="w-[100px]">Date</TableHead>
                 <TableHead>Data</TableHead>
-                <TableHead className="w-[120px]">IP Address</TableHead>
                 <TableHead className="w-[150px]">Referrer</TableHead>
                 <TableHead className="w-[80px]"></TableHead>
               </TableRow>
@@ -122,9 +120,6 @@ export function SubmissionsTable({
                   </TableCell>
                   <TableCell className="text-muted-foreground max-w-[300px] truncate text-sm">
                     {getDataPreview(submission.data)}
-                  </TableCell>
-                  <TableCell className="font-mono text-xs">
-                    {submission.ipAddress || "-"}
                   </TableCell>
                   <TableCell
                     className="max-w-[150px] truncate text-xs"
@@ -229,12 +224,6 @@ export function SubmissionsTable({
                 <h4 className="mb-2 text-sm font-medium">Metadata</h4>
                 <div className="bg-muted rounded-md p-4">
                   <dl className="space-y-2 text-sm">
-                    <div className="grid grid-cols-3 gap-2">
-                      <dt className="text-muted-foreground font-medium">IP Address</dt>
-                      <dd className="col-span-2 font-mono">
-                        {selectedSubmission.ipAddress || "Unknown"}
-                      </dd>
-                    </div>
                     <div className="grid grid-cols-3 gap-2">
                       <dt className="text-muted-foreground font-medium">Referrer</dt>
                       <dd className="col-span-2 break-all">

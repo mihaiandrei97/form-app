@@ -1,6 +1,5 @@
 import { db, form, notificationChannel, submission, usage, user } from "@repo/db";
 import { createFileRoute } from "@tanstack/react-router";
-import { getRequestIP } from "@tanstack/react-start/server";
 import { and, eq, sql, sum } from "drizzle-orm";
 import { validateSubmission } from "~/lib/forms/validation";
 import { generateId } from "~/lib/id";
@@ -30,7 +29,6 @@ export const Route = createFileRoute("/api/f/$slug")({
        */
       POST: async ({ request, params }) => {
         const { slug } = params;
-        const requestIp = getRequestIP();
 
         try {
           // Extract origin early — needed for CORS headers throughout
@@ -157,7 +155,6 @@ export const Route = createFileRoute("/api/f/$slug")({
             id: submissionId,
             formId: formRecord.id,
             data: submissionData,
-            ipAddress: requestIp || getClientIp(request),
             userAgent: request.headers.get("user-agent") || null,
             referrer: referer || null,
           });
@@ -386,24 +383,6 @@ async function parseFormData(request: Request): Promise<Record<string, unknown>>
   } catch {
     return {};
   }
-}
-
-/**
- * Get client IP address from request headers
- */
-function getClientIp(request: Request): string | null {
-  // Check common proxy headers
-  const forwardedFor = request.headers.get("x-forwarded-for");
-  if (forwardedFor) {
-    return forwardedFor.split(",")[0].trim();
-  }
-
-  const realIp = request.headers.get("x-real-ip");
-  if (realIp) {
-    return realIp;
-  }
-
-  return null;
 }
 
 /**
