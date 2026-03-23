@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
-import { ChevronUp, BookOpen, FileText, Home, LogOut, Settings } from "lucide-react";
+import { ChevronUp, BookOpen, FileText, Home, LogOut, Settings, ShieldCheck } from "lucide-react";
 import { UserAvatar } from "~/components/ui/avatar";
 import {
   DropdownMenu,
@@ -46,11 +46,18 @@ const navItems = [
     url: "/docs",
     icon: BookOpen,
   },
+  {
+    title: "Admin",
+    url: "/dashboard/admin",
+    icon: ShieldCheck,
+    adminOnly: true,
+  },
 ];
 
 export function DashboardSidebar({ user }: { user: NonNullable<AuthQueryResult> }) {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const isAdmin = user.role === "admin";
 
   const handleSignOut = async () => {
     await authClient.signOut({
@@ -90,23 +97,26 @@ export function DashboardSidebar({ user }: { user: NonNullable<AuthQueryResult> 
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    render={
-                      <Link
-                        to={item.url}
-                        activeOptions={{ exact: item.exact }}
-                        activeProps={{ "data-active": true }}
-                      />
-                    }
-                    tooltip={item.title}
-                  >
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {navItems.map((item) => {
+                if (item.adminOnly && !isAdmin) return null;
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      render={
+                        <Link
+                          to={item.url}
+                          activeOptions={{ exact: item.exact }}
+                          activeProps={{ "data-active": true }}
+                        />
+                      }
+                      tooltip={item.title}
+                    >
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
