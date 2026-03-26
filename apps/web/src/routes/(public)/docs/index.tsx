@@ -60,7 +60,7 @@ function DocsPage() {
       <Separator className="my-10" />
 
       <section className="grid items-start gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold">1) Set up a form endpoint</h2>
             <p className="text-muted-foreground">

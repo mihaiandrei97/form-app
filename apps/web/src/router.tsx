@@ -1,4 +1,4 @@
-import { QueryClient } from "@tanstack/react-query";
+import { MutationCache, QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 
@@ -14,6 +14,20 @@ export function getRouter() {
         staleTime: 1000 * 60 * 2, // 2 minutes
       },
     },
+    // https://tkdodo.eu/blog/automatic-query-invalidation-after-mutations
+    mutationCache: new MutationCache({
+      onSuccess: (_data, _variables, _context, mutation) => {
+        if (
+          Array.isArray(mutation.options.mutationKey) &&
+          mutation.options.mutationKey.length === 0
+        ) {
+          return;
+        }
+        queryClient.invalidateQueries({
+          queryKey: mutation.options.mutationKey,
+        });
+      },
+    }),
   });
 
   const router = createRouter({

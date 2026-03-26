@@ -25,8 +25,10 @@ import { Route as authenticatedDashboardIndexRouteImport } from './routes/(authe
 import { Route as ApiFSlugRouteImport } from './routes/api/f/$slug'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as authenticatedDashboardSettingsRouteImport } from './routes/(authenticated)/dashboard/settings'
+import { Route as authenticatedDashboardAdminRouteRouteImport } from './routes/(authenticated)/dashboard/admin/route'
 import { Route as publicDocsTemplatesIndexRouteImport } from './routes/(public)/docs/templates/index'
 import { Route as authenticatedDashboardFormsIndexRouteImport } from './routes/(authenticated)/dashboard/forms/index'
+import { Route as authenticatedDashboardAdminIndexRouteImport } from './routes/(authenticated)/dashboard/admin/index'
 import { Route as publicDocsTemplatesWaitingListRouteImport } from './routes/(public)/docs/templates/waiting-list'
 import { Route as publicDocsTemplatesNewsletterRouteImport } from './routes/(public)/docs/templates/newsletter'
 import { Route as publicDocsTemplatesFeedbackRouteImport } from './routes/(public)/docs/templates/feedback'
@@ -34,6 +36,7 @@ import { Route as publicDocsTemplatesContactRouteImport } from './routes/(public
 import { Route as publicDocsTemplatesBugReportRouteImport } from './routes/(public)/docs/templates/bug-report'
 import { Route as authenticatedDashboardFormsNewRouteImport } from './routes/(authenticated)/dashboard/forms/new'
 import { Route as authenticatedDashboardFormsFormIdIndexRouteImport } from './routes/(authenticated)/dashboard/forms/$formId/index'
+import { Route as authenticatedDashboardAdminStatisticsIndexRouteImport } from './routes/(authenticated)/dashboard/admin/statistics/index'
 import { Route as authenticatedDashboardFormsFormIdNotificationsRouteImport } from './routes/(authenticated)/dashboard/forms/$formId/notifications'
 import { Route as authenticatedDashboardFormsFormIdEditRouteImport } from './routes/(authenticated)/dashboard/forms/$formId/edit'
 
@@ -117,6 +120,12 @@ const authenticatedDashboardSettingsRoute =
     path: '/settings',
     getParentRoute: () => authenticatedDashboardRouteRoute,
   } as any)
+const authenticatedDashboardAdminRouteRoute =
+  authenticatedDashboardAdminRouteRouteImport.update({
+    id: '/admin',
+    path: '/admin',
+    getParentRoute: () => authenticatedDashboardRouteRoute,
+  } as any)
 const publicDocsTemplatesIndexRoute =
   publicDocsTemplatesIndexRouteImport.update({
     id: '/docs/templates/',
@@ -128,6 +137,12 @@ const authenticatedDashboardFormsIndexRoute =
     id: '/forms/',
     path: '/forms/',
     getParentRoute: () => authenticatedDashboardRouteRoute,
+  } as any)
+const authenticatedDashboardAdminIndexRoute =
+  authenticatedDashboardAdminIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => authenticatedDashboardAdminRouteRoute,
   } as any)
 const publicDocsTemplatesWaitingListRoute =
   publicDocsTemplatesWaitingListRouteImport.update({
@@ -171,6 +186,12 @@ const authenticatedDashboardFormsFormIdIndexRoute =
     path: '/forms/$formId/',
     getParentRoute: () => authenticatedDashboardRouteRoute,
   } as any)
+const authenticatedDashboardAdminStatisticsIndexRoute =
+  authenticatedDashboardAdminStatisticsIndexRouteImport.update({
+    id: '/statistics/',
+    path: '/statistics/',
+    getParentRoute: () => authenticatedDashboardAdminRouteRoute,
+  } as any)
 const authenticatedDashboardFormsFormIdNotificationsRoute =
   authenticatedDashboardFormsFormIdNotificationsRouteImport.update({
     id: '/forms/$formId/notifications',
@@ -193,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/success': typeof publicSuccessRoute
   '/terms': typeof publicTermsRoute
   '/': typeof publicIndexRoute
+  '/dashboard/admin': typeof authenticatedDashboardAdminRouteRouteWithChildren
   '/dashboard/settings': typeof authenticatedDashboardSettingsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/f/$slug': typeof ApiFSlugRoute
@@ -204,10 +226,12 @@ export interface FileRoutesByFullPath {
   '/docs/templates/feedback': typeof publicDocsTemplatesFeedbackRoute
   '/docs/templates/newsletter': typeof publicDocsTemplatesNewsletterRoute
   '/docs/templates/waiting-list': typeof publicDocsTemplatesWaitingListRoute
+  '/dashboard/admin/': typeof authenticatedDashboardAdminIndexRoute
   '/dashboard/forms/': typeof authenticatedDashboardFormsIndexRoute
   '/docs/templates/': typeof publicDocsTemplatesIndexRoute
   '/dashboard/forms/$formId/edit': typeof authenticatedDashboardFormsFormIdEditRoute
   '/dashboard/forms/$formId/notifications': typeof authenticatedDashboardFormsFormIdNotificationsRoute
+  '/dashboard/admin/statistics/': typeof authenticatedDashboardAdminStatisticsIndexRoute
   '/dashboard/forms/$formId/': typeof authenticatedDashboardFormsFormIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -229,10 +253,12 @@ export interface FileRoutesByTo {
   '/docs/templates/feedback': typeof publicDocsTemplatesFeedbackRoute
   '/docs/templates/newsletter': typeof publicDocsTemplatesNewsletterRoute
   '/docs/templates/waiting-list': typeof publicDocsTemplatesWaitingListRoute
+  '/dashboard/admin': typeof authenticatedDashboardAdminIndexRoute
   '/dashboard/forms': typeof authenticatedDashboardFormsIndexRoute
   '/docs/templates': typeof publicDocsTemplatesIndexRoute
   '/dashboard/forms/$formId/edit': typeof authenticatedDashboardFormsFormIdEditRoute
   '/dashboard/forms/$formId/notifications': typeof authenticatedDashboardFormsFormIdNotificationsRoute
+  '/dashboard/admin/statistics': typeof authenticatedDashboardAdminStatisticsIndexRoute
   '/dashboard/forms/$formId': typeof authenticatedDashboardFormsFormIdIndexRoute
 }
 export interface FileRoutesById {
@@ -248,6 +274,7 @@ export interface FileRoutesById {
   '/(public)/success': typeof publicSuccessRoute
   '/(public)/terms': typeof publicTermsRoute
   '/(public)/': typeof publicIndexRoute
+  '/(authenticated)/dashboard/admin': typeof authenticatedDashboardAdminRouteRouteWithChildren
   '/(authenticated)/dashboard/settings': typeof authenticatedDashboardSettingsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/f/$slug': typeof ApiFSlugRoute
@@ -259,10 +286,12 @@ export interface FileRoutesById {
   '/(public)/docs/templates/feedback': typeof publicDocsTemplatesFeedbackRoute
   '/(public)/docs/templates/newsletter': typeof publicDocsTemplatesNewsletterRoute
   '/(public)/docs/templates/waiting-list': typeof publicDocsTemplatesWaitingListRoute
+  '/(authenticated)/dashboard/admin/': typeof authenticatedDashboardAdminIndexRoute
   '/(authenticated)/dashboard/forms/': typeof authenticatedDashboardFormsIndexRoute
   '/(public)/docs/templates/': typeof publicDocsTemplatesIndexRoute
   '/(authenticated)/dashboard/forms/$formId/edit': typeof authenticatedDashboardFormsFormIdEditRoute
   '/(authenticated)/dashboard/forms/$formId/notifications': typeof authenticatedDashboardFormsFormIdNotificationsRoute
+  '/(authenticated)/dashboard/admin/statistics/': typeof authenticatedDashboardAdminStatisticsIndexRoute
   '/(authenticated)/dashboard/forms/$formId/': typeof authenticatedDashboardFormsFormIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -276,6 +305,7 @@ export interface FileRouteTypes {
     | '/success'
     | '/terms'
     | '/'
+    | '/dashboard/admin'
     | '/dashboard/settings'
     | '/api/auth/$'
     | '/api/f/$slug'
@@ -287,10 +317,12 @@ export interface FileRouteTypes {
     | '/docs/templates/feedback'
     | '/docs/templates/newsletter'
     | '/docs/templates/waiting-list'
+    | '/dashboard/admin/'
     | '/dashboard/forms/'
     | '/docs/templates/'
     | '/dashboard/forms/$formId/edit'
     | '/dashboard/forms/$formId/notifications'
+    | '/dashboard/admin/statistics/'
     | '/dashboard/forms/$formId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -312,10 +344,12 @@ export interface FileRouteTypes {
     | '/docs/templates/feedback'
     | '/docs/templates/newsletter'
     | '/docs/templates/waiting-list'
+    | '/dashboard/admin'
     | '/dashboard/forms'
     | '/docs/templates'
     | '/dashboard/forms/$formId/edit'
     | '/dashboard/forms/$formId/notifications'
+    | '/dashboard/admin/statistics'
     | '/dashboard/forms/$formId'
   id:
     | '__root__'
@@ -330,6 +364,7 @@ export interface FileRouteTypes {
     | '/(public)/success'
     | '/(public)/terms'
     | '/(public)/'
+    | '/(authenticated)/dashboard/admin'
     | '/(authenticated)/dashboard/settings'
     | '/api/auth/$'
     | '/api/f/$slug'
@@ -341,10 +376,12 @@ export interface FileRouteTypes {
     | '/(public)/docs/templates/feedback'
     | '/(public)/docs/templates/newsletter'
     | '/(public)/docs/templates/waiting-list'
+    | '/(authenticated)/dashboard/admin/'
     | '/(authenticated)/dashboard/forms/'
     | '/(public)/docs/templates/'
     | '/(authenticated)/dashboard/forms/$formId/edit'
     | '/(authenticated)/dashboard/forms/$formId/notifications'
+    | '/(authenticated)/dashboard/admin/statistics/'
     | '/(authenticated)/dashboard/forms/$formId/'
   fileRoutesById: FileRoutesById
 }
@@ -470,6 +507,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedDashboardSettingsRouteImport
       parentRoute: typeof authenticatedDashboardRouteRoute
     }
+    '/(authenticated)/dashboard/admin': {
+      id: '/(authenticated)/dashboard/admin'
+      path: '/admin'
+      fullPath: '/dashboard/admin'
+      preLoaderRoute: typeof authenticatedDashboardAdminRouteRouteImport
+      parentRoute: typeof authenticatedDashboardRouteRoute
+    }
     '/(public)/docs/templates/': {
       id: '/(public)/docs/templates/'
       path: '/docs/templates'
@@ -483,6 +527,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/forms/'
       preLoaderRoute: typeof authenticatedDashboardFormsIndexRouteImport
       parentRoute: typeof authenticatedDashboardRouteRoute
+    }
+    '/(authenticated)/dashboard/admin/': {
+      id: '/(authenticated)/dashboard/admin/'
+      path: '/'
+      fullPath: '/dashboard/admin/'
+      preLoaderRoute: typeof authenticatedDashboardAdminIndexRouteImport
+      parentRoute: typeof authenticatedDashboardAdminRouteRoute
     }
     '/(public)/docs/templates/waiting-list': {
       id: '/(public)/docs/templates/waiting-list'
@@ -533,6 +584,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedDashboardFormsFormIdIndexRouteImport
       parentRoute: typeof authenticatedDashboardRouteRoute
     }
+    '/(authenticated)/dashboard/admin/statistics/': {
+      id: '/(authenticated)/dashboard/admin/statistics/'
+      path: '/statistics'
+      fullPath: '/dashboard/admin/statistics/'
+      preLoaderRoute: typeof authenticatedDashboardAdminStatisticsIndexRouteImport
+      parentRoute: typeof authenticatedDashboardAdminRouteRoute
+    }
     '/(authenticated)/dashboard/forms/$formId/notifications': {
       id: '/(authenticated)/dashboard/forms/$formId/notifications'
       path: '/forms/$formId/notifications'
@@ -564,7 +622,26 @@ const authPagesRouteRouteWithChildren = authPagesRouteRoute._addFileChildren(
   authPagesRouteRouteChildren,
 )
 
+interface authenticatedDashboardAdminRouteRouteChildren {
+  authenticatedDashboardAdminIndexRoute: typeof authenticatedDashboardAdminIndexRoute
+  authenticatedDashboardAdminStatisticsIndexRoute: typeof authenticatedDashboardAdminStatisticsIndexRoute
+}
+
+const authenticatedDashboardAdminRouteRouteChildren: authenticatedDashboardAdminRouteRouteChildren =
+  {
+    authenticatedDashboardAdminIndexRoute:
+      authenticatedDashboardAdminIndexRoute,
+    authenticatedDashboardAdminStatisticsIndexRoute:
+      authenticatedDashboardAdminStatisticsIndexRoute,
+  }
+
+const authenticatedDashboardAdminRouteRouteWithChildren =
+  authenticatedDashboardAdminRouteRoute._addFileChildren(
+    authenticatedDashboardAdminRouteRouteChildren,
+  )
+
 interface authenticatedDashboardRouteRouteChildren {
+  authenticatedDashboardAdminRouteRoute: typeof authenticatedDashboardAdminRouteRouteWithChildren
   authenticatedDashboardSettingsRoute: typeof authenticatedDashboardSettingsRoute
   authenticatedDashboardIndexRoute: typeof authenticatedDashboardIndexRoute
   authenticatedDashboardFormsNewRoute: typeof authenticatedDashboardFormsNewRoute
@@ -576,6 +653,8 @@ interface authenticatedDashboardRouteRouteChildren {
 
 const authenticatedDashboardRouteRouteChildren: authenticatedDashboardRouteRouteChildren =
   {
+    authenticatedDashboardAdminRouteRoute:
+      authenticatedDashboardAdminRouteRouteWithChildren,
     authenticatedDashboardSettingsRoute: authenticatedDashboardSettingsRoute,
     authenticatedDashboardIndexRoute: authenticatedDashboardIndexRoute,
     authenticatedDashboardFormsNewRoute: authenticatedDashboardFormsNewRoute,

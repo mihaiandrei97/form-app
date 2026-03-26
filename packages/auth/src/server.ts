@@ -6,6 +6,7 @@ import { db } from "@repo/db";
 import { user } from "@repo/db/schema";
 import { env } from "@repo/env/server";
 import { eq } from "drizzle-orm";
+import { admin } from "better-auth/plugins";
 
 export const auth = betterAuth({
   baseURL: env.VITE_BASE_URL,
@@ -31,6 +32,7 @@ export const auth = betterAuth({
   },
   plugins: [
     tanstackStartCookies(),
+    admin(),
     creem({
       apiKey: env.CREEM_API_KEY,
       webhookSecret: env.CREEM_WEBHOOK_SECRET,

@@ -8,6 +8,13 @@
       "when": 1772449022190,
       "tag": "0000_acoustic_brood",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774177230628,
+      "tag": "0001_omniscient_lilandra",
+      "breakpoints": true
     }
   ]
 }
