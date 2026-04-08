@@ -13,7 +13,8 @@
     "@repo/db": "workspace:*",
     "@repo/env": "workspace:*",
     "better-auth": "catalog:",
-    "drizzle-orm": "catalog:"
+    "drizzle-orm": "catalog:",
+    "resend": "^6.9.2"
   },
   "devDependencies": {
     "@repo/config": "workspace:*",

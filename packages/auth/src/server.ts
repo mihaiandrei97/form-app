@@ -6,7 +6,10 @@ import { db } from "@repo/db";
 import { user } from "@repo/db/schema";
 import { env } from "@repo/env/server";
 import { eq } from "drizzle-orm";
-import { admin } from "better-auth/plugins";
+import { admin, magicLink } from "better-auth/plugins";
+import { Resend } from "resend";
+
+const resend = new Resend(env.RESEND_API_KEY);
 
 export const auth = betterAuth({
   baseURL: env.VITE_BASE_URL,
@@ -33,6 +36,33 @@ export const auth = betterAuth({
   plugins: [
     tanstackStartCookies(),
     admin(),
+    magicLink({
+      sendMagicLink: async ({ email, url }) => {
+        const { error } = await resend.emails.send({
+          from: env.RESEND_FROM_EMAIL,
+          to: [email],
+          subject: "Sign in to BForms",
+          html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #333;">Sign in to BForms</h2>
+              <p style="color: #666;">Click the link below to sign in to your account. This link will expire in 5 minutes.</p>
+              <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #000; color: #fff; text-decoration: none; font-weight: bold; margin: 16px 0;">
+                Sign in to BForms
+              </a>
+              <p style="color: #999; font-size: 14px;">If you didn't request this email, you can safely ignore it.</p>
+              <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 24px 0;" />
+              <p style="color: #999; font-size: 12px;">If the button doesn't work, copy and paste this URL into your browser: ${url}</p>
+            </div>
+          `,
+          text: `Sign in to BForms\n\nClick the link below to sign in. This link expires in 5 minutes.\n\n${url}\n\nIf you didn't request this, you can safely ignore this email.`,
+        });
+
+        if (error) {
+          console.error("[auth] Failed to send magic link email:", error);
+          throw new Error("Failed to send magic link email");
+        }
+      },
+    }),
     creem({
       apiKey: env.CREEM_API_KEY,
       webhookSecret: env.CREEM_WEBHOOK_SECRET,
